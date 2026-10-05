@@ -159,6 +159,26 @@ final class NetworkDirectory
     }
 
     /**
+     * Name and phone for operational alerts to a branch (e.g. a sample
+     * rejected or a manifest on its way). Any branch the network sends
+     * samples to or from may be told.
+     */
+    public function branchContact(string $branchId): BranchContact
+    {
+        return $this->currentScope->runAs(ScopeContext::system(), function () use ($branchId): BranchContact {
+            $branch = Branch::query()->findOrFail($branchId);
+
+            return new BranchContact($branch->id, $branch->organization_id, $branch->branch_code, $branch->name, $branch->phone);
+        });
+    }
+
+    /** An active reference or clinical lab of the organization, visible to the caller or not. */
+    public function isOperatingLab(string $organizationId, string $branchId): bool
+    {
+        return in_array($branchId, $this->operatingLabIds($organizationId), true);
+    }
+
+    /**
      * A suspended or terminated franchise's branches cannot take orders
      * (spec §5.1); company branches always can.
      */

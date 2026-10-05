@@ -25,6 +25,24 @@ class NotificationTemplateSeeder extends Seeder
             'whatsapp' => [null, 'Hello {{patient_name}}, please pay Rs {{amount}} for invoice {{invoice_no}} here: {{payment_url}}'],
             'email' => ['Payment for invoice {{invoice_no}}', "Dear {{patient_name}},\n\nPlease pay Rs {{amount}} for invoice {{invoice_no}}: {{payment_url}}\n"],
         ],
+        // Sample journey (spec §5.4, §9). Branch alerts go to the branch phone by SMS.
+        'sample_rejected' => [
+            'sms' => [null, 'Sample {{barcode}} of order {{order_no}} was rejected at {{lab_name}} ({{reason}}). Redraw with barcode {{redraw_barcode}}.'],
+        ],
+        'sample_recollection' => [
+            'sms' => [null, 'Dear {{patient_name}}, your sample for order {{order_no}} could not be tested ({{reason}}). Please visit {{branch_name}} for a free re-collection.'],
+            'whatsapp' => [null, 'Hello {{patient_name}}, we could not test your sample for order {{order_no}} ({{reason}}). Please visit {{branch_name}} for a free re-collection.'],
+            'email' => ['Re-collection needed for order {{order_no}}', "Dear {{patient_name}},\n\nWe could not test your sample for order {{order_no}} ({{reason}}). Please visit {{branch_name}} for a free re-collection.\n"],
+        ],
+        'manifest_dispatched' => [
+            'sms' => [null, 'Manifest {{manifest_no}} with {{sample_count}} sample(s) left {{from_branch}}. Courier: {{courier_name}}.'],
+        ],
+        'samples_missing' => [
+            'sms' => [null, 'Manifest {{manifest_no}} ({{from_branch}} to {{to_branch}}): {{missing_count}} sample(s) not scanned in at the lab.'],
+        ],
+        'samples_delayed' => [
+            'sms' => [null, 'Manifest {{manifest_no}} ({{from_branch}} to {{to_branch}}): {{sample_count}} sample(s) in transit past their stability limit.'],
+        ],
     ];
 
     public function run(): void

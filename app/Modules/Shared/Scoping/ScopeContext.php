@@ -72,6 +72,20 @@ final class ScopeContext
         return $this->level === null;
     }
 
+    /**
+     * Whether the caller acts for this branch: the whole organization, or a
+     * region, franchise or branch scope that contains it. B2B client users
+     * never act for a branch.
+     */
+    public function coversBranch(string $branchId): bool
+    {
+        return match ($this->level) {
+            null, ScopeLevel::Organization => true,
+            ScopeLevel::B2bClient => false,
+            default => in_array($branchId, $this->branchIds, true),
+        };
+    }
+
     public function franchiseId(): ?string
     {
         return $this->level === ScopeLevel::Franchise ? $this->franchiseIds[0] : null;

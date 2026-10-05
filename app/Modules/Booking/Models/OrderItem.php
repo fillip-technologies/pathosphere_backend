@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $test_id
  * @property string|null $package_id
  * @property string|null $parent_item_id
+ * @property string|null $recollection_of_item_id set on a free redraw line (spec §5.4)
  * @property string|null $processing_branch_id
  * @property Money $mrp_price
  * @property Money $partner_price

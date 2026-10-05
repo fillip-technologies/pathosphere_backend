@@ -35,6 +35,23 @@ return [
         'discount_approval_percent' => '10',
     ],
 
+    // Samples and logistics (spec §5.4). Rejection reasons are a lookup list
+    // (spec §6): add reasons here, never rename a key that is in use.
+    'samples' => [
+        'rejection_reasons' => [
+            'haemolysed' => 'Haemolysed',
+            'clotted' => 'Clotted',
+            'insufficient' => 'Insufficient volume',
+            'leaked' => 'Leaked',
+            'wrong_container' => 'Wrong container',
+            'unlabelled' => 'Unlabelled',
+            'temperature' => 'Temperature breach',
+            'delayed' => 'Delayed beyond stability',
+        ],
+        // Grace period after a lab starts scanning a manifest before unscanned samples are flagged missing.
+        'missing_after_minutes' => 120,
+    ],
+
     // Staff authentication (spec §8.1, §10.3–10.4).
     'auth' => [
         'access_token_minutes' => 15,

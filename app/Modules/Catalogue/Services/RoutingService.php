@@ -132,6 +132,28 @@ final class RoutingService
     }
 
     /**
+     * Whether an operating lab can run every one of the tests now, e.g. as the
+     * target when a lab re-routes a sample (spec §5.4 step 6).
+     *
+     * @param  list<string>  $testIds
+     */
+    public function labCanRunAll(string $organizationId, string $labId, array $testIds): bool
+    {
+        if (! in_array($labId, $this->network->operatingLabIds($organizationId), true)) {
+            return false;
+        }
+
+        $testIds = array_values(array_unique($testIds));
+        $capableCount = LabTestCapability::query()
+            ->where('branch_id', $labId)
+            ->whereIn('test_id', $testIds)
+            ->where('is_active', true)
+            ->count();
+
+        return $capableCount === count($testIds);
+    }
+
+    /**
      * A rule must start at a visible branch and point at a visible lab; a
      * rule for one test needs that lab to have the test switched on
      * (spec §7.4).

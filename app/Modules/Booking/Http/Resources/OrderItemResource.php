@@ -17,6 +17,7 @@ final class OrderItemResource extends JsonResource
             'test_id' => $this->test_id,
             'package_id' => $this->package_id,
             'parent_item_id' => $this->parent_item_id,
+            'recollection_of_item_id' => $this->recollection_of_item_id,
             'processing_branch_id' => $this->processing_branch_id,
             'mrp_price' => $this->mrp_price,
             'partner_price' => $this->partner_price,

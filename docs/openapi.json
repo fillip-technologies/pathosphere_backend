@@ -2557,6 +2557,370 @@
                 }
             }
         },
+        "/manifests": {
+            "get": {
+                "operationId": "manifest.index",
+                "tags": [
+                    "Manifest"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        },
+                                        "pagination": {
+                                            "type": "object",
+                                            "properties": {
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "limit": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "next_cursor",
+                                                "limit"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "pagination"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "manifest.store",
+                "tags": [
+                    "Manifest"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateManifestRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`JsonResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/JsonResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/manifests/{manifest}": {
+            "get": {
+                "operationId": "manifest.show",
+                "tags": [
+                    "Manifest"
+                ],
+                "parameters": [
+                    {
+                        "name": "manifest",
+                        "in": "path",
+                        "required": true,
+                        "description": "The manifest ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`ManifestResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ManifestResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/manifests/{manifest}/samples": {
+            "post": {
+                "operationId": "manifest.addSamples",
+                "tags": [
+                    "Manifest"
+                ],
+                "parameters": [
+                    {
+                        "name": "manifest",
+                        "in": "path",
+                        "required": true,
+                        "description": "The manifest ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ManifestSamplesRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`ManifestResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ManifestResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/manifests/{manifest}/samples/{sampleId}": {
+            "delete": {
+                "operationId": "manifest.removeSample",
+                "tags": [
+                    "Manifest"
+                ],
+                "parameters": [
+                    {
+                        "name": "manifest",
+                        "in": "path",
+                        "required": true,
+                        "description": "The manifest ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "sampleId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`ManifestResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ManifestResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/manifests/{manifest}/dispatch": {
+            "post": {
+                "operationId": "manifest.dispatch",
+                "tags": [
+                    "Manifest"
+                ],
+                "parameters": [
+                    {
+                        "name": "manifest",
+                        "in": "path",
+                        "required": true,
+                        "description": "The manifest ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DispatchManifestRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`ManifestResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ManifestResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/manifests/{manifest}/receive": {
+            "post": {
+                "operationId": "manifest.receive",
+                "summary": "Scan-driven: one call per scan or per batch of scans",
+                "tags": [
+                    "Manifest"
+                ],
+                "parameters": [
+                    {
+                        "name": "manifest",
+                        "in": "path",
+                        "required": true,
+                        "description": "The manifest ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ReceiveManifestRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`ManifestResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ManifestResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
         "/me": {
             "get": {
                 "operationId": "auth.me",
@@ -5054,6 +5418,413 @@
                 }
             }
         },
+        "/samples": {
+            "get": {
+                "operationId": "sample.index",
+                "tags": [
+                    "Sample"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        },
+                                        "pagination": {
+                                            "type": "object",
+                                            "properties": {
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "limit": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "next_cursor",
+                                                "limit"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "pagination"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/samples/{barcodeOrId}": {
+            "get": {
+                "operationId": "sample.show",
+                "summary": "GET /samples/{barcode}: scanners look samples up by barcode; the ID works too",
+                "tags": [
+                    "Sample"
+                ],
+                "parameters": [
+                    {
+                        "name": "barcodeOrId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`SampleDetailResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/SampleDetailResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/orders/{orderId}/samples": {
+            "post": {
+                "operationId": "sample.prepareForOrder",
+                "summary": "POST /orders/{id}/samples: barcodes and ZPL labels for every container\nthe order needs. 201 when new containers were planned, 200 when the\norder already had them all",
+                "tags": [
+                    "Sample"
+                ],
+                "parameters": [
+                    {
+                        "name": "orderId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/samples/{sample}/assign-barcode": {
+            "post": {
+                "operationId": "sample.assignBarcode",
+                "tags": [
+                    "Sample"
+                ],
+                "parameters": [
+                    {
+                        "name": "sample",
+                        "in": "path",
+                        "required": true,
+                        "description": "The sample ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AssignBarcodeRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`SampleDetailResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/SampleDetailResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/samples/{sample}/collect": {
+            "post": {
+                "operationId": "sample.collect",
+                "tags": [
+                    "Sample"
+                ],
+                "parameters": [
+                    {
+                        "name": "sample",
+                        "in": "path",
+                        "required": true,
+                        "description": "The sample ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CollectSampleRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`SampleDetailResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/SampleDetailResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/samples/{sample}/receive": {
+            "post": {
+                "operationId": "sample.receive",
+                "summary": "Accession at the lab for a sample drawn there",
+                "tags": [
+                    "Sample"
+                ],
+                "parameters": [
+                    {
+                        "name": "sample",
+                        "in": "path",
+                        "required": true,
+                        "description": "The sample ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`SampleDetailResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/SampleDetailResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/samples/{sample}/reject": {
+            "post": {
+                "operationId": "sample.reject",
+                "summary": "Rejects the sample and answers with the redraw now awaiting collection",
+                "tags": [
+                    "Sample"
+                ],
+                "parameters": [
+                    {
+                        "name": "sample",
+                        "in": "path",
+                        "required": true,
+                        "description": "The sample ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RejectSampleRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`SampleDetailResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/SampleDetailResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/samples/{sample}/reroute": {
+            "post": {
+                "operationId": "sample.reroute",
+                "tags": [
+                    "Sample"
+                ],
+                "parameters": [
+                    {
+                        "name": "sample",
+                        "in": "path",
+                        "required": true,
+                        "description": "The sample ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RerouteSampleRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`SampleDetailResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/SampleDetailResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
         "/auth/login": {
             "post": {
                 "operationId": "signIn.login",
@@ -5942,6 +6713,20 @@
                 ],
                 "title": "AddOrderItemsRequest"
             },
+            "AssignBarcodeRequest": {
+                "type": "object",
+                "description": "A pre-printed label stuck on the tube (Code 128, letters, digits and hyphens).",
+                "properties": {
+                    "barcode": {
+                        "type": "string",
+                        "pattern": "^[A-Z0-9-]{4,30}$"
+                    }
+                },
+                "required": [
+                    "barcode"
+                ],
+                "title": "AssignBarcodeRequest"
+            },
             "AssignPhlebotomistRequest": {
                 "type": "object",
                 "properties": {
@@ -6435,6 +7220,50 @@
                 ],
                 "title": "CapabilitiesRequest"
             },
+            "CollectSampleRequest": {
+                "type": "object",
+                "description": "Recording a draw; offline apps send the real collection time later.",
+                "properties": {
+                    "collected_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    }
+                },
+                "title": "CollectSampleRequest"
+            },
+            "CreateManifestRequest": {
+                "type": "object",
+                "description": "A new bag; staff at one branch may leave out the sending branch.",
+                "properties": {
+                    "from_branch_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "uuid"
+                    },
+                    "to_branch_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "barcodes": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "maxLength": 30
+                        },
+                        "maxItems": 500,
+                        "uniqueItems": true
+                    }
+                },
+                "required": [
+                    "to_branch_id"
+                ],
+                "title": "CreateManifestRequest"
+            },
             "DepartmentRequest": {
                 "type": "object",
                 "properties": {
@@ -6518,6 +7347,34 @@
                     "amount"
                 ],
                 "title": "DeskPaymentRequest"
+            },
+            "DispatchManifestRequest": {
+                "type": "object",
+                "description": "Courier and temperature check at dispatch (spec \u00a77.6).",
+                "properties": {
+                    "courier_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 100
+                    },
+                    "temperature_ok": {
+                        "type": [
+                            "boolean",
+                            "null"
+                        ]
+                    },
+                    "dispatch_temp_c": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "minimum": -99.9,
+                        "maximum": 99.9
+                    }
+                },
+                "title": "DispatchManifestRequest"
             },
             "DoctorRequest": {
                 "type": "object",
@@ -7148,6 +8005,203 @@
                 ],
                 "title": "LabTestResource"
             },
+            "ManifestItemCondition": {
+                "type": "string",
+                "description": "sample_transfer_items.condition: how a sample arrived at the receiving lab.\n",
+                "enum": [
+                    "pending",
+                    "accepted",
+                    "rejected"
+                ],
+                "title": "ManifestItemCondition"
+            },
+            "ManifestResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "manifest_no": {
+                        "type": "string"
+                    },
+                    "from_branch_id": {
+                        "type": "string"
+                    },
+                    "to_branch_id": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/ManifestStatus"
+                    },
+                    "courier_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "temperature_ok": {
+                        "type": [
+                            "boolean",
+                            "null"
+                        ]
+                    },
+                    "dispatch_temp_c": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "receipt_temp_c": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "dispatched_by": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "dispatched_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "received_by": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "received_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "missing_flagged_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "sample_id": {
+                                    "type": "string"
+                                },
+                                "barcode": {
+                                    "type": "string"
+                                },
+                                "container_type": {
+                                    "type": "string"
+                                },
+                                "sample_status": {
+                                    "$ref": "#/components/schemas/SampleStatus"
+                                },
+                                "stable_until": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "stability_exceeded": {
+                                    "type": "boolean"
+                                },
+                                "condition": {
+                                    "$ref": "#/components/schemas/ManifestItemCondition"
+                                },
+                                "rejection_reason": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "scanned_at": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "sample_id",
+                                "barcode",
+                                "container_type",
+                                "sample_status",
+                                "stable_until",
+                                "stability_exceeded",
+                                "condition",
+                                "rejection_reason",
+                                "scanned_at"
+                            ]
+                        }
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "manifest_no",
+                    "from_branch_id",
+                    "to_branch_id",
+                    "status",
+                    "courier_name",
+                    "temperature_ok",
+                    "dispatch_temp_c",
+                    "receipt_temp_c",
+                    "dispatched_by",
+                    "dispatched_at",
+                    "received_by",
+                    "received_at",
+                    "missing_flagged_at",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "ManifestResource"
+            },
+            "ManifestSamplesRequest": {
+                "type": "object",
+                "description": "Barcodes scanned into an open bag.",
+                "properties": {
+                    "barcodes": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "maxLength": 30
+                        },
+                        "minItems": 1,
+                        "maxItems": 500,
+                        "uniqueItems": true
+                    }
+                },
+                "required": [
+                    "barcodes"
+                ],
+                "title": "ManifestSamplesRequest"
+            },
+            "ManifestStatus": {
+                "type": "string",
+                "description": "sample_transfers.status (spec \u00a75.4).\n",
+                "enum": [
+                    "created",
+                    "dispatched",
+                    "received",
+                    "partially_received"
+                ],
+                "title": "ManifestStatus"
+            },
             "MergePatientRequest": {
                 "type": "object",
                 "properties": {
@@ -7216,6 +8270,12 @@
                             "null"
                         ]
                     },
+                    "recollection_of_item_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
                     "processing_branch_id": {
                         "type": [
                             "string",
@@ -7249,6 +8309,7 @@
                     "test_id",
                     "package_id",
                     "parent_item_id",
+                    "recollection_of_item_id",
                     "processing_branch_id",
                     "mrp_price",
                     "partner_price",
@@ -8104,6 +9165,80 @@
                 ],
                 "title": "PriceListType"
             },
+            "ReceiveManifestRequest": {
+                "type": "object",
+                "description": "Barcodes scanned at the receiving lab, each accepted or rejected with a reason.",
+                "properties": {
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "barcode": {
+                                    "type": "string",
+                                    "maxLength": 30
+                                },
+                                "condition": {
+                                    "type": "string",
+                                    "enum": [
+                                        "accepted",
+                                        "rejected"
+                                    ]
+                                },
+                                "rejection_reason": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ],
+                                    "enum": [
+                                        "haemolysed",
+                                        "clotted",
+                                        "insufficient",
+                                        "leaked",
+                                        "wrong_container",
+                                        "unlabelled",
+                                        "temperature",
+                                        "delayed",
+                                        null
+                                    ]
+                                },
+                                "rejection_note": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ],
+                                    "maxLength": 1000
+                                }
+                            },
+                            "required": [
+                                "barcode",
+                                "condition"
+                            ]
+                        },
+                        "minItems": 1,
+                        "maxItems": 500,
+                        "uniqueItems": true
+                    },
+                    "temperature_ok": {
+                        "type": [
+                            "boolean",
+                            "null"
+                        ]
+                    },
+                    "receipt_temp_c": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "minimum": -99.9,
+                        "maximum": 99.9
+                    }
+                },
+                "required": [
+                    "items"
+                ],
+                "title": "ReceiveManifestRequest"
+            },
             "RefreshTokenRequest": {
                 "type": "object",
                 "properties": {
@@ -8258,6 +9393,36 @@
                 ],
                 "title": "RegionType"
             },
+            "RejectSampleRequest": {
+                "type": "object",
+                "description": "A reason from the configured list, plus a free-text note (spec \u00a76 reasons rule).",
+                "properties": {
+                    "reason": {
+                        "type": "string",
+                        "enum": [
+                            "haemolysed",
+                            "clotted",
+                            "insufficient",
+                            "leaked",
+                            "wrong_container",
+                            "unlabelled",
+                            "temperature",
+                            "delayed"
+                        ]
+                    },
+                    "note": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 1000
+                    }
+                },
+                "required": [
+                    "reason"
+                ],
+                "title": "RejectSampleRequest"
+            },
             "ReportDelivery": {
                 "type": "string",
                 "description": "How a referring doctor receives reports (spec \u00a77.3).\n",
@@ -8268,6 +9433,27 @@
                     "email"
                 ],
                 "title": "ReportDelivery"
+            },
+            "RerouteSampleRequest": {
+                "type": "object",
+                "description": "Send a sample to another lab; without a lab, the routing rules choose.",
+                "properties": {
+                    "processing_branch_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "uuid"
+                    },
+                    "reason": {
+                        "type": "string",
+                        "maxLength": 255
+                    }
+                },
+                "required": [
+                    "reason"
+                ],
+                "title": "RerouteSampleRequest"
             },
             "ResultType": {
                 "type": "string",
@@ -8446,6 +9632,212 @@
                     "updated_at"
                 ],
                 "title": "RoutingRuleResource"
+            },
+            "SampleDetailResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "barcode": {
+                        "type": "string"
+                    },
+                    "order_id": {
+                        "type": "string"
+                    },
+                    "sample_type": {
+                        "type": "string"
+                    },
+                    "container_type": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/SampleStatus"
+                    },
+                    "collected_branch_id": {
+                        "type": "string"
+                    },
+                    "processing_branch_id": {
+                        "type": "string"
+                    },
+                    "current_branch_id": {
+                        "type": "string"
+                    },
+                    "collected_by": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "collection_datetime": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "stable_until": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "stability_exceeded": {
+                        "type": "string"
+                    },
+                    "received_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "received_by": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "rejection_reason": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "rejection_note": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "recollection_of_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "order": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "order_no": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "order_no"
+                        ]
+                    },
+                    "patient": {
+                        "type": "object",
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "uhid": {
+                                "type": "string"
+                            },
+                            "age_years": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            "gender": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "name",
+                            "uhid",
+                            "age_years",
+                            "gender"
+                        ]
+                    },
+                    "tests": {
+                        "type": "array",
+                        "items": {}
+                    },
+                    "journey": {
+                        "type": "array",
+                        "items": {}
+                    },
+                    "redraw_sample_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "label": {
+                        "type": "object",
+                        "properties": {
+                            "format": {
+                                "type": "string",
+                                "const": "zpl"
+                            },
+                            "content": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "format",
+                            "content"
+                        ]
+                    }
+                },
+                "required": [
+                    "id",
+                    "barcode",
+                    "order_id",
+                    "sample_type",
+                    "container_type",
+                    "status",
+                    "collected_branch_id",
+                    "processing_branch_id",
+                    "current_branch_id",
+                    "collected_by",
+                    "collection_datetime",
+                    "stable_until",
+                    "stability_exceeded",
+                    "received_at",
+                    "received_by",
+                    "rejection_reason",
+                    "rejection_note",
+                    "recollection_of_id",
+                    "updated_at",
+                    "order",
+                    "patient",
+                    "tests",
+                    "journey",
+                    "redraw_sample_id",
+                    "label"
+                ],
+                "title": "SampleDetailResource"
+            },
+            "SampleStatus": {
+                "type": "string",
+                "description": "Sample journey (spec \u00a75.4).\n",
+                "enum": [
+                    "pending_collection",
+                    "collected",
+                    "in_transit",
+                    "received",
+                    "rejected",
+                    "in_process",
+                    "processed",
+                    "stored",
+                    "discarded"
+                ],
+                "title": "SampleStatus"
             },
             "ScopeLevel": {
                 "type": "string",

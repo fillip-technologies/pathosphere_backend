@@ -1,5 +1,6 @@
 <?php
 
+use App\Modules\Samples\Jobs\MonitorTransitDelays;
 use App\Modules\Shared\Http\Middleware\IdempotencyRecord;
 use Illuminate\Support\Facades\Schedule;
 
@@ -10,4 +11,9 @@ use Illuminate\Support\Facades\Schedule;
 
 Schedule::command('model:prune', ['--model' => [IdempotencyRecord::class]])
     ->daily()
+    ->withoutOverlapping();
+
+// Samples in transit past their stability limit (spec §9).
+Schedule::job(new MonitorTransitDelays)
+    ->everyThirtyMinutes()
     ->withoutOverlapping();

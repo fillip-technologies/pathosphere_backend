@@ -22,5 +22,12 @@ final class ScopeColumns
         public readonly ?string $b2bClient = null,
         /** Rows every user of the organization may read, e.g. the test catalogue. */
         public readonly bool $visibleToWholeOrganization = false,
+        /**
+         * More columns naming a branch whose staff may see the row, e.g. the
+         * lab currently holding a sample or a manifest's receiving lab.
+         *
+         * @var list<string>
+         */
+        public readonly array $otherBranches = [],
     ) {}
 }

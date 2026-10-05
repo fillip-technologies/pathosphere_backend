@@ -3,6 +3,7 @@
 use App\Modules\Auth\AuthServiceProvider;
 use App\Modules\Booking\BookingServiceProvider;
 use App\Modules\Catalogue\CatalogueServiceProvider;
+use App\Modules\Samples\SamplesServiceProvider;
 use App\Modules\Shared\SharedServiceProvider;
 use App\Providers\AppServiceProvider;
 
@@ -12,4 +13,5 @@ return [
     AuthServiceProvider::class,
     CatalogueServiceProvider::class,
     BookingServiceProvider::class,
+    SamplesServiceProvider::class,
 ];

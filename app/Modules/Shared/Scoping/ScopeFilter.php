@@ -56,22 +56,22 @@ final class ScopeFilter implements Scope
      */
     private function visibilityRules(ScopeContext $scope, ScopeColumns $columns): array
     {
+        $byBranch = array_map(
+            fn (?string $column): array => [$column, $scope->branchIds],
+            [$columns->branch, $columns->processingBranch, ...$columns->otherBranches],
+        );
+
         $candidates = match ($scope->level) {
             ScopeLevel::Region => [
                 [$columns->region, $scope->regionIds],
                 [$columns->franchise, $scope->franchiseIds],
-                [$columns->branch, $scope->branchIds],
-                [$columns->processingBranch, $scope->branchIds],
+                ...$byBranch,
             ],
             ScopeLevel::Franchise => [
                 [$columns->franchise, $scope->franchiseIds],
-                [$columns->branch, $scope->branchIds],
-                [$columns->processingBranch, $scope->branchIds],
+                ...$byBranch,
             ],
-            ScopeLevel::Branch => [
-                [$columns->branch, $scope->branchIds],
-                [$columns->processingBranch, $scope->branchIds],
-            ],
+            ScopeLevel::Branch => $byBranch,
             ScopeLevel::B2bClient => [
                 [$columns->b2bClient, $scope->b2bClientId === null ? [] : [$scope->b2bClientId]],
             ],
