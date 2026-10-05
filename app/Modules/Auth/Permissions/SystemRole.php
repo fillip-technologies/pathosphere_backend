@@ -65,7 +65,10 @@ enum SystemRole: string
             ],
             self::BranchAdmin => [
                 Permission::ManageBranchStaff, Permission::ViewBranchReports, Permission::ManageInventory,
-                Permission::ViewBranchDashboard, Permission::ManageHomeCollection,
+                Permission::ViewBranchDashboard, Permission::ManageHomeCollection, Permission::ApproveDiscount,
+                Permission::ApproveRefund,
+                // Branch admins also work the desk at small collection centres.
+                Permission::RegisterPatient, Permission::CreateOrder, Permission::CollectPayment,
             ],
             self::FrontDesk => [
                 Permission::RegisterPatient, Permission::CreateOrder, Permission::CollectPayment, Permission::PrintBarcode,

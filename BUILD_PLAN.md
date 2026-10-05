@@ -185,6 +185,21 @@ Module: **Booking + billing**. Pull forward from Phase 5 the **notification plum
 
 Done when (spec): a company-owned PSC books, bills and collects payment end to end.
 
+**Status: complete** (ABHA M1 against a fake ABDM client). 201 tests green; Larastan level 6 and Pint clean; OpenAPI regenerated. The done-when runs through the API: register patient → book → pay at the desk (UPI/cash) or online (payment link → signed Razorpay webhook, applied once despite retries) → order confirmed → booking message sent after commit.
+
+Decisions made while building Phase 3:
+- **Booking reuses `OrderQuoteService`** so a quote and the order it becomes always agree; prices are snapshotted on `order_items`.
+- **Payment rule** (when draft → confirmed): B2B (credit) and home collection at once; online when fully paid; walk-in/camp when the advance in `organizations.settings.walk_in_advance_percent` is paid (default 100%). Invoice `payment_status` is derived from amounts, never written directly.
+- **Bill-level discount** is spread over priced lines pro rata in whole paise (largest remainder), so each line's `net_price` is right for Phase 6 commissions. `invoices.amount` is the gross; `discount` the total discount; `total` = amount − discount + tax. Discounts above `discount_approval_percent` (default 10%) need `approve_discount` (new permission; Branch Admin and Super Admin).
+- **Branch Admin** also holds the desk permissions (`register_patient`, `create_order`, `collect_payment`) — small PSCs run that way, and the approver must be able to book.
+- **Additions to the spec schema**: `organization_id` on `invoices`, `home_collections` and `notifications` (for organization scoping); `abha_number_hash` (keyed blind index, the ABHA number itself is encrypted per §10.2); `consent_notice_version`, `consented_at`, `whatsapp_opted_in_at` on patients (§9 rule 3, DPDP).
+- **ABHA endpoints renamed to nouns (D4)**: `POST /abha-verifications`, `POST /abha-verifications/{txn}/confirmation`, `POST /abha-qr-scans`, `POST /abha-enrolments`, `…/{txn}/confirmation`, `…/{txn}/address`, `GET /patients/{id}/abha-card`, `DELETE /patients/{id}/abha-link`, `GET /abha-profile-shares`, `POST /abha-profile-shares/{id}/link`, `POST /abdm/callbacks/{type}`.
+- **ABDM**: only `FakeAbdmClient` exists (OTP 123456). The real adapter (public-key encryption, gateway token cache, callback JWT verification) is built after sandbox onboarding, against the same `AbdmClient` interface.
+- **Payments**: `PaymentGateway` interface; `RazorpayGateway` (links, refunds, webhook HMAC) and `FakePaymentGateway` (same webhook format, no network). `PAYMENT_GATEWAY=fake|razorpay`. Gateway webhooks are stored first, verified, then processed by a job with system scope; payments are unique per (gateway, transaction_id).
+- **Partner charges**: `PartnerChargePolicy` is called on confirm/cancel inside the transaction; Phase 3 binds `DeferredPartnerCharges` (no-op). Phase 6 replaces it.
+- **Notifications** (pulled forward): templates only, WhatsApp → SMS → email with opt-in, quiet hours 21:00–08:00 IST except urgent, fallback to the next channel after 3 failed tries. Vendors are `LogMessageSender` until chosen. Delivery webhooks come in Phase 5.
+- **Not built yet**: invoice/receipt PDFs (Phase 5 brings the PDF renderer); a cancelled order's unpaid invoice stays `unpaid` (no `cancelled` invoice status in the spec — a credit-note flow needs the CA's input); geocoding (`DisabledGeocoder` until a maps vendor is chosen).
+- **Verified**: parallel invoice numbering with 4 forked processes (100 numbers, unique and gap-free); FULLTEXT name search on committed rows; the Aadhaar number never appears in `patients`, `abdm_requests` or `audit_logs`.
 ---
 
 ## Phase 4 — Samples and logistics (spec §12 Phase 4)

@@ -23,6 +23,18 @@ return [
         'password' => env('SUPER_ADMIN_PASSWORD'),
     ],
 
+    // Payments (spec §3). `fake` behaves like Razorpay without network calls.
+    'payments' => [
+        'gateway' => env('PAYMENT_GATEWAY', 'fake'),
+        'link_expiry_hours' => 48,
+    ],
+
+    // Booking defaults; HQ can override most of them in organization settings.
+    'booking' => [
+        'walk_in_advance_percent' => '100',
+        'discount_approval_percent' => '10',
+    ],
+
     // Staff authentication (spec §8.1, §10.3–10.4).
     'auth' => [
         'access_token_minutes' => 15,

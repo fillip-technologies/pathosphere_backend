@@ -11,6 +11,859 @@
         }
     ],
     "paths": {
+        "/abdm/callbacks/{callbackType}": {
+            "post": {
+                "operationId": "booking.abdmCallback",
+                "tags": [
+                    "AbdmCallback"
+                ],
+                "parameters": [
+                    {
+                        "name": "callbackType",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "accepted": {
+                                                    "type": "boolean"
+                                                }
+                                            },
+                                            "required": [
+                                                "accepted"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/abha-verifications": {
+            "post": {
+                "operationId": "abha.startVerification",
+                "summary": "POST /abha-verifications: OTP to the ABHA's mobile",
+                "tags": [
+                    "Abha"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "patient_id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "abha_number": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "pattern": "^\\d{2}-?\\d{4}-?\\d{4}-?\\d{4}$"
+                                    },
+                                    "abha_address": {
+                                        "type": [
+                                            "string",
+                                            "null"
+                                        ],
+                                        "maxLength": 100
+                                    }
+                                },
+                                "required": [
+                                    "patient_id"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "txn_id": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "txn_id"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/abha-verifications/{txnId}/confirmation": {
+            "post": {
+                "operationId": "abha.confirmVerification",
+                "summary": "POST /abha-verifications/{txnId}/confirmation",
+                "tags": [
+                    "Abha"
+                ],
+                "parameters": [
+                    {
+                        "name": "txnId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "otp": {
+                                        "type": "string",
+                                        "pattern": "^\\d{6}$"
+                                    }
+                                },
+                                "required": [
+                                    "otp"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "patient": {
+                                                    "type": "array",
+                                                    "items": {}
+                                                },
+                                                "abha_profile": {
+                                                    "type": "string"
+                                                },
+                                                "mismatches": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "anyOf": [
+                                                            {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "field": {
+                                                                        "type": "string",
+                                                                        "const": "name"
+                                                                    },
+                                                                    "patient_value": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "abha_value": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "required": [
+                                                                    "field",
+                                                                    "patient_value",
+                                                                    "abha_value"
+                                                                ]
+                                                            },
+                                                            {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "field": {
+                                                                        "type": "string",
+                                                                        "const": "gender"
+                                                                    },
+                                                                    "patient_value": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "abha_value": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "required": [
+                                                                    "field",
+                                                                    "patient_value",
+                                                                    "abha_value"
+                                                                ]
+                                                            },
+                                                            {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "field": {
+                                                                        "type": "string",
+                                                                        "const": "year_of_birth"
+                                                                    },
+                                                                    "patient_value": {
+                                                                        "type": [
+                                                                            "string",
+                                                                            "null",
+                                                                            "integer"
+                                                                        ]
+                                                                    },
+                                                                    "abha_value": {
+                                                                        "type": [
+                                                                            "integer",
+                                                                            "null"
+                                                                        ]
+                                                                    }
+                                                                },
+                                                                "required": [
+                                                                    "field",
+                                                                    "patient_value",
+                                                                    "abha_value"
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            "required": [
+                                                "patient",
+                                                "abha_profile",
+                                                "mismatches"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/abha-qr-scans": {
+            "post": {
+                "operationId": "abha.scan",
+                "summary": "POST /abha-qr-scans",
+                "tags": [
+                    "Abha"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "patient_id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "qr_payload": {
+                                        "type": "string",
+                                        "maxLength": 2000
+                                    }
+                                },
+                                "required": [
+                                    "patient_id",
+                                    "qr_payload"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "txn_id": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "txn_id"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/abha-enrolments": {
+            "post": {
+                "operationId": "abha.startEnrolment",
+                "summary": "POST /abha-enrolments: Aadhaar OTP, after recording consent",
+                "tags": [
+                    "Abha"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "patient_id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    },
+                                    "aadhaar_number": {
+                                        "type": "string",
+                                        "pattern": "^\\d{12}$"
+                                    },
+                                    "consent_version": {
+                                        "type": "string",
+                                        "maxLength": 20
+                                    }
+                                },
+                                "required": [
+                                    "patient_id",
+                                    "aadhaar_number",
+                                    "consent_version"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "txn_id": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "txn_id"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/abha-enrolments/{txnId}/confirmation": {
+            "post": {
+                "operationId": "abha.confirmEnrolment",
+                "summary": "POST /abha-enrolments/{txnId}/confirmation",
+                "tags": [
+                    "Abha"
+                ],
+                "parameters": [
+                    {
+                        "name": "txnId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "otp": {
+                                        "type": "string",
+                                        "pattern": "^\\d{6}$"
+                                    },
+                                    "mobile": {
+                                        "type": "string",
+                                        "pattern": "^[6-9]\\d{9}$"
+                                    }
+                                },
+                                "required": [
+                                    "otp",
+                                    "mobile"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "patient": {
+                                                    "type": "array",
+                                                    "items": {}
+                                                },
+                                                "abha_profile": {
+                                                    "type": "string"
+                                                },
+                                                "mismatches": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "additionalProperties": {}
+                                                    }
+                                                }
+                                            },
+                                            "required": [
+                                                "patient",
+                                                "abha_profile",
+                                                "mismatches"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/abha-enrolments/{txnId}/address": {
+            "post": {
+                "operationId": "abha.chooseAddress",
+                "summary": "POST /abha-enrolments/{txnId}/address",
+                "tags": [
+                    "Abha"
+                ],
+                "parameters": [
+                    {
+                        "name": "txnId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "abha_address": {
+                                        "type": "string",
+                                        "pattern": "^[a-z0-9._]+(@[a-z]+)?$",
+                                        "maxLength": 100
+                                    }
+                                },
+                                "required": [
+                                    "abha_address"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`PatientResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/PatientResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/patients/{patient}/abha-card": {
+            "get": {
+                "operationId": "abha.card",
+                "summary": "GET /patients/{patient}/abha-card",
+                "tags": [
+                    "Abha"
+                ],
+                "parameters": [
+                    {
+                        "name": "patient",
+                        "in": "path",
+                        "required": true,
+                        "description": "The patient ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/pdf": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Content-Disposition": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            },
+                            "Cache-Control": {
+                                "schema": {
+                                    "type": "string",
+                                    "const": "no-store"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/patients/{patient}/abha-link": {
+            "delete": {
+                "operationId": "abha.unlink",
+                "summary": "DELETE /patients/{patient}/abha-link",
+                "tags": [
+                    "Abha"
+                ],
+                "parameters": [
+                    {
+                        "name": "patient",
+                        "in": "path",
+                        "required": true,
+                        "description": "The patient ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/abha-profile-shares": {
+            "get": {
+                "operationId": "abha.shareQueue",
+                "summary": "GET /abha-profile-shares?filter[branch_id]=\u2026: Scan and Share queue",
+                "tags": [
+                    "Abha"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        },
+                                        "pagination": {
+                                            "type": "object",
+                                            "properties": {
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "limit": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "next_cursor",
+                                                "limit"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "pagination"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/abha-profile-shares/{shareId}/link": {
+            "post": {
+                "operationId": "abha.linkShare",
+                "summary": "POST /abha-profile-shares/{share}/link",
+                "tags": [
+                    "Abha"
+                ],
+                "parameters": [
+                    {
+                        "name": "shareId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "patient_id": {
+                                        "type": "string",
+                                        "format": "uuid"
+                                    }
+                                },
+                                "required": [
+                                    "patient_id"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "patient": {
+                                                    "type": "array",
+                                                    "items": {}
+                                                },
+                                                "abha_profile": {
+                                                    "type": "string"
+                                                },
+                                                "mismatches": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "anyOf": [
+                                                            {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "field": {
+                                                                        "type": "string",
+                                                                        "const": "name"
+                                                                    },
+                                                                    "patient_value": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "abha_value": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "required": [
+                                                                    "field",
+                                                                    "patient_value",
+                                                                    "abha_value"
+                                                                ]
+                                                            },
+                                                            {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "field": {
+                                                                        "type": "string",
+                                                                        "const": "gender"
+                                                                    },
+                                                                    "patient_value": {
+                                                                        "type": "string"
+                                                                    },
+                                                                    "abha_value": {
+                                                                        "type": "string"
+                                                                    }
+                                                                },
+                                                                "required": [
+                                                                    "field",
+                                                                    "patient_value",
+                                                                    "abha_value"
+                                                                ]
+                                                            },
+                                                            {
+                                                                "type": "object",
+                                                                "properties": {
+                                                                    "field": {
+                                                                        "type": "string",
+                                                                        "const": "year_of_birth"
+                                                                    },
+                                                                    "patient_value": {
+                                                                        "type": [
+                                                                            "string",
+                                                                            "null",
+                                                                            "integer"
+                                                                        ]
+                                                                    },
+                                                                    "abha_value": {
+                                                                        "type": [
+                                                                            "integer",
+                                                                            "null"
+                                                                        ]
+                                                                    }
+                                                                },
+                                                                "required": [
+                                                                    "field",
+                                                                    "patient_value",
+                                                                    "abha_value"
+                                                                ]
+                                                            }
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            "required": [
+                                                "patient",
+                                                "abha_profile",
+                                                "mismatches"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
         "/audit-logs": {
             "get": {
                 "operationId": "auditLog.index",
@@ -638,6 +1491,227 @@
                 }
             }
         },
+        "/doctors": {
+            "get": {
+                "operationId": "doctor.index",
+                "tags": [
+                    "Doctor"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        },
+                                        "pagination": {
+                                            "type": "object",
+                                            "properties": {
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "limit": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "next_cursor",
+                                                "limit"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "pagination"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "doctor.store",
+                "tags": [
+                    "Doctor"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DoctorRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`JsonResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/JsonResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/doctors/{doctor}": {
+            "get": {
+                "operationId": "doctor.show",
+                "tags": [
+                    "Doctor"
+                ],
+                "parameters": [
+                    {
+                        "name": "doctor",
+                        "in": "path",
+                        "required": true,
+                        "description": "The doctor ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`DoctorResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/DoctorResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "patch": {
+                "operationId": "doctor.update",
+                "tags": [
+                    "Doctor"
+                ],
+                "parameters": [
+                    {
+                        "name": "doctor",
+                        "in": "path",
+                        "required": true,
+                        "description": "The doctor ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DoctorRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`DoctorResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/DoctorResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "doctor.destroy",
+                "tags": [
+                    "Doctor"
+                ],
+                "parameters": [
+                    {
+                        "name": "doctor",
+                        "in": "path",
+                        "required": true,
+                        "description": "The doctor ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
         "/health": {
             "get": {
                 "operationId": "health",
@@ -750,6 +1824,504 @@
                                 }
                             }
                         }
+                    }
+                }
+            }
+        },
+        "/home-collections": {
+            "get": {
+                "operationId": "homeCollection.index",
+                "tags": [
+                    "HomeCollection"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        },
+                                        "pagination": {
+                                            "type": "object",
+                                            "properties": {
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "limit": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "next_cursor",
+                                                "limit"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "pagination"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/home-collections/{homeCollection}": {
+            "get": {
+                "operationId": "homeCollection.show",
+                "tags": [
+                    "HomeCollection"
+                ],
+                "parameters": [
+                    {
+                        "name": "homeCollection",
+                        "in": "path",
+                        "required": true,
+                        "description": "The home collection ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`HomeCollectionResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/HomeCollectionResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/home-collections/{homeCollection}/assign": {
+            "post": {
+                "operationId": "homeCollection.assign",
+                "tags": [
+                    "HomeCollection"
+                ],
+                "parameters": [
+                    {
+                        "name": "homeCollection",
+                        "in": "path",
+                        "required": true,
+                        "description": "The home collection ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AssignPhlebotomistRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`HomeCollectionResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/HomeCollectionResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/home-collections/{homeCollection}/status": {
+            "post": {
+                "operationId": "homeCollection.updateStatus",
+                "tags": [
+                    "HomeCollection"
+                ],
+                "parameters": [
+                    {
+                        "name": "homeCollection",
+                        "in": "path",
+                        "required": true,
+                        "description": "The home collection ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/HomeCollectionStatusRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`HomeCollectionResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/HomeCollectionResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/invoices": {
+            "get": {
+                "operationId": "invoice.index",
+                "tags": [
+                    "Invoice"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        },
+                                        "pagination": {
+                                            "type": "object",
+                                            "properties": {
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "limit": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "next_cursor",
+                                                "limit"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "pagination"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/invoices/{invoice}": {
+            "get": {
+                "operationId": "invoice.show",
+                "tags": [
+                    "Invoice"
+                ],
+                "parameters": [
+                    {
+                        "name": "invoice",
+                        "in": "path",
+                        "required": true,
+                        "description": "The invoice ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`InvoiceResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/InvoiceResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "payments"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/invoices/{invoice}/payments": {
+            "post": {
+                "operationId": "invoice.pay",
+                "tags": [
+                    "Invoice"
+                ],
+                "parameters": [
+                    {
+                        "name": "invoice",
+                        "in": "path",
+                        "required": true,
+                        "description": "The invoice ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DeskPaymentRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`JsonResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/JsonResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/payment-links": {
+            "post": {
+                "operationId": "invoice.paymentLink",
+                "summary": "POST /payment-links: a gateway link for the balance, sent to the patient",
+                "tags": [
+                    "Invoice"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PaymentLinkRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "invoice_id": {
+                                                    "type": "string"
+                                                },
+                                                "link_id": {
+                                                    "type": "string"
+                                                },
+                                                "url": {
+                                                    "type": "string"
+                                                },
+                                                "amount": {
+                                                    "type": "object"
+                                                },
+                                                "expires_at": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "invoice_id",
+                                                "link_id",
+                                                "url",
+                                                "amount",
+                                                "expires_at"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/payments/{paymentId}/refunds": {
+            "post": {
+                "operationId": "invoice.refund",
+                "summary": "POST /payments/{payment}/refunds. The payment is reached through a visible invoice",
+                "tags": [
+                    "Invoice"
+                ],
+                "parameters": [
+                    {
+                        "name": "paymentId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RefundRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`JsonResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/JsonResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
                     }
                 }
             }
@@ -1080,6 +2652,285 @@
                     },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/orders": {
+            "get": {
+                "operationId": "order.index",
+                "tags": [
+                    "Order"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        },
+                                        "pagination": {
+                                            "type": "object",
+                                            "properties": {
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "limit": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "next_cursor",
+                                                "limit"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "pagination"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "order.store",
+                "summary": "POST /orders: retry-safe with an Idempotency-Key (spec \u00a78.5)",
+                "tags": [
+                    "Order"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/BookOrderRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`JsonResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/JsonResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/orders/{order}": {
+            "get": {
+                "operationId": "order.show",
+                "tags": [
+                    "Order"
+                ],
+                "parameters": [
+                    {
+                        "name": "order",
+                        "in": "path",
+                        "required": true,
+                        "description": "The order ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`OrderResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/OrderResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "items",
+                                                        "invoices",
+                                                        "home_collection"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/orders/{order}/cancel": {
+            "post": {
+                "operationId": "order.cancel",
+                "tags": [
+                    "Order"
+                ],
+                "parameters": [
+                    {
+                        "name": "order",
+                        "in": "path",
+                        "required": true,
+                        "description": "The order ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CancelOrderRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`OrderResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/OrderResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "items",
+                                                        "invoices",
+                                                        "home_collection"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/orders/{order}/items": {
+            "post": {
+                "operationId": "order.addItems",
+                "summary": "Add-on tests: answers with the supplementary invoice",
+                "tags": [
+                    "Order"
+                ],
+                "parameters": [
+                    {
+                        "name": "order",
+                        "in": "path",
+                        "required": true,
+                        "description": "The order ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AddOrderItemsRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`JsonResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/JsonResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
                     }
                 }
             }
@@ -1484,6 +3335,299 @@
                     },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/patients": {
+            "get": {
+                "operationId": "patient.index",
+                "summary": "GET /patients?q=\u2026 : search is required, the patient list is never browsable",
+                "tags": [
+                    "Patient"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        },
+                                        "pagination": {
+                                            "type": "object",
+                                            "properties": {
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "limit": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "next_cursor",
+                                                "limit"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "pagination"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "patient.store",
+                "tags": [
+                    "Patient"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatientRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`JsonResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/JsonResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/patients/{patient}": {
+            "get": {
+                "operationId": "patient.show",
+                "summary": "A merged record answers with the record that survived (spec \u00a77.3)",
+                "tags": [
+                    "Patient"
+                ],
+                "parameters": [
+                    {
+                        "name": "patient",
+                        "in": "path",
+                        "required": true,
+                        "description": "The patient ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`PatientResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/PatientResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "patch": {
+                "operationId": "patient.update",
+                "tags": [
+                    "Patient"
+                ],
+                "parameters": [
+                    {
+                        "name": "patient",
+                        "in": "path",
+                        "required": true,
+                        "description": "The patient ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PatientRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`PatientResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/PatientResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/patients/{patient}/merge": {
+            "post": {
+                "operationId": "patient.merge",
+                "tags": [
+                    "Patient"
+                ],
+                "parameters": [
+                    {
+                        "name": "patient",
+                        "in": "path",
+                        "required": true,
+                        "description": "The patient ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MergePatientRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`PatientResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/PatientResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/webhooks/razorpay": {
+            "post": {
+                "operationId": "booking.paymentWebhook",
+                "tags": [
+                    "PaymentWebhook"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "received": {
+                                                    "type": "boolean"
+                                                },
+                                                "duplicate": {
+                                                    "type": "boolean"
+                                                }
+                                            },
+                                            "required": [
+                                                "received",
+                                                "duplicate"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -3715,6 +5859,253 @@
     },
     "components": {
         "schemas": {
+            "AbhaStatus": {
+                "type": "string",
+                "description": "ABHA link state on a patient (spec \u00a75.7).\n",
+                "enum": [
+                    "not_linked",
+                    "linked",
+                    "unlinked"
+                ],
+                "title": "AbhaStatus"
+            },
+            "AddOrderItemsRequest": {
+                "type": "object",
+                "description": "POST /orders/{id}/items: add-on tests with their own invoice.",
+                "properties": {
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "test_id": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ],
+                                    "format": "uuid"
+                                },
+                                "package_id": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ],
+                                    "format": "uuid"
+                                }
+                            }
+                        },
+                        "minItems": 1,
+                        "maxItems": 100
+                    },
+                    "discount": {
+                        "type": "object",
+                        "properties": {
+                            "amount": {
+                                "type": "number",
+                                "minimum": 0
+                            },
+                            "reason": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "maxLength": 100
+                            }
+                        }
+                    },
+                    "payment": {
+                        "type": "object",
+                        "properties": {
+                            "mode": {
+                                "type": "string",
+                                "enum": [
+                                    "cash",
+                                    "card",
+                                    "upi"
+                                ]
+                            },
+                            "amount": {
+                                "type": "number"
+                            },
+                            "transaction_id": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "maxLength": 100
+                            }
+                        }
+                    }
+                },
+                "required": [
+                    "items"
+                ],
+                "title": "AddOrderItemsRequest"
+            },
+            "AssignPhlebotomistRequest": {
+                "type": "object",
+                "properties": {
+                    "phlebotomist_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                },
+                "required": [
+                    "phlebotomist_id"
+                ],
+                "title": "AssignPhlebotomistRequest"
+            },
+            "BillToType": {
+                "type": "string",
+                "enum": [
+                    "patient",
+                    "b2b_client"
+                ],
+                "title": "BillToType"
+            },
+            "BookOrderRequest": {
+                "type": "object",
+                "description": "POST /orders (spec \u00a78 example).",
+                "properties": {
+                    "patient_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "branch_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "doctor_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "uuid"
+                    },
+                    "b2b_client_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "uuid"
+                    },
+                    "order_source": {
+                        "$ref": "#/components/schemas/OrderSource"
+                    },
+                    "external_ref": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 50
+                    },
+                    "clinical_notes": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 2000
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "test_id": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ],
+                                    "format": "uuid"
+                                },
+                                "package_id": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ],
+                                    "format": "uuid"
+                                }
+                            }
+                        },
+                        "minItems": 1,
+                        "maxItems": 100
+                    },
+                    "discount": {
+                        "type": "object",
+                        "properties": {
+                            "amount": {
+                                "type": "number",
+                                "minimum": 0
+                            },
+                            "reason": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "maxLength": 100
+                            }
+                        }
+                    },
+                    "payment": {
+                        "type": "object",
+                        "properties": {
+                            "mode": {
+                                "type": "string",
+                                "enum": [
+                                    "cash",
+                                    "card",
+                                    "upi"
+                                ]
+                            },
+                            "amount": {
+                                "type": "number"
+                            },
+                            "transaction_id": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "maxLength": 100
+                            }
+                        }
+                    },
+                    "home_collection": {
+                        "type": "object",
+                        "properties": {
+                            "address": {
+                                "type": "string",
+                                "maxLength": 1000
+                            },
+                            "pincode": {
+                                "type": "string",
+                                "pattern": "^[1-9]\\d{5}$"
+                            },
+                            "slot_start": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "slot_end": {
+                                "type": "string",
+                                "format": "date-time"
+                            },
+                            "collection_charge": {
+                                "type": [
+                                    "number",
+                                    "null"
+                                ],
+                                "minimum": 0
+                            }
+                        }
+                    }
+                },
+                "required": [
+                    "patient_id",
+                    "branch_id",
+                    "order_source",
+                    "items"
+                ],
+                "title": "BookOrderRequest"
+            },
             "BranchOwnerType": {
                 "type": "string",
                 "enum": [
@@ -3994,6 +6385,19 @@
                 ],
                 "title": "BranchType"
             },
+            "CancelOrderRequest": {
+                "type": "object",
+                "properties": {
+                    "reason": {
+                        "type": "string",
+                        "maxLength": 500
+                    }
+                },
+                "required": [
+                    "reason"
+                ],
+                "title": "CancelOrderRequest"
+            },
             "CapabilitiesRequest": {
                 "type": "object",
                 "description": "The complete set of tests a lab can run (PUT replaces all).",
@@ -4087,6 +6491,151 @@
                 ],
                 "title": "DepartmentResource"
             },
+            "DeskPaymentRequest": {
+                "type": "object",
+                "properties": {
+                    "mode": {
+                        "type": "string",
+                        "enum": [
+                            "cash",
+                            "card",
+                            "upi"
+                        ]
+                    },
+                    "amount": {
+                        "type": "number"
+                    },
+                    "transaction_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 100
+                    }
+                },
+                "required": [
+                    "mode",
+                    "amount"
+                ],
+                "title": "DeskPaymentRequest"
+            },
+            "DoctorRequest": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 150
+                    },
+                    "registration_no": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 50
+                    },
+                    "specialization": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 100
+                    },
+                    "clinic_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 150
+                    },
+                    "phone": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "pattern": "^\\+?\\d{10,15}$"
+                    },
+                    "email": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "email",
+                        "maxLength": 150
+                    },
+                    "report_delivery": {
+                        "$ref": "#/components/schemas/ReportDelivery"
+                    }
+                },
+                "required": [
+                    "name"
+                ],
+                "title": "DoctorRequest"
+            },
+            "DoctorResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "registration_no": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "specialization": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "clinic_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "phone": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "email": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "report_delivery": {
+                        "$ref": "#/components/schemas/ReportDelivery"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "registration_no",
+                    "specialization",
+                    "clinic_name",
+                    "phone",
+                    "email",
+                    "report_delivery",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "DoctorResource"
+            },
             "Gender": {
                 "type": "string",
                 "description": "Patient gender; drives reference ranges (spec \u00a77.3, \u00a77.4).\n",
@@ -4097,6 +6646,271 @@
                     "unknown"
                 ],
                 "title": "Gender"
+            },
+            "HomeCollectionResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "order_id": {
+                        "type": "string"
+                    },
+                    "branch_id": {
+                        "type": "string"
+                    },
+                    "phlebotomist_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "address": {
+                        "type": "string"
+                    },
+                    "pincode": {
+                        "type": "string"
+                    },
+                    "latitude": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "longitude": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "slot_start": {
+                        "type": "string"
+                    },
+                    "slot_end": {
+                        "type": "string"
+                    },
+                    "collection_charge": {
+                        "type": "object"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/HomeCollectionStatus"
+                    },
+                    "status_note": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "collected_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "order_id",
+                    "branch_id",
+                    "phlebotomist_id",
+                    "address",
+                    "pincode",
+                    "latitude",
+                    "longitude",
+                    "slot_start",
+                    "slot_end",
+                    "collection_charge",
+                    "status",
+                    "status_note",
+                    "collected_at",
+                    "updated_at"
+                ],
+                "title": "HomeCollectionResource"
+            },
+            "HomeCollectionStatus": {
+                "type": "string",
+                "description": "Home visit lifecycle (spec \u00a75.3).\n",
+                "enum": [
+                    "scheduled",
+                    "assigned",
+                    "en_route",
+                    "collected",
+                    "handed_over",
+                    "rescheduled",
+                    "cancelled",
+                    "failed"
+                ],
+                "title": "HomeCollectionStatus"
+            },
+            "HomeCollectionStatusRequest": {
+                "type": "object",
+                "description": "Status updates from the phlebotomist app, with GPS on collection (spec \u00a75.3).",
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "enum": [
+                            "en_route",
+                            "collected",
+                            "handed_over",
+                            "rescheduled",
+                            "cancelled",
+                            "failed"
+                        ]
+                    },
+                    "note": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 500
+                    },
+                    "latitude": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "minimum": -90,
+                        "maximum": 90
+                    },
+                    "longitude": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "minimum": -180,
+                        "maximum": 180
+                    },
+                    "slot_start": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    },
+                    "slot_end": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "status"
+                ],
+                "title": "HomeCollectionStatusRequest"
+            },
+            "InvoicePaymentStatus": {
+                "type": "string",
+                "description": "credit: billed to a B2B client on credit terms.\n",
+                "enum": [
+                    "unpaid",
+                    "partially_paid",
+                    "paid",
+                    "refunded",
+                    "partially_refunded",
+                    "credit"
+                ],
+                "title": "InvoicePaymentStatus"
+            },
+            "InvoiceResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "invoice_no": {
+                        "type": "string"
+                    },
+                    "order_id": {
+                        "type": "string"
+                    },
+                    "billed_by_branch_id": {
+                        "type": "string"
+                    },
+                    "bill_to_type": {
+                        "$ref": "#/components/schemas/BillToType"
+                    },
+                    "b2b_client_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "invoice_date": {
+                        "type": "string"
+                    },
+                    "due_date": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "amount": {
+                        "type": "object"
+                    },
+                    "discount": {
+                        "type": "object"
+                    },
+                    "tax": {
+                        "type": "object"
+                    },
+                    "total": {
+                        "type": "object"
+                    },
+                    "amount_paid": {
+                        "type": "object"
+                    },
+                    "balance_due": {
+                        "type": "object"
+                    },
+                    "payment_status": {
+                        "$ref": "#/components/schemas/InvoicePaymentStatus"
+                    },
+                    "payments": {
+                        "type": "array",
+                        "items": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/components/schemas/PaymentResource"
+                                },
+                                {
+                                    "type": "object",
+                                    "required": [
+                                        "refunds"
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "invoice_no",
+                    "order_id",
+                    "billed_by_branch_id",
+                    "bill_to_type",
+                    "b2b_client_id",
+                    "invoice_date",
+                    "due_date",
+                    "amount",
+                    "discount",
+                    "tax",
+                    "total",
+                    "amount_paid",
+                    "balance_due",
+                    "payment_status",
+                    "created_at"
+                ],
+                "title": "InvoiceResource"
             },
             "JsonResource": {
                 "type": "string",
@@ -4334,6 +7148,19 @@
                 ],
                 "title": "LabTestResource"
             },
+            "MergePatientRequest": {
+                "type": "object",
+                "properties": {
+                    "merge_into_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                },
+                "required": [
+                    "merge_into_id"
+                ],
+                "title": "MergePatientRequest"
+            },
             "MfaEnrollmentRequest": {
                 "type": "object",
                 "properties": {
@@ -4364,6 +7191,85 @@
                     "code"
                 ],
                 "title": "MfaVerificationRequest"
+            },
+            "OrderItemResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "test_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "package_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "parent_item_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "processing_branch_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "mrp_price": {
+                        "type": "object"
+                    },
+                    "partner_price": {
+                        "type": "object"
+                    },
+                    "discount": {
+                        "type": "object"
+                    },
+                    "net_price": {
+                        "type": "object"
+                    },
+                    "due_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/OrderItemStatus"
+                    }
+                },
+                "required": [
+                    "id",
+                    "test_id",
+                    "package_id",
+                    "parent_item_id",
+                    "processing_branch_id",
+                    "mrp_price",
+                    "partner_price",
+                    "discount",
+                    "net_price",
+                    "due_at",
+                    "status"
+                ],
+                "title": "OrderItemResource"
+            },
+            "OrderItemStatus": {
+                "type": "string",
+                "enum": [
+                    "ordered",
+                    "collected",
+                    "processing",
+                    "reported",
+                    "cancelled",
+                    "recollect"
+                ],
+                "title": "OrderItemStatus"
             },
             "OrderQuoteRequest": {
                 "type": "object",
@@ -4409,6 +7315,144 @@
                     "items"
                 ],
                 "title": "OrderQuoteRequest"
+            },
+            "OrderResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "order_no": {
+                        "type": "string"
+                    },
+                    "patient_id": {
+                        "type": "string"
+                    },
+                    "branch_id": {
+                        "type": "string"
+                    },
+                    "franchise_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "b2b_client_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "doctor_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "order_source": {
+                        "$ref": "#/components/schemas/OrderSource"
+                    },
+                    "external_ref": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "order_date": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/OrderStatus"
+                    },
+                    "cancelled_reason": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/OrderItemResource"
+                        }
+                    },
+                    "invoices": {
+                        "type": "array",
+                        "items": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/components/schemas/InvoiceResource"
+                                },
+                                {
+                                    "type": "object",
+                                    "required": [
+                                        "payments"
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    "home_collection": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/HomeCollectionResource"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "order_no",
+                    "patient_id",
+                    "branch_id",
+                    "franchise_id",
+                    "b2b_client_id",
+                    "doctor_id",
+                    "order_source",
+                    "external_ref",
+                    "order_date",
+                    "status",
+                    "cancelled_reason",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "OrderResource"
+            },
+            "OrderSource": {
+                "type": "string",
+                "description": "How the booking reached us (spec \u00a77.5).\n",
+                "enum": [
+                    "walk_in",
+                    "home_collection",
+                    "b2b",
+                    "corporate_camp",
+                    "online"
+                ],
+                "title": "OrderSource"
+            },
+            "OrderStatus": {
+                "type": "string",
+                "description": "Order lifecycle (spec \u00a75.2).\n",
+                "enum": [
+                    "draft",
+                    "confirmed",
+                    "in_progress",
+                    "partially_reported",
+                    "completed",
+                    "cancelled"
+                ],
+                "title": "OrderStatus"
             },
             "OrganizationResource": {
                 "type": "object",
@@ -4591,6 +7635,324 @@
                 ],
                 "title": "PackageResource"
             },
+            "PatientRequest": {
+                "type": "object",
+                "description": "Register (POST) or correct (PATCH) a patient. Registration records the\nconsent notice shown (spec \u00a710 DPDP); either a date of birth or an age is\nrequired.",
+                "properties": {
+                    "salutation": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 10
+                    },
+                    "name": {
+                        "type": "string",
+                        "maxLength": 150
+                    },
+                    "dob": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date"
+                    },
+                    "age_years": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 130
+                    },
+                    "gender": {
+                        "$ref": "#/components/schemas/Gender"
+                    },
+                    "phone": {
+                        "type": "string",
+                        "pattern": "^\\+?\\d{10,15}$"
+                    },
+                    "email": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "email",
+                        "maxLength": 150
+                    },
+                    "address": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 1000
+                    },
+                    "pincode": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "pattern": "^[1-9]\\d{5}$"
+                    },
+                    "registered_branch_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "guardian_patient_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "uuid"
+                    },
+                    "consent_notice_version": {
+                        "type": "string",
+                        "maxLength": 20
+                    },
+                    "whatsapp_opt_in": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "name",
+                    "gender",
+                    "phone",
+                    "consent_notice_version"
+                ],
+                "title": "PatientRequest"
+            },
+            "PatientResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "uhid": {
+                        "type": "string"
+                    },
+                    "salutation": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "dob": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "age_years": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "gender": {
+                        "$ref": "#/components/schemas/Gender"
+                    },
+                    "phone": {
+                        "type": "string"
+                    },
+                    "email": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "address": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "pincode": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "registered_branch_id": {
+                        "type": "string"
+                    },
+                    "guardian_patient_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "merged_into_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "whatsapp_opted_in": {
+                        "type": "boolean"
+                    },
+                    "abha": {
+                        "type": "object",
+                        "properties": {
+                            "status": {
+                                "$ref": "#/components/schemas/AbhaStatus"
+                            },
+                            "number": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "address": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "kyc_verified": {
+                                "type": "boolean"
+                            },
+                            "linked_at": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "status",
+                            "number",
+                            "address",
+                            "kyc_verified",
+                            "linked_at"
+                        ]
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "uhid",
+                    "salutation",
+                    "name",
+                    "dob",
+                    "age_years",
+                    "gender",
+                    "phone",
+                    "email",
+                    "address",
+                    "pincode",
+                    "registered_branch_id",
+                    "guardian_patient_id",
+                    "merged_into_id",
+                    "whatsapp_opted_in",
+                    "abha",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "PatientResource"
+            },
+            "PaymentLinkRequest": {
+                "type": "object",
+                "properties": {
+                    "invoice_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                },
+                "required": [
+                    "invoice_id"
+                ],
+                "title": "PaymentLinkRequest"
+            },
+            "PaymentMode": {
+                "type": "string",
+                "enum": [
+                    "cash",
+                    "card",
+                    "upi",
+                    "netbanking",
+                    "wallet",
+                    "credit_note"
+                ],
+                "title": "PaymentMode"
+            },
+            "PaymentResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "invoice_id": {
+                        "type": "string"
+                    },
+                    "amount": {
+                        "type": "object"
+                    },
+                    "mode": {
+                        "$ref": "#/components/schemas/PaymentMode"
+                    },
+                    "gateway": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "transaction_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "received_by": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "paid_at": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/PaymentStatus"
+                    },
+                    "refunds": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/RefundResource"
+                        }
+                    }
+                },
+                "required": [
+                    "id",
+                    "invoice_id",
+                    "amount",
+                    "mode",
+                    "gateway",
+                    "transaction_id",
+                    "received_by",
+                    "paid_at",
+                    "status"
+                ],
+                "title": "PaymentResource"
+            },
+            "PaymentStatus": {
+                "type": "string",
+                "enum": [
+                    "success",
+                    "pending",
+                    "failed"
+                ],
+                "title": "PaymentStatus"
+            },
             "PriceListImportRequest": {
                 "type": "object",
                 "properties": {
@@ -4755,6 +8117,69 @@
                 ],
                 "title": "RefreshTokenRequest"
             },
+            "RefundRequest": {
+                "type": "object",
+                "properties": {
+                    "amount": {
+                        "type": "number"
+                    },
+                    "reason": {
+                        "type": "string",
+                        "maxLength": 100
+                    }
+                },
+                "required": [
+                    "amount",
+                    "reason"
+                ],
+                "title": "RefundRequest"
+            },
+            "RefundResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "payment_id": {
+                        "type": "string"
+                    },
+                    "amount": {
+                        "type": "object"
+                    },
+                    "reason": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/RefundStatus"
+                    },
+                    "approved_by": {
+                        "type": "string"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "payment_id",
+                    "amount",
+                    "reason",
+                    "status",
+                    "approved_by",
+                    "created_at"
+                ],
+                "title": "RefundResource"
+            },
+            "RefundStatus": {
+                "type": "string",
+                "enum": [
+                    "requested",
+                    "processed",
+                    "failed"
+                ],
+                "title": "RefundStatus"
+            },
             "RegionRequest": {
                 "type": "object",
                 "description": "Create (POST) and partial update (PATCH) of a region.",
@@ -4832,6 +8257,17 @@
                     "area"
                 ],
                 "title": "RegionType"
+            },
+            "ReportDelivery": {
+                "type": "string",
+                "description": "How a referring doctor receives reports (spec \u00a77.3).\n",
+                "enum": [
+                    "none",
+                    "sms",
+                    "whatsapp",
+                    "email"
+                ],
+                "title": "ReportDelivery"
             },
             "ResultType": {
                 "type": "string",

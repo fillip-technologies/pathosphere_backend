@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
                 PermissionSeeder::class,
                 OrganizationSeeder::class,
                 SuperAdminSeeder::class,
+                NotificationTemplateSeeder::class,
             ]);
 
             if (app()->environment('local', 'testing')) {

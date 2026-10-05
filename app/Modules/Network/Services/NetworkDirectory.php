@@ -4,9 +4,11 @@ namespace App\Modules\Network\Services;
 
 use App\Modules\Network\Enums\BranchStatus;
 use App\Modules\Network\Enums\BranchType;
+use App\Modules\Network\Enums\FranchiseStatus;
 use App\Modules\Network\Models\B2bClient;
 use App\Modules\Network\Models\Branch;
 use App\Modules\Network\Models\Franchise;
+use App\Modules\Network\Models\Organization;
 use App\Modules\Network\Models\Region;
 use App\Modules\Shared\Scoping\CurrentScope;
 use App\Modules\Shared\Scoping\ScopeContext;
@@ -120,6 +122,62 @@ final class NetworkDirectory
     public function b2bClientPriceListId(string $b2bClientId): ?string
     {
         return B2bClient::query()->whereKey($b2bClientId)->value('price_list_id');
+    }
+
+    /**
+     * Organization settings (number formats, policies). Every staff member's
+     * own organization; read at organization level because branch staff
+     * cannot see the organization row's scope columns.
+     *
+     * @return array<string, mixed>
+     */
+    public function organizationSettings(string $organizationId): array
+    {
+        return $this->currentScope->runAs(
+            ScopeContext::system($organizationId),
+            fn (): array => Organization::query()->findOrFail($organizationId)->settings,
+        );
+    }
+
+    /** The lab whose ABDM Health Facility Registry ID this is (Scan and Share callbacks). */
+    public function branchIdByHfrId(string $hfrId): ?string
+    {
+        if ($hfrId === '') {
+            return null;
+        }
+
+        return $this->currentScope->runAs(ScopeContext::system(), fn (): ?string => Branch::query()->where('hfr_id', $hfrId)->value('id'));
+    }
+
+    /** Branch code, used in invoice and order numbers. */
+    public function branchCode(string $branchId): string
+    {
+        return $this->currentScope->runAs(
+            ScopeContext::system(),
+            fn (): string => (string) Branch::query()->whereKey($branchId)->value('branch_code'),
+        );
+    }
+
+    /**
+     * A suspended or terminated franchise's branches cannot take orders
+     * (spec §5.1); company branches always can.
+     */
+    public function franchiseAllowsBooking(?string $franchiseId): bool
+    {
+        if ($franchiseId === null) {
+            return true;
+        }
+
+        return $this->currentScope->runAs(
+            ScopeContext::system(),
+            fn (): bool => Franchise::query()->whereKey($franchiseId)->where('status', FranchiseStatus::Active)->exists(),
+        );
+    }
+
+    /** Credit days of a visible B2B client, for invoice due dates. */
+    public function b2bClientCreditDays(string $b2bClientId): int
+    {
+        return (int) B2bClient::query()->whereKey($b2bClientId)->value('credit_days');
     }
 
     /** Whether any branch, franchise or B2B client still uses the price list. */

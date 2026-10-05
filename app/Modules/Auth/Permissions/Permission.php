@@ -60,6 +60,7 @@ enum Permission: string
     case RegisterPatient = 'register_patient';
     case CreateOrder = 'create_order';
     case CollectPayment = 'collect_payment';
+    case ApproveDiscount = 'approve_discount';
     case PrintBarcode = 'print_barcode';
     case ManageHomeCollection = 'manage_home_collection';
     case ViewAssignedCollections = 'view_assigned_collections';
@@ -135,7 +136,7 @@ enum Permission: string
             self::ManageBranches, self::ViewBranches, self::OnboardFranchise, self::VerifyKyc,
             self::ApproveAgreement, self::SuspendFranchise, self::ManageB2b, self::ManageSignatories => 'network',
             self::ManageRouting, self::ManageCatalog, self::ManagePriceLists => 'catalogue',
-            self::RegisterPatient, self::CreateOrder, self::CollectPayment, self::ApproveRefund,
+            self::RegisterPatient, self::CreateOrder, self::CollectPayment, self::ApproveRefund, self::ApproveDiscount,
             self::ManageHomeCollection, self::ViewAssignedCollections, self::CreateB2bOrder,
             self::ViewAllInvoices => 'booking',
             self::PrintBarcode, self::MarkCollected, self::CreateManifest, self::ReceiveManifest,

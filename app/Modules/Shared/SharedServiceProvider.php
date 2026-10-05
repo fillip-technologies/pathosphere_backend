@@ -5,6 +5,10 @@ namespace App\Modules\Shared;
 use App\Modules\Shared\Console\PrintAppUserGrants;
 use App\Modules\Shared\Context\CurrentActor;
 use App\Modules\Shared\Database\SchemaMacros;
+use App\Modules\Shared\Notifications\Contracts\EmailSender;
+use App\Modules\Shared\Notifications\Contracts\SmsSender;
+use App\Modules\Shared\Notifications\Contracts\WhatsAppSender;
+use App\Modules\Shared\Notifications\Infrastructure\LogMessageSender;
 use App\Modules\Shared\Scoping\CurrentScope;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
@@ -19,6 +23,11 @@ final class SharedServiceProvider extends ServiceProvider
         $this->app->scoped(CurrentScope::class);
 
         $this->commands([PrintAppUserGrants::class]);
+
+        // Vendors are swapped here, never in business code (spec §3).
+        $this->app->bind(SmsSender::class, LogMessageSender::class);
+        $this->app->bind(WhatsAppSender::class, LogMessageSender::class);
+        $this->app->bind(EmailSender::class, LogMessageSender::class);
     }
 
     public function boot(): void
