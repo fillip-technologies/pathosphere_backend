@@ -1,0 +1,5 @@
+<?php
+// Deliberately bad sample: bypasses the scope engine.
+namespace App\Modules\Booking\Services;
+use Illuminate\Support\Facades\DB;
+final class OrderLookup { public function all() { return DB::table('orders')->get(); } }

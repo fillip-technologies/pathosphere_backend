@@ -1,0 +1,131 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "Pathology Network API",
+        "version": "1.0.0",
+        "description": "Pathology Network Platform API v1. Errors use { error: { code, message, status, details } }; lists use { data, pagination: { next_cursor, limit } }."
+    },
+    "servers": [
+        {
+            "url": "http://localhost/api/v1"
+        }
+    ],
+    "paths": {
+        "/health": {
+            "get": {
+                "operationId": "health",
+                "tags": [
+                    "Health"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "status": {
+                                                    "type": "string",
+                                                    "const": "ok"
+                                                },
+                                                "checks": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "database": {
+                                                            "type": "string",
+                                                            "const": "ok"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "database"
+                                                    ]
+                                                },
+                                                "time": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "status",
+                                                "checks",
+                                                "time"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "error": {
+                                            "type": "object",
+                                            "properties": {
+                                                "code": {
+                                                    "type": "string",
+                                                    "const": "SERVICE_UNAVAILABLE"
+                                                },
+                                                "message": {
+                                                    "type": "string",
+                                                    "const": "The database is not reachable."
+                                                },
+                                                "status": {
+                                                    "type": "integer",
+                                                    "const": 503
+                                                },
+                                                "details": {
+                                                    "type": "array",
+                                                    "prefixItems": [
+                                                        {
+                                                            "type": "object",
+                                                            "properties": {
+                                                                "check": {
+                                                                    "type": "string",
+                                                                    "const": "database"
+                                                                },
+                                                                "status": {
+                                                                    "type": "string",
+                                                                    "const": "failing"
+                                                                }
+                                                            },
+                                                            "required": [
+                                                                "check",
+                                                                "status"
+                                                            ]
+                                                        }
+                                                    ],
+                                                    "minItems": 1,
+                                                    "maxItems": 1
+                                                }
+                                            },
+                                            "required": [
+                                                "code",
+                                                "message",
+                                                "status",
+                                                "details"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "error"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

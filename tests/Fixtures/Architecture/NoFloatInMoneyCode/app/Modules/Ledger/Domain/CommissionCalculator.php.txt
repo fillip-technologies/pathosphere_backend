@@ -1,0 +1,4 @@
+<?php
+// Deliberately bad sample: money as float.
+namespace App\Modules\Ledger\Domain;
+final class CommissionCalculator { public function commission(float $billed): float { return $billed * 0.1; } }

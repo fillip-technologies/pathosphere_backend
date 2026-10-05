@@ -1,0 +1,93 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  quality:
+    name: Style, static analysis, API contract
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: pdo_mysql, bcmath, intl
+          coverage: none
+
+      - run: composer install --no-interaction --prefer-dist --no-progress
+
+      - name: Code style (Pint)
+        run: vendor/bin/pint --test
+
+      - name: Static analysis (Larastan)
+        run: vendor/bin/phpstan analyse --memory-limit=1G --no-progress
+
+      - name: Dependency audit
+        run: composer audit
+
+      - name: OpenAPI spec is up to date
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+          php artisan scramble:export
+          git diff --exit-code docs/openapi.json || (echo "::error::docs/openapi.json is stale. Run php artisan scramble:export and classify the change as breaking or non-breaking." && exit 1)
+
+  tests:
+    name: Tests on ${{ matrix.database.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        database:
+          - name: MySQL 8
+            image: mysql:8.0
+            health: mysqladmin ping -h 127.0.0.1 -uroot -proot
+          - name: MariaDB 11.8
+            image: mariadb:11.8
+            health: healthcheck.sh --connect --innodb_initialized
+
+    services:
+      database:
+        image: ${{ matrix.database.image }}
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MARIADB_ROOT_PASSWORD: root
+          MYSQL_DATABASE: pathology_api_test
+          MARIADB_DATABASE: pathology_api_test
+        ports: ['3306:3306']
+        options: >-
+          --health-cmd="${{ matrix.database.health }}"
+          --health-interval=5s --health-timeout=5s --health-retries=20
+
+    env:
+      DB_CONNECTION: mysql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_DATABASE: pathology_api_test
+      DB_USERNAME: root
+      DB_PASSWORD: root
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: pdo_mysql, bcmath, intl
+          coverage: none
+
+      - run: composer install --no-interaction --prefer-dist --no-progress
+
+      - run: |
+          cp .env.example .env
+          php artisan key:generate
+
+      - name: Migrations run cleanly
+        run: php artisan migrate --force
+
+      - name: Tests
+        run: php artisan test

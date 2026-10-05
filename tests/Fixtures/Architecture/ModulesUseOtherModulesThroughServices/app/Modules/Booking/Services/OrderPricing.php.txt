@@ -1,0 +1,5 @@
+<?php
+// Deliberately bad sample: reaches into another module's models.
+namespace App\Modules\Booking\Services;
+use App\Modules\Catalogue\Models\PriceListItem;
+final class OrderPricing { public function price($id) { return PriceListItem::find($id); } }

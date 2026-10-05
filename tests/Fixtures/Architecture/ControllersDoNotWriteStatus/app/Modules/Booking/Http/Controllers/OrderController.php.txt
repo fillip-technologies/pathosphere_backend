@@ -1,0 +1,4 @@
+<?php
+// Deliberately bad sample: changes status without the state machine.
+namespace App\Modules\Booking\Http\Controllers;
+final class OrderController { public function cancel($order) { $order->status = 'cancelled'; $order->save(); } }

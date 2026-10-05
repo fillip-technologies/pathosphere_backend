@@ -1,0 +1,6 @@
+<?php
+// Deliberately bad sample: vendor SDK and outbound HTTP in business code.
+namespace App\Modules\Booking\Services;
+use Razorpay\Api\Api;
+use Illuminate\Support\Facades\Http;
+final class PaymentCapture { public function capture() { return Http::post('https://api.razorpay.com/v1/payments'); } }
