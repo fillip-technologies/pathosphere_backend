@@ -28,7 +28,9 @@ final class CursorPage
         $limit = self::limit($request);
 
         // A unique, time-ordered tie-breaker keeps cursors stable (UUIDv7 ids).
-        $query->orderBy($query->getModel()->getQualifiedKeyName());
+        if (! self::isOrderedByKey($query)) {
+            $query->orderBy($query->getModel()->getQualifiedKeyName());
+        }
 
         $page = $query->cursorPaginate(perPage: $limit, cursorName: 'cursor');
 
@@ -39,6 +41,20 @@ final class CursorPage
                 'limit' => $limit,
             ],
         ]);
+    }
+
+    private static function isOrderedByKey(Builder $query): bool
+    {
+        $model = $query->getModel();
+        $keyColumns = [$model->getKeyName(), $model->getQualifiedKeyName()];
+
+        foreach ($query->getQuery()->orders ?? [] as $order) {
+            if (in_array($order['column'] ?? null, $keyColumns, true)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private static function limit(Request $request): int

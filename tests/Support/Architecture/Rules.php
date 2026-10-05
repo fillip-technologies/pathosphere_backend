@@ -17,6 +17,7 @@ final class Rules
             new ControllersDoNotWriteStatus,
             new VendorCodeStaysInInfrastructure,
             new NoFloatInMoneyCode,
+            new ScopeBypassesAreAllowlisted,
         ];
     }
 }

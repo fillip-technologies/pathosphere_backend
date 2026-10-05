@@ -28,7 +28,8 @@ final class NumberSequenceService
         $yearLabel = $financialYear?->label() ?? self::NO_FINANCIAL_YEAR;
 
         // Create the counter on first use; a parallel request creating it too is harmless.
-        NumberSequence::query()->insertOrIgnore([
+        // ON DUPLICATE KEY (not INSERT IGNORE) so a bad organization still fails loudly.
+        NumberSequence::query()->upsert([
             'id' => (string) Str::uuid7(),
             'organization_id' => $organizationId,
             'series_key' => $seriesKey,
@@ -36,7 +37,7 @@ final class NumberSequenceService
             'next_value' => 1,
             'created_at' => now(),
             'updated_at' => now(),
-        ]);
+        ], ['organization_id', 'series_key', 'financial_year'], ['series_key']);
 
         $counter = NumberSequence::query()
             ->where('organization_id', $organizationId)

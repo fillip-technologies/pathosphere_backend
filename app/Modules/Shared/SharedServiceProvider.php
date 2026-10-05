@@ -5,6 +5,7 @@ namespace App\Modules\Shared;
 use App\Modules\Shared\Console\PrintAppUserGrants;
 use App\Modules\Shared\Context\CurrentActor;
 use App\Modules\Shared\Database\SchemaMacros;
+use App\Modules\Shared\Scoping\CurrentScope;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Date;
@@ -15,6 +16,7 @@ final class SharedServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->scoped(CurrentActor::class);
+        $this->app->scoped(CurrentScope::class);
 
         $this->commands([PrintAppUserGrants::class]);
     }

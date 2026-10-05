@@ -16,7 +16,7 @@ use Illuminate\Validation\ValidationException;
  */
 final class ListQuery
 {
-    /** @var array<string, string|Closure(Builder, string): void> */
+    /** @var array<string, string|Closure(Builder, string): mixed> */
     private array $filters = [];
 
     /** @var array<string, string> */
@@ -32,7 +32,7 @@ final class ListQuery
     }
 
     /**
-     * @param  array<string, string|Closure(Builder, string): void>  $filters  API key => column, or a closure for custom logic
+     * @param  array<string, string|Closure(Builder, string): mixed>  $filters  API key => column, or a closure for custom logic
      */
     public function allowFilters(array $filters): self
     {
@@ -51,7 +51,7 @@ final class ListQuery
         return $this;
     }
 
-    /** @param  Closure(Builder, string): void  $search */
+    /** @param  Closure(Builder, string): mixed  $search */
     public function allowSearch(Closure $search): self
     {
         $this->search = $search;

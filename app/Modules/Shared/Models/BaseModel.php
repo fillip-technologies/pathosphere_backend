@@ -2,6 +2,7 @@
 
 namespace App\Modules\Shared\Models;
 
+use Carbon\CarbonImmutable;
 use DateTimeInterface;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
@@ -14,6 +15,9 @@ use Illuminate\Support\Carbon;
  *
  * Soft deletes are opted into per model with SoftDeletes, because only master
  * and people tables may use them (§6.4).
+ *
+ * @property CarbonImmutable $created_at
+ * @property CarbonImmutable $updated_at
  */
 abstract class BaseModel extends Model
 {

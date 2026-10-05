@@ -1,0 +1,59 @@
+<?php
+
+namespace App\Modules\Network\Models;
+
+use App\Modules\Network\Enums\B2bClientStatus;
+use App\Modules\Network\Enums\B2bClientType;
+use App\Modules\Shared\Models\BaseModel;
+use App\Modules\Shared\Money\Money;
+use App\Modules\Shared\Money\MoneyCast;
+use App\Modules\Shared\Scoping\BelongsToScope;
+use App\Modules\Shared\Scoping\HasScopeColumns;
+use App\Modules\Shared\Scoping\ScopeColumns;
+use Database\Factories\Network\B2bClientFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+/**
+ * Hospital, clinic, lab or corporate buying on credit (spec §7.1).
+ * Client management arrives in Phase 6.
+ *
+ * @property string $id
+ * @property string $organization_id
+ * @property string $region_id
+ * @property string $serviced_by_branch_id
+ * @property string $client_code
+ * @property string $name
+ * @property Money $credit_limit
+ * @property Money $current_balance
+ * @property B2bClientStatus $status
+ */
+final class B2bClient extends BaseModel implements HasScopeColumns
+{
+    use BelongsToScope;
+
+    /** @use HasFactory<B2bClientFactory> */
+    use HasFactory;
+
+    use SoftDeletes;
+
+    protected function casts(): array
+    {
+        return [
+            'client_type' => B2bClientType::class,
+            'credit_limit' => MoneyCast::class,
+            'current_balance' => MoneyCast::class,
+            'status' => B2bClientStatus::class,
+        ];
+    }
+
+    public static function scopeColumns(): ScopeColumns
+    {
+        return new ScopeColumns(region: 'region_id', b2bClient: 'id');
+    }
+
+    protected static function newFactory(): B2bClientFactory
+    {
+        return B2bClientFactory::new();
+    }
+}

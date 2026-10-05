@@ -2,17 +2,21 @@
 
 namespace Tests\Feature\Shared;
 
+use App\Modules\Network\Models\Organization;
 use App\Modules\Shared\Numbering\FinancialYear;
 use App\Modules\Shared\Numbering\NumberSequenceService;
 use Carbon\CarbonImmutable;
+use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use LogicException;
+use Tests\Support\Auth\BuildsStaff;
 use Tests\TestCase;
 
 final class NumberSequenceServiceTest extends TestCase
 {
+    use BuildsStaff;
     use RefreshDatabase;
 
     private NumberSequenceService $sequences;
@@ -23,7 +27,7 @@ final class NumberSequenceServiceTest extends TestCase
     {
         parent::setUp();
         $this->sequences = app(NumberSequenceService::class);
-        $this->organizationId = (string) Str::uuid();
+        $this->organizationId = $this->asSystem(fn () => Organization::factory()->create()->id);
     }
 
     public function test_numbers_increase_by_one_per_series(): void
@@ -73,6 +77,13 @@ final class NumberSequenceServiceTest extends TestCase
         }
 
         $this->assertSame(1, DB::transaction(fn () => $this->sequences->next($this->organizationId, 'order')));
+    }
+
+    public function test_an_unknown_organization_fails_loudly(): void
+    {
+        $this->expectException(QueryException::class);
+
+        DB::transaction(fn () => $this->sequences->next((string) Str::uuid(), 'uhid'));
     }
 
     public function test_it_refuses_to_run_outside_a_transaction(): void

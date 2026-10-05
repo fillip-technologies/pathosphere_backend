@@ -52,8 +52,8 @@ final class AuditLogger
         return AuditLog::query()->create([
             'organization_id' => $this->organizationIdFor($entity),
             'user_id' => $this->currentActor->userId(),
-            'franchise_id' => $entity->getAttribute('franchise_id'),
-            'branch_id' => $entity->getAttribute('branch_id'),
+            'franchise_id' => $this->columnValue($entity, 'franchise_id'),
+            'branch_id' => $this->columnValue($entity, 'branch_id'),
             'action' => $action,
             'entity_type' => $entity->getTable(),
             'entity_id' => (string) $entity->getKey(),
@@ -66,7 +66,7 @@ final class AuditLogger
 
     private function organizationIdFor(Model $entity): string
     {
-        $organizationId = $entity->getAttribute('organization_id') ?? $this->currentActor->organizationId();
+        $organizationId = $this->columnValue($entity, 'organization_id') ?? $this->currentActor->organizationId();
 
         if ($organizationId === null) {
             throw new LogicException(sprintf(
@@ -77,6 +77,14 @@ final class AuditLogger
         }
 
         return (string) $organizationId;
+    }
+
+    /** Reads a scope column only if this model has it (not every table does). */
+    private function columnValue(Model $entity, string $column): ?string
+    {
+        $value = $entity->getAttributes()[$column] ?? null;
+
+        return $value === null ? null : (string) $value;
     }
 
     /**

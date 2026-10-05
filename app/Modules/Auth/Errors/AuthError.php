@@ -1,0 +1,83 @@
+<?php
+
+namespace App\Modules\Auth\Errors;
+
+use App\Modules\Shared\Errors\DomainError;
+
+/**
+ * Authentication and RBAC failures with stable codes. Login failures stay
+ * deliberately vague so they do not reveal which accounts exist.
+ */
+final class AuthError
+{
+    public static function invalidCredentials(): DomainError
+    {
+        return new DomainError('INVALID_CREDENTIALS', 'The login details are incorrect.', 401);
+    }
+
+    public static function accountLocked(): DomainError
+    {
+        return new DomainError('ACCOUNT_LOCKED', 'Too many failed attempts. The account is locked for a few minutes.', 401);
+    }
+
+    public static function accountDisabled(): DomainError
+    {
+        return new DomainError('ACCOUNT_DISABLED', 'This account is disabled. Contact your administrator.', 401);
+    }
+
+    public static function invalidRefreshToken(): DomainError
+    {
+        return new DomainError('INVALID_REFRESH_TOKEN', 'The session has expired. Sign in again.', 401);
+    }
+
+    public static function invalidMfaChallenge(): DomainError
+    {
+        return new DomainError('MFA_CHALLENGE_INVALID', 'The sign-in attempt has expired. Sign in again.', 401);
+    }
+
+    public static function invalidMfaCode(): DomainError
+    {
+        return new DomainError('MFA_CODE_INVALID', 'The authenticator code is incorrect.', 401);
+    }
+
+    public static function mfaEnrollmentNotStarted(): DomainError
+    {
+        return new DomainError('MFA_ENROLLMENT_NOT_STARTED', 'Start MFA enrolment before confirming a code.', 422);
+    }
+
+    public static function notStaff(): DomainError
+    {
+        return new DomainError('FORBIDDEN', 'This endpoint is for staff accounts.', 403);
+    }
+
+    public static function roleNotAssignable(string $reason): DomainError
+    {
+        return new DomainError('ROLE_NOT_ASSIGNABLE', $reason, 403);
+    }
+
+    public static function systemRoleReadOnly(): DomainError
+    {
+        return new DomainError('SYSTEM_ROLE_READ_ONLY', 'System roles cannot be changed or deleted. Create a new role instead.', 422);
+    }
+
+    public static function roleInUse(): DomainError
+    {
+        return new DomainError('ROLE_IN_USE', 'Staff still hold this role. Move them to another role first.', 409);
+    }
+
+    /** @param  list<string>  $permissionNames */
+    public static function permissionsAboveScope(array $permissionNames, string $scopeLevel): DomainError
+    {
+        return new DomainError(
+            'PERMISSION_ABOVE_SCOPE',
+            "A {$scopeLevel}-level role cannot hold these permissions.",
+            422,
+            array_map(fn (string $name): array => ['field' => 'permissions', 'permission' => $name], $permissionNames),
+        );
+    }
+
+    public static function cannotChangeOwnAccess(): DomainError
+    {
+        return new DomainError('CANNOT_CHANGE_OWN_ACCESS', 'You cannot disable, delete or change the role of your own account.', 422);
+    }
+}

@@ -1,0 +1,5 @@
+<?php
+// Deliberately bad sample: reads every franchise's orders.
+namespace App\Modules\Booking\Services;
+use App\Modules\Booking\Models\Order;
+final class OrderSearch { public function all() { return Order::query()->withoutGlobalScopes()->get(); } }

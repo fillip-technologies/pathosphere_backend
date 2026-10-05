@@ -2,16 +2,19 @@
 
 namespace Tests\Feature\Shared;
 
+use App\Modules\Auth\Permissions\SystemRole;
 use App\Modules\Shared\Audit\AuditLog;
 use App\Modules\Shared\Audit\AuditLogger;
 use App\Modules\Shared\Context\Actor;
 use App\Modules\Shared\Context\CurrentActor;
+use App\Modules\Shared\Scoping\CurrentScope;
+use App\Modules\Shared\Scoping\ScopeContext;
 use App\Modules\Shared\StateMachines\InvalidStatusTransition;
 use App\Modules\Shared\StateMachines\StateMachine;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Context;
-use Illuminate\Support\Str;
 use LogicException;
+use Tests\Support\Auth\BuildsStaff;
 use Tests\Support\Fixtures\SampleStatus;
 use Tests\Support\Fixtures\ScratchItem;
 use Tests\TestCase;
@@ -19,6 +22,7 @@ use Tests\TestCase;
 /** Every status change is checked, saved and audited together (spec §5). */
 final class AuditAndStateMachineTest extends TestCase
 {
+    use BuildsStaff;
     use RefreshDatabase;
 
     private StateMachine $machine;
@@ -32,9 +36,11 @@ final class AuditAndStateMachineTest extends TestCase
         parent::setUp();
         ScratchItem::createTable();
 
-        $organizationId = (string) Str::uuid();
-        $this->userId = (string) Str::uuid();
+        $this->setUpOrganization();
+        $organizationId = $this->organization->id;
+        $this->userId = $this->staff(SystemRole::SuperAdmin)->id;
         app(CurrentActor::class)->set(Actor::user($this->userId, $organizationId));
+        app(CurrentScope::class)->set(ScopeContext::system());
         Context::add('request_id', 'req-test-0001');
 
         $this->item = ScratchItem::query()->create([

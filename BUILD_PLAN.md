@@ -126,6 +126,19 @@ Module: **Auth + RBAC**, **Network** (structure only), **Shared** (audit).
 
 Done when (spec): a Super Admin creates a branch and a branch user who sees only that branch.
 
+**Status: complete.** 134 tests green (scope matrix, sign-in/MFA/refresh, staff and role management, branches/regions, end-to-end scenario); Larastan level 6 and Pint clean; OpenAPI regenerated.
+
+Decisions made while building Phase 1:
+- **`users` is owned by the Auth module**, not Network (spec §2 table). Role, account and scope checks always need user + role + account together; splitting them would force every query through cross-module services. Network keeps organizations, regions, branches, franchises, B2B clients.
+- **Permission catalogue lives in code** (`Auth\Permissions\Permission` enum: module, allowed scope levels, MFA flag). The `permissions` table is synced from it on deploy (`PermissionSeeder`); the spec's schema is unchanged. System roles are defined in `SystemRole`.
+- **Role assignment rule** (spec "cannot grant a role above own scope"): assignment checks scope only, so a Branch Admin can hire Front Desk staff without holding `create_order`. *Editing* a role's permissions additionally requires holding each permission granted.
+- **MFA** is required for any role holding `manage_roles`, `manage_organization`, `approve_settlement`, `post_ledger_adjustment`, `onboard_franchise`, `approve_agreement`, `sign_report` or `amend_report`. Flow: `POST /auth/login` → `mfa_enrollment_required` / `mfa_required` + challenge token → `POST /auth/mfa-enrollments` (first time) → `POST /auth/mfa-verifications` → tokens. TOTP (RFC 6238), challenges encrypted in the database cache for 5 minutes.
+- **`POST /auth/refresh` takes the refresh token in the body and needs no access token** (the access token has usually expired by then). Refresh rotates; the old pair stops working immediately.
+- **Extra endpoints**: `POST /users/{id}/enable`; `POST /branches/{id}/activate|suspend|close` (branch state machine); `GET /permissions` (catalogue for role editors).
+- **Scope engine**: `ScopeContext` (Shared) + `BelongsToScope`/`HasScopeColumns` on every scoped model; models declare their scope columns; a missing column for a level means "no rows" (fail closed); no scope set throws `MissingScope`. Organization-wide rows (the organization itself, later the catalogue) use `visibleToWholeOrganization`. Scope bypasses are only allowed in allowlisted files (architecture test).
+- **Not yet built** (deferred to the phase that needs them): staff invitations (`users.status = invited`) need notifications (Phase 3); OTP login and password reset tables exist but their flows come with patient/doctor login (Phase 3/7).
+- `DomainError`s (4xx business errors) are not reported to logs/Sentry; only unexpected failures are.
+
 ---
 
 ## Phase 2 — Catalogue, pricing and routing (spec §12 Phase 2)
@@ -243,7 +256,7 @@ DigiLocker pull into the locker (separate onboarding), home-collection route opt
 
 | Item | When |
 | --- | --- |
-| ABDM sandbox onboarding request, HFR registration for labs | File during Phase 1 (long lead time) |
+| ABDM sandbox onboarding request, HFR registration for labs | **File now** (Phase 1 done; long lead time) |
 | DLT template registration (SMS), WhatsApp template approval | File during Phase 2 for Phase 3/5 messages |
 | Legal: retention periods, DPDP consent notice text, CA confirmation on GST exemption | Before Phase 5 / before launch |
 | Scheduled ops jobs: orphan account check, log archiving to `*_archive`, cache/OTP pruning, backup restore drill, disk-usage alert | Introduced in the phase that creates the tables they touch; backup drill before first production deploy |

@@ -37,7 +37,7 @@ return [
     |
     */
 
-    'guard' => ['web'],
+    'guard' => [], // token-only API: no cookie (stateful) authentication
 
     /*
     |--------------------------------------------------------------------------
