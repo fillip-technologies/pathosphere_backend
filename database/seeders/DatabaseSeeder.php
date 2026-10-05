@@ -26,7 +26,7 @@ class DatabaseSeeder extends Seeder
             ]);
 
             if (app()->environment('local', 'testing')) {
-                $this->call(DevelopmentNetworkSeeder::class);
+                $this->call([DevelopmentNetworkSeeder::class, DevelopmentCatalogueSeeder::class]);
             }
         }));
     }

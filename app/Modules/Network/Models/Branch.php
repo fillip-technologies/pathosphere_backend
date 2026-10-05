@@ -26,6 +26,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string $branch_code
  * @property string $name
  * @property BranchType $branch_type
+ * @property string|null $mrp_price_list_id
  * @property string|null $nabl_certificate_no
  * @property CarbonImmutable|null $nabl_valid_till
  * @property string|null $hfr_id
@@ -40,6 +41,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property CarbonImmutable|null $opened_at
  * @property CarbonImmutable $created_at
  * @property CarbonImmutable $updated_at
+ * @property Franchise|null $franchise
  */
 final class Branch extends BaseModel implements HasScopeColumns
 {

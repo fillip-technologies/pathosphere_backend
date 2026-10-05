@@ -3,6 +3,8 @@
 namespace App\Modules\Network\Services;
 
 use App\Modules\Auth\Services\StaffDirectory;
+use App\Modules\Catalogue\Enums\PriceListType;
+use App\Modules\Catalogue\Services\PriceListDirectory;
 use App\Modules\Network\Enums\BranchOwnerType;
 use App\Modules\Network\Enums\BranchStatus;
 use App\Modules\Network\Enums\BranchType;
@@ -23,6 +25,7 @@ final class BranchService
         private readonly NetworkDirectory $directory,
         private readonly StaffDirectory $staffDirectory,
         private readonly BranchStateMachine $stateMachine,
+        private readonly PriceListDirectory $priceLists,
     ) {}
 
     /**
@@ -35,6 +38,7 @@ final class BranchService
         $this->assertRegionIsVisible($attributes['region_id']);
         $this->assertOwnership(BranchOwnerType::from($attributes['owner_type']), $attributes['franchise_id'] ?? null);
         $this->assertLabOnlyFields(BranchType::from($attributes['branch_type']), $attributes);
+        $this->assertMrpPriceList($attributes['mrp_price_list_id'] ?? null);
 
         return DB::transaction(function () use ($organizationId, $attributes): Branch {
             $branch = new Branch($attributes);
@@ -59,6 +63,8 @@ final class BranchService
         if (array_key_exists('region_id', $changes)) {
             $this->assertRegionIsVisible($changes['region_id']);
         }
+
+        $this->assertMrpPriceList($changes['mrp_price_list_id'] ?? null);
 
         $branchType = array_key_exists('branch_type', $changes) ? BranchType::from($changes['branch_type']) : $branch->branch_type;
         $this->assertLabOnlyFields($branchType, $changes + $branch->only(self::LAB_ONLY_FIELDS));
@@ -93,6 +99,14 @@ final class BranchService
             $branch->delete();
             $this->auditLogger->record('branch.delete', $branch);
         });
+    }
+
+    /** A branch may override patient prices with its own MRP list (spec §7.4). */
+    private function assertMrpPriceList(?string $priceListId): void
+    {
+        if ($priceListId !== null && ! $this->priceLists->isListOfType($priceListId, PriceListType::Mrp)) {
+            throw ValidationException::withMessages(['mrp_price_list_id' => 'Choose an existing MRP price list.']);
+        }
     }
 
     private function assertRegionIsVisible(string $regionId): void

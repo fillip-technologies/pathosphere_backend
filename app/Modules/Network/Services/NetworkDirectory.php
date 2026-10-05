@@ -2,10 +2,14 @@
 
 namespace App\Modules\Network\Services;
 
+use App\Modules\Network\Enums\BranchStatus;
+use App\Modules\Network\Enums\BranchType;
 use App\Modules\Network\Models\B2bClient;
 use App\Modules\Network\Models\Branch;
 use App\Modules\Network\Models\Franchise;
 use App\Modules\Network\Models\Region;
+use App\Modules\Shared\Scoping\CurrentScope;
+use App\Modules\Shared\Scoping\ScopeContext;
 
 /**
  * Read-only questions other modules ask about the network. Every query runs
@@ -14,6 +18,8 @@ use App\Modules\Network\Models\Region;
  */
 final class NetworkDirectory
 {
+    public function __construct(private readonly CurrentScope $currentScope) {}
+
     /**
      * The region and all regions below it.
      *
@@ -74,5 +80,86 @@ final class NetworkDirectory
     public function b2bClientIsVisible(string $b2bClientId): bool
     {
         return B2bClient::query()->whereKey($b2bClientId)->exists();
+    }
+
+    /** A lab branch (reference or clinical) the caller can see. */
+    public function labIsVisible(string $branchId): bool
+    {
+        return Branch::query()
+            ->whereKey($branchId)
+            ->whereIn('branch_type', [BranchType::ReferenceLab, BranchType::ClinicalLab])
+            ->exists();
+    }
+
+    /** @return list<string> branch IDs the caller can see */
+    public function visibleBranchIds(): array
+    {
+        return Branch::query()->pluck('id')->all();
+    }
+
+    /** Pricing facts for a branch the caller can see; null when it is not visible. */
+    public function pricingProfile(string $branchId): ?BranchPricingProfile
+    {
+        $branch = Branch::query()->find($branchId);
+
+        if ($branch === null) {
+            return null;
+        }
+
+        return new BranchPricingProfile(
+            $branch->id,
+            $branch->organization_id,
+            $branch->status,
+            $branch->mrp_price_list_id,
+            $branch->franchise_id,
+            $this->partnerPriceListOf($branch),
+        );
+    }
+
+    /** The client's price list, or null when the client is not visible to the caller. */
+    public function b2bClientPriceListId(string $b2bClientId): ?string
+    {
+        return B2bClient::query()->whereKey($b2bClientId)->value('price_list_id');
+    }
+
+    /** Whether any branch, franchise or B2B client still uses the price list. */
+    public function priceListIsAssigned(string $priceListId): bool
+    {
+        return Branch::query()->where('mrp_price_list_id', $priceListId)->exists()
+            || Franchise::query()->where('partner_price_list_id', $priceListId)->exists()
+            || B2bClient::query()->where('price_list_id', $priceListId)->exists();
+    }
+
+    /**
+     * A franchise branch's staff have branch scope and cannot see the
+     * franchise row itself, yet their bookings must carry its partner price.
+     * The branch is already visible to the caller, so reading its franchise's
+     * price list at organization level reveals nothing else.
+     */
+    private function partnerPriceListOf(Branch $branch): ?string
+    {
+        if ($branch->franchise_id === null) {
+            return null;
+        }
+
+        return $this->currentScope->runAs(
+            ScopeContext::system($branch->organization_id),
+            fn (): ?string => Franchise::query()->whereKey($branch->franchise_id)->value('partner_price_list_id'),
+        );
+    }
+
+    /**
+     * Labs that can take work now, across the whole organization: a front
+     * desk must route to labs outside its own scope. Only IDs leave here.
+     *
+     * @return list<string>
+     */
+    public function operatingLabIds(string $organizationId): array
+    {
+        return $this->currentScope->runAs(ScopeContext::system($organizationId), fn (): array => Branch::query()
+            ->whereIn('branch_type', [BranchType::ReferenceLab, BranchType::ClinicalLab])
+            ->where('status', BranchStatus::Active)
+            ->pluck('id')
+            ->all());
     }
 }

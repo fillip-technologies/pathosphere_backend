@@ -156,6 +156,18 @@ Module: **Catalogue + routing**.
 
 Done when (spec): `POST /order-quotes` returns correct price and processing lab for any branch.
 
+**Status: complete.** 166 tests green; Larastan level 6 and Pint clean; OpenAPI regenerated. The done-when scenario runs against the full demo network (company PSC, branch MRP override, franchise PSC with partner price, B2B client at a lab, package expansion, analyser-off and suspended-lab fallback).
+
+Decisions made while building Phase 2:
+- **Quote logic is pure** (`Catalogue\Domain`: `QuoteBuilder`, `ProcessingBranchResolver`, `MrpPrices`, `PriceBook`); `OrderQuoteService` only loads data. Phase 3 booking must call the same service so a quote and its order always agree.
+- **Every problem is reported at once**: a 422 carries the first problem's code (`PRICE_MISSING`, `NO_ROUTE_FOR_TEST`, `TEST_INACTIVE`, `DUPLICATE_TEST`, …) and one `details` entry per failing item (`field: items.N`).
+- **Routing follows spec §7.4 literally**: rules before "the source itself". So a clinical lab must not have a default rule to the reference lab (it would send away routine tests it can run); it gets per-test rules for specialised tests only. Only active labs with an active capability receive work.
+- **Partner price**: franchise branch → franchise's partner list; B2B booking → client list; company walk-in → 0. A franchise with no partner list yet charges partner price 0 (revenue-share model); a list that lacks the item blocks booking.
+- **Visibility**: the catalogue, lab capabilities and routing rules are readable organization-wide (a front desk must route to labs outside its scope); price lists and price endpoints are `manage_price_lists` only. B2B clients are also visible to the branch that services them.
+- **Found and fixed**: a franchise front desk (branch scope) cannot see the franchise row, which would have silently priced franchise bookings at partner price 0. The partner list is now read at organization level for a branch the caller can see; a regression test guards it.
+- Models mirror database column defaults so create responses report stored values.
+- `POST /price-lists/{id}/imports` is synchronous and all-or-nothing (CSV `item_type,code,price`); it returns 200 with created/updated counts or 422 with one detail per bad row.
+- Extra endpoints: `GET /branches/{id}/capabilities`, `GET /price-lists/{id}/items`, scoped `/tests/{test}/parameters/{parameter}`.
 ---
 
 ## Phase 3 — Booking and billing, ABHA M1 (spec §12 Phase 3)

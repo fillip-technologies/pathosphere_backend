@@ -2,6 +2,8 @@
 
 namespace Database\Factories\Network;
 
+use App\Modules\Catalogue\Enums\PriceListType;
+use App\Modules\Catalogue\Models\PriceList;
 use App\Modules\Network\Enums\B2bClientStatus;
 use App\Modules\Network\Enums\B2bClientType;
 use App\Modules\Network\Models\B2bClient;
@@ -25,7 +27,17 @@ final class B2bClientFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'billing_address' => fake()->address(),
             'status' => B2bClientStatus::Active,
+            'price_list_id' => fn (array $attributes) => $this->clientPriceList($attributes['organization_id'])->id,
         ];
+    }
+
+    private function clientPriceList(string $organizationId): PriceList
+    {
+        $priceList = new PriceList(['name' => 'Client Rates', 'list_type' => PriceListType::Client, 'valid_from' => '2026-04-01']);
+        $priceList->organization_id = $organizationId;
+        $priceList->save();
+
+        return $priceList;
     }
 
     public function servicedBy(Branch $branch): self

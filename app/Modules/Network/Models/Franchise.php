@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string $region_id
  * @property string $franchise_code
  * @property string $name
+ * @property string|null $partner_price_list_id
  * @property Money $credit_limit
  * @property Money $current_balance
  * @property FranchiseStatus $status
@@ -37,6 +38,9 @@ final class Franchise extends BaseModel implements HasScopeColumns
     use SoftDeletes;
 
     protected $hidden = ['bank_account_no'];
+
+    /** Mirrors the column defaults, so new models report what the database stores. */
+    protected $attributes = ['credit_limit' => '0.00', 'current_balance' => '0.00'];
 
     protected function casts(): array
     {

@@ -17,6 +17,7 @@ final class BranchResource extends JsonResource
             'branch_code' => $this->branch_code,
             'name' => $this->name,
             'branch_type' => $this->branch_type,
+            'mrp_price_list_id' => $this->mrp_price_list_id,
             'owner_type' => $this->owner_type,
             'franchise_id' => $this->franchise_id,
             'region_id' => $this->region_id,

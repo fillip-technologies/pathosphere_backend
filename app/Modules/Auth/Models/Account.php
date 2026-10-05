@@ -34,6 +34,9 @@ final class Account extends BaseModel implements AuthenticatableContract
 
     protected $hidden = ['password_hash', 'mfa_secret'];
 
+    /** Mirrors the column defaults, so new models report what the database stores. */
+    protected $attributes = ['mfa_enabled' => false, 'failed_attempts' => 0, 'is_active' => true];
+
     protected function casts(): array
     {
         return [

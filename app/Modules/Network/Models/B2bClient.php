@@ -22,6 +22,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string $organization_id
  * @property string $region_id
  * @property string $serviced_by_branch_id
+ * @property string $price_list_id
  * @property string $client_code
  * @property string $name
  * @property Money $credit_limit
@@ -37,6 +38,9 @@ final class B2bClient extends BaseModel implements HasScopeColumns
 
     use SoftDeletes;
 
+    /** Mirrors the column defaults, so new models report what the database stores. */
+    protected $attributes = ['credit_limit' => '0.00', 'credit_days' => 30, 'current_balance' => '0.00'];
+
     protected function casts(): array
     {
         return [
@@ -49,7 +53,8 @@ final class B2bClient extends BaseModel implements HasScopeColumns
 
     public static function scopeColumns(): ScopeColumns
     {
-        return new ScopeColumns(region: 'region_id', b2bClient: 'id');
+        // The servicing branch handles the client's samples, so it sees the client too.
+        return new ScopeColumns(region: 'region_id', branch: 'serviced_by_branch_id', b2bClient: 'id');
     }
 
     protected static function newFactory(): B2bClientFactory

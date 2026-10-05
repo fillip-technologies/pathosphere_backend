@@ -417,6 +417,227 @@
                 }
             }
         },
+        "/departments": {
+            "get": {
+                "operationId": "department.index",
+                "tags": [
+                    "Department"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        },
+                                        "pagination": {
+                                            "type": "object",
+                                            "properties": {
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "limit": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "next_cursor",
+                                                "limit"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "pagination"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "department.store",
+                "tags": [
+                    "Department"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DepartmentRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`JsonResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/JsonResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/departments/{department}": {
+            "get": {
+                "operationId": "department.show",
+                "tags": [
+                    "Department"
+                ],
+                "parameters": [
+                    {
+                        "name": "department",
+                        "in": "path",
+                        "required": true,
+                        "description": "The department ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`DepartmentResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/DepartmentResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "patch": {
+                "operationId": "department.update",
+                "tags": [
+                    "Department"
+                ],
+                "parameters": [
+                    {
+                        "name": "department",
+                        "in": "path",
+                        "required": true,
+                        "description": "The department ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DepartmentRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`DepartmentResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/DepartmentResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "department.destroy",
+                "tags": [
+                    "Department"
+                ],
+                "parameters": [
+                    {
+                        "name": "department",
+                        "in": "path",
+                        "required": true,
+                        "description": "The department ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
         "/health": {
             "get": {
                 "operationId": "health",
@@ -533,6 +754,237 @@
                 }
             }
         },
+        "/tests": {
+            "get": {
+                "operationId": "labTest.index",
+                "tags": [
+                    "LabTest"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        },
+                                        "pagination": {
+                                            "type": "object",
+                                            "properties": {
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "limit": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "next_cursor",
+                                                "limit"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "pagination"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "labTest.store",
+                "tags": [
+                    "LabTest"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LabTestRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`JsonResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/JsonResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/tests/{test}": {
+            "get": {
+                "operationId": "labTest.show",
+                "tags": [
+                    "LabTest"
+                ],
+                "parameters": [
+                    {
+                        "name": "test",
+                        "in": "path",
+                        "required": true,
+                        "description": "The test ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`LabTestResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/LabTestResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "parameters"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "patch": {
+                "operationId": "labTest.update",
+                "tags": [
+                    "LabTest"
+                ],
+                "parameters": [
+                    {
+                        "name": "test",
+                        "in": "path",
+                        "required": true,
+                        "description": "The test ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LabTestRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`LabTestResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/LabTestResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "labTest.destroy",
+                "tags": [
+                    "LabTest"
+                ],
+                "parameters": [
+                    {
+                        "name": "test",
+                        "in": "path",
+                        "required": true,
+                        "description": "The test ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
         "/me": {
             "get": {
                 "operationId": "auth.me",
@@ -632,6 +1084,97 @@
                 }
             }
         },
+        "/order-quotes": {
+            "post": {
+                "operationId": "catalogue.orderQuote",
+                "tags": [
+                    "OrderQuote"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/OrderQuoteRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "branch_id": {
+                                                    "type": "string"
+                                                },
+                                                "b2b_client_id": {},
+                                                "mrp_price_list_id": {
+                                                    "type": "string"
+                                                },
+                                                "partner_price_list_id": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "lines": {
+                                                    "type": "array",
+                                                    "items": {}
+                                                },
+                                                "totals": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "mrp_total": {
+                                                            "type": "object"
+                                                        },
+                                                        "partner_total": {
+                                                            "type": "object"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "mrp_total",
+                                                        "partner_total"
+                                                    ]
+                                                },
+                                                "wallet_check": {
+                                                    "type": "null",
+                                                    "description": "Filled in Phase 6, when franchise wallets exist."
+                                                }
+                                            },
+                                            "required": [
+                                                "branch_id",
+                                                "b2b_client_id",
+                                                "mrp_price_list_id",
+                                                "partner_price_list_id",
+                                                "lines",
+                                                "totals",
+                                                "wallet_check"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
         "/organization": {
             "get": {
                 "operationId": "organization.show",
@@ -704,6 +1247,247 @@
                 }
             }
         },
+        "/packages": {
+            "get": {
+                "operationId": "package.index",
+                "tags": [
+                    "Package"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        },
+                                        "pagination": {
+                                            "type": "object",
+                                            "properties": {
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "limit": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "next_cursor",
+                                                "limit"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "pagination"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "package.store",
+                "tags": [
+                    "Package"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PackageRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`JsonResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/JsonResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/packages/{package}": {
+            "get": {
+                "operationId": "package.show",
+                "tags": [
+                    "Package"
+                ],
+                "parameters": [
+                    {
+                        "name": "package",
+                        "in": "path",
+                        "required": true,
+                        "description": "The package ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`PackageResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/PackageResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "tests"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "patch": {
+                "operationId": "package.update",
+                "tags": [
+                    "Package"
+                ],
+                "parameters": [
+                    {
+                        "name": "package",
+                        "in": "path",
+                        "required": true,
+                        "description": "The package ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PackageRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`PackageResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/PackageResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "tests"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "package.destroy",
+                "tags": [
+                    "Package"
+                ],
+                "parameters": [
+                    {
+                        "name": "package",
+                        "in": "path",
+                        "required": true,
+                        "description": "The package ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
         "/permissions": {
             "get": {
                 "operationId": "auth.permission",
@@ -748,6 +1532,433 @@
                     },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/price-lists": {
+            "get": {
+                "operationId": "priceList.index",
+                "tags": [
+                    "PriceList"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        },
+                                        "pagination": {
+                                            "type": "object",
+                                            "properties": {
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "limit": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "next_cursor",
+                                                "limit"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "pagination"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "priceList.store",
+                "tags": [
+                    "PriceList"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PriceListRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`JsonResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/JsonResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/price-lists/{priceList}": {
+            "get": {
+                "operationId": "priceList.show",
+                "tags": [
+                    "PriceList"
+                ],
+                "parameters": [
+                    {
+                        "name": "priceList",
+                        "in": "path",
+                        "required": true,
+                        "description": "The price list ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`PriceListResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/PriceListResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "patch": {
+                "operationId": "priceList.update",
+                "tags": [
+                    "PriceList"
+                ],
+                "parameters": [
+                    {
+                        "name": "priceList",
+                        "in": "path",
+                        "required": true,
+                        "description": "The price list ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PriceListRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`PriceListResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/PriceListResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "priceList.destroy",
+                "tags": [
+                    "PriceList"
+                ],
+                "parameters": [
+                    {
+                        "name": "priceList",
+                        "in": "path",
+                        "required": true,
+                        "description": "The price list ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/price-lists/{priceList}/items": {
+            "get": {
+                "operationId": "priceList.items",
+                "tags": [
+                    "PriceList"
+                ],
+                "parameters": [
+                    {
+                        "name": "priceList",
+                        "in": "path",
+                        "required": true,
+                        "description": "The price list ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        },
+                                        "pagination": {
+                                            "type": "object",
+                                            "properties": {
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "limit": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "next_cursor",
+                                                "limit"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "pagination"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "put": {
+                "operationId": "priceList.replaceItems",
+                "tags": [
+                    "PriceList"
+                ],
+                "parameters": [
+                    {
+                        "name": "priceList",
+                        "in": "path",
+                        "required": true,
+                        "description": "The price list ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PriceListItemsRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "price_list_id": {
+                                                    "type": "string"
+                                                },
+                                                "item_count": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "price_list_id",
+                                                "item_count"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/price-lists/{priceList}/imports": {
+            "post": {
+                "operationId": "priceList.import",
+                "tags": [
+                    "PriceList"
+                ],
+                "parameters": [
+                    {
+                        "name": "priceList",
+                        "in": "path",
+                        "required": true,
+                        "description": "The price list ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/PriceListImportRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "price_list_id": {
+                                                    "type": "string"
+                                                },
+                                                "created": {
+                                                    "type": "integer"
+                                                },
+                                                "updated": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "price_list_id",
+                                                "created",
+                                                "updated"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
                     }
                 }
             }
@@ -1274,6 +2485,431 @@
                 }
             }
         },
+        "/branches/{branchId}/capabilities": {
+            "get": {
+                "operationId": "routing.capabilities",
+                "tags": [
+                    "Routing"
+                ],
+                "parameters": [
+                    {
+                        "name": "branchId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "branch_id": {
+                                                    "type": "string"
+                                                },
+                                                "capabilities": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object",
+                                                        "properties": {
+                                                            "test_id": {
+                                                                "type": "string"
+                                                            },
+                                                            "is_active": {
+                                                                "type": "boolean"
+                                                            },
+                                                            "daily_capacity": {
+                                                                "type": [
+                                                                    "integer",
+                                                                    "null"
+                                                                ]
+                                                            }
+                                                        },
+                                                        "required": [
+                                                            "test_id",
+                                                            "is_active",
+                                                            "daily_capacity"
+                                                        ]
+                                                    }
+                                                }
+                                            },
+                                            "required": [
+                                                "branch_id",
+                                                "capabilities"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "put": {
+                "operationId": "routing.replaceCapabilities",
+                "tags": [
+                    "Routing"
+                ],
+                "parameters": [
+                    {
+                        "name": "branchId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CapabilitiesRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "branch_id": {
+                                                    "type": "string"
+                                                },
+                                                "capability_count": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "branch_id",
+                                                "capability_count"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/routing-rules": {
+            "get": {
+                "operationId": "routing.index",
+                "tags": [
+                    "Routing"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        },
+                                        "pagination": {
+                                            "type": "object",
+                                            "properties": {
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "limit": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "next_cursor",
+                                                "limit"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "pagination"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "routing.store",
+                "tags": [
+                    "Routing"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RoutingRuleRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`JsonResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/JsonResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/routing-rules/{routingRule}": {
+            "get": {
+                "operationId": "routing.show",
+                "tags": [
+                    "Routing"
+                ],
+                "parameters": [
+                    {
+                        "name": "routingRule",
+                        "in": "path",
+                        "required": true,
+                        "description": "The routing rule ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`RoutingRuleResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/RoutingRuleResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "patch": {
+                "operationId": "routing.update",
+                "tags": [
+                    "Routing"
+                ],
+                "parameters": [
+                    {
+                        "name": "routingRule",
+                        "in": "path",
+                        "required": true,
+                        "description": "The routing rule ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RoutingRuleRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`RoutingRuleResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/RoutingRuleResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "routing.destroy",
+                "tags": [
+                    "Routing"
+                ],
+                "parameters": [
+                    {
+                        "name": "routingRule",
+                        "in": "path",
+                        "required": true,
+                        "description": "The routing rule ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/routing-resolutions": {
+            "get": {
+                "operationId": "routing.resolve",
+                "summary": "GET /routing-resolutions?branch_id=\u2026&test_ids[]=\u2026",
+                "tags": [
+                    "Routing"
+                ],
+                "parameters": [
+                    {
+                        "name": "branch_id",
+                        "in": "query",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    },
+                    {
+                        "name": "test_ids[]",
+                        "in": "query",
+                        "schema": {
+                            "type": "array",
+                            "format": "uuid",
+                            "items": {
+                                "type": "string",
+                                "format": "uuid"
+                            }
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {}
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
         "/auth/login": {
             "post": {
                 "operationId": "signIn.login",
@@ -1462,6 +3098,302 @@
                 "responses": {
                     "204": {
                         "description": "No content"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/tests/{test}/parameters": {
+            "get": {
+                "operationId": "testParameter.index",
+                "tags": [
+                    "TestParameter"
+                ],
+                "parameters": [
+                    {
+                        "name": "test",
+                        "in": "path",
+                        "required": true,
+                        "description": "The test ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        },
+                                        "pagination": {
+                                            "type": "object",
+                                            "properties": {
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "limit": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "next_cursor",
+                                                "limit"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "pagination"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "testParameter.store",
+                "tags": [
+                    "TestParameter"
+                ],
+                "parameters": [
+                    {
+                        "name": "test",
+                        "in": "path",
+                        "required": true,
+                        "description": "The test ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TestParameterRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`JsonResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/JsonResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/tests/{test}/parameters/{parameter}": {
+            "get": {
+                "operationId": "testParameter.show",
+                "tags": [
+                    "TestParameter"
+                ],
+                "parameters": [
+                    {
+                        "name": "test",
+                        "in": "path",
+                        "required": true,
+                        "description": "The test ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "parameter",
+                        "in": "path",
+                        "required": true,
+                        "description": "The parameter ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`TestParameterResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/TestParameterResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "reference_ranges"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "patch": {
+                "operationId": "testParameter.update",
+                "tags": [
+                    "TestParameter"
+                ],
+                "parameters": [
+                    {
+                        "name": "test",
+                        "in": "path",
+                        "required": true,
+                        "description": "The test ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "parameter",
+                        "in": "path",
+                        "required": true,
+                        "description": "The parameter ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/TestParameterRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`TestParameterResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/components/schemas/TestParameterResource"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "required": [
+                                                        "reference_ranges"
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "testParameter.destroy",
+                "tags": [
+                    "TestParameter"
+                ],
+                "parameters": [
+                    {
+                        "name": "test",
+                        "in": "path",
+                        "required": true,
+                        "description": "The test ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "parameter",
+                        "in": "path",
+                        "required": true,
+                        "description": "The parameter ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
                     },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
@@ -1806,6 +3738,13 @@
                     "branch_type": {
                         "$ref": "#/components/schemas/BranchType"
                     },
+                    "mrp_price_list_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "uuid"
+                    },
                     "nabl_certificate_no": {
                         "type": [
                             "string",
@@ -1921,6 +3860,12 @@
                     "branch_type": {
                         "$ref": "#/components/schemas/BranchType"
                     },
+                    "mrp_price_list_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
                     "owner_type": {
                         "$ref": "#/components/schemas/BranchOwnerType"
                     },
@@ -2008,6 +3953,7 @@
                     "branch_code",
                     "name",
                     "branch_type",
+                    "mrp_price_list_id",
                     "owner_type",
                     "franchise_id",
                     "region_id",
@@ -2048,9 +3994,345 @@
                 ],
                 "title": "BranchType"
             },
+            "CapabilitiesRequest": {
+                "type": "object",
+                "description": "The complete set of tests a lab can run (PUT replaces all).",
+                "properties": {
+                    "capabilities": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "test_id": {
+                                    "type": "string",
+                                    "format": "uuid"
+                                },
+                                "is_active": {
+                                    "type": "boolean"
+                                },
+                                "daily_capacity": {
+                                    "type": [
+                                        "integer",
+                                        "null"
+                                    ],
+                                    "minimum": 1
+                                }
+                            },
+                            "required": [
+                                "test_id"
+                            ]
+                        },
+                        "maxItems": 5000,
+                        "uniqueItems": true
+                    }
+                },
+                "required": [
+                    "capabilities"
+                ],
+                "title": "CapabilitiesRequest"
+            },
+            "DepartmentRequest": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 80
+                    },
+                    "signing_discipline": {
+                        "$ref": "#/components/schemas/SigningDiscipline"
+                    },
+                    "report_order": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 1000
+                    }
+                },
+                "required": [
+                    "name",
+                    "signing_discipline"
+                ],
+                "title": "DepartmentRequest"
+            },
+            "DepartmentResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "signing_discipline": {
+                        "$ref": "#/components/schemas/SigningDiscipline"
+                    },
+                    "report_order": {
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "signing_discipline",
+                    "report_order",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "DepartmentResource"
+            },
+            "Gender": {
+                "type": "string",
+                "description": "Patient gender; drives reference ranges (spec \u00a77.3, \u00a77.4).\n",
+                "enum": [
+                    "male",
+                    "female",
+                    "other",
+                    "unknown"
+                ],
+                "title": "Gender"
+            },
             "JsonResource": {
                 "type": "string",
                 "title": "JsonResource"
+            },
+            "LabTestRequest": {
+                "type": "object",
+                "description": "Create (POST) and partial update (PATCH) of a test. The code is fixed at creation.",
+                "properties": {
+                    "department_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "name": {
+                        "type": "string",
+                        "maxLength": 200
+                    },
+                    "short_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 50
+                    },
+                    "loinc_code": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 20
+                    },
+                    "sample_type": {
+                        "type": "string",
+                        "maxLength": 50
+                    },
+                    "container_type": {
+                        "type": "string",
+                        "maxLength": 50
+                    },
+                    "sample_volume_ml": {
+                        "type": [
+                            "number",
+                            "null"
+                        ],
+                        "minimum": 0
+                    },
+                    "storage_temp": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/StorageTemperature"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "stability_hours": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 1,
+                        "maximum": 8760
+                    },
+                    "tat_hours": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 8760
+                    },
+                    "method": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 100
+                    },
+                    "patient_instructions": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 2000
+                    },
+                    "base_price": {
+                        "type": "number",
+                        "minimum": 0
+                    },
+                    "is_outsourced_only": {
+                        "type": "boolean"
+                    },
+                    "is_active": {
+                        "type": "boolean"
+                    },
+                    "code": {
+                        "type": "string",
+                        "pattern": "^[A-Z0-9][A-Z0-9_-]*$",
+                        "maxLength": 20
+                    }
+                },
+                "required": [
+                    "department_id",
+                    "name",
+                    "sample_type",
+                    "container_type",
+                    "tat_hours",
+                    "base_price",
+                    "code"
+                ],
+                "title": "LabTestRequest"
+            },
+            "LabTestResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "code": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "short_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "department_id": {
+                        "type": "string"
+                    },
+                    "loinc_code": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "sample_type": {
+                        "type": "string"
+                    },
+                    "container_type": {
+                        "type": "string"
+                    },
+                    "sample_volume_ml": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "storage_temp": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/StorageTemperature"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "stability_hours": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "tat_hours": {
+                        "type": "integer"
+                    },
+                    "method": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "patient_instructions": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "base_price": {
+                        "type": "object"
+                    },
+                    "is_outsourced_only": {
+                        "type": "boolean"
+                    },
+                    "is_active": {
+                        "type": "boolean"
+                    },
+                    "parameters": {
+                        "type": "array",
+                        "items": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/components/schemas/TestParameterResource"
+                                },
+                                {
+                                    "type": "object",
+                                    "required": [
+                                        "reference_ranges"
+                                    ]
+                                }
+                            ]
+                        }
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "code",
+                    "name",
+                    "short_name",
+                    "department_id",
+                    "loinc_code",
+                    "sample_type",
+                    "container_type",
+                    "sample_volume_ml",
+                    "storage_temp",
+                    "stability_hours",
+                    "tat_hours",
+                    "method",
+                    "patient_instructions",
+                    "base_price",
+                    "is_outsourced_only",
+                    "is_active",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "LabTestResource"
             },
             "MfaEnrollmentRequest": {
                 "type": "object",
@@ -2082,6 +4364,51 @@
                     "code"
                 ],
                 "title": "MfaVerificationRequest"
+            },
+            "OrderQuoteRequest": {
+                "type": "object",
+                "properties": {
+                    "branch_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "b2b_client_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "uuid"
+                    },
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "test_id": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ],
+                                    "format": "uuid"
+                                },
+                                "package_id": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ],
+                                    "format": "uuid"
+                                }
+                            }
+                        },
+                        "minItems": 1,
+                        "maxItems": 100
+                    }
+                },
+                "required": [
+                    "branch_id",
+                    "items"
+                ],
+                "title": "OrderQuoteRequest"
             },
             "OrganizationResource": {
                 "type": "object",
@@ -2160,6 +4487,260 @@
                     "suspended"
                 ],
                 "title": "OrganizationStatus"
+            },
+            "PackageRequest": {
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 200
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 2000
+                    },
+                    "is_active": {
+                        "type": "boolean"
+                    },
+                    "test_ids": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "minItems": 2,
+                        "maxItems": 200,
+                        "uniqueItems": true
+                    },
+                    "code": {
+                        "type": "string",
+                        "pattern": "^[A-Z0-9][A-Z0-9_-]*$",
+                        "maxLength": 20
+                    }
+                },
+                "required": [
+                    "name",
+                    "test_ids",
+                    "code"
+                ],
+                "title": "PackageRequest"
+            },
+            "PackageResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "code": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "description": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "is_active": {
+                        "type": "boolean"
+                    },
+                    "tests": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "id": {
+                                    "type": "string"
+                                },
+                                "code": {
+                                    "type": "string"
+                                },
+                                "name": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "id",
+                                "code",
+                                "name"
+                            ]
+                        }
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "code",
+                    "name",
+                    "description",
+                    "is_active",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "PackageResource"
+            },
+            "PriceListImportRequest": {
+                "type": "object",
+                "properties": {
+                    "file": {
+                        "type": "string",
+                        "format": "binary",
+                        "contentMediaType": "application/octet-stream",
+                        "description": "Maximum file size: 2048 kilobytes."
+                    }
+                },
+                "required": [
+                    "file"
+                ],
+                "title": "PriceListImportRequest"
+            },
+            "PriceListItemsRequest": {
+                "type": "object",
+                "description": "The complete set of prices for a list (PUT replaces all items).",
+                "properties": {
+                    "items": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "test_id": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ],
+                                    "format": "uuid"
+                                },
+                                "package_id": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ],
+                                    "format": "uuid"
+                                },
+                                "price": {
+                                    "type": "number",
+                                    "minimum": 0
+                                }
+                            },
+                            "required": [
+                                "price"
+                            ]
+                        },
+                        "maxItems": 5000,
+                        "uniqueItems": true
+                    }
+                },
+                "required": [
+                    "items"
+                ],
+                "title": "PriceListItemsRequest"
+            },
+            "PriceListRequest": {
+                "type": "object",
+                "description": "Create (POST) and partial update (PATCH). The list type is fixed at creation.",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 100
+                    },
+                    "is_default_mrp": {
+                        "type": "boolean"
+                    },
+                    "valid_from": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "valid_to": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date"
+                    },
+                    "is_active": {
+                        "type": "boolean"
+                    },
+                    "list_type": {
+                        "$ref": "#/components/schemas/PriceListType"
+                    }
+                },
+                "required": [
+                    "name",
+                    "valid_from",
+                    "list_type"
+                ],
+                "title": "PriceListRequest"
+            },
+            "PriceListResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "list_type": {
+                        "$ref": "#/components/schemas/PriceListType"
+                    },
+                    "is_default_mrp": {
+                        "type": "boolean"
+                    },
+                    "valid_from": {
+                        "type": "string"
+                    },
+                    "valid_to": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "is_active": {
+                        "type": "boolean"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "list_type",
+                    "is_default_mrp",
+                    "valid_from",
+                    "valid_to",
+                    "is_active",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "PriceListResource"
+            },
+            "PriceListType": {
+                "type": "string",
+                "description": "mrp: what patients pay. partner: what HQ charges a franchise. client: what HQ charges a B2B client (spec \u00a77.4).\n",
+                "enum": [
+                    "mrp",
+                    "partner",
+                    "client"
+                ],
+                "title": "PriceListType"
             },
             "RefreshTokenRequest": {
                 "type": "object",
@@ -2252,6 +4833,16 @@
                 ],
                 "title": "RegionType"
             },
+            "ResultType": {
+                "type": "string",
+                "enum": [
+                    "numeric",
+                    "text",
+                    "option",
+                    "calculated"
+                ],
+                "title": "ResultType"
+            },
             "RolePermissionsRequest": {
                 "type": "object",
                 "properties": {
@@ -2341,6 +4932,85 @@
                 ],
                 "title": "RoleResource"
             },
+            "RoutingRuleRequest": {
+                "type": "object",
+                "description": "Create (POST) and partial update (PATCH). The source branch is fixed at creation.",
+                "properties": {
+                    "test_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "uuid"
+                    },
+                    "processing_branch_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "priority": {
+                        "type": "integer",
+                        "minimum": 1,
+                        "maximum": 1000
+                    },
+                    "is_active": {
+                        "type": "boolean"
+                    },
+                    "source_branch_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    }
+                },
+                "required": [
+                    "processing_branch_id",
+                    "source_branch_id"
+                ],
+                "title": "RoutingRuleRequest"
+            },
+            "RoutingRuleResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "source_branch_id": {
+                        "type": "string"
+                    },
+                    "test_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "processing_branch_id": {
+                        "type": "string"
+                    },
+                    "priority": {
+                        "type": "integer"
+                    },
+                    "is_active": {
+                        "type": "boolean"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "source_branch_id",
+                    "test_id",
+                    "processing_branch_id",
+                    "priority",
+                    "is_active",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "RoutingRuleResource"
+            },
             "ScopeLevel": {
                 "type": "string",
                 "description": "How much of the network a role can see (spec \u00a74, roles.scope_level).\n",
@@ -2377,6 +5047,294 @@
                     "password"
                 ],
                 "title": "SignInRequest"
+            },
+            "SigningDiscipline": {
+                "type": "string",
+                "description": "Which qualification may sign a department's results (spec \u00a77.2, \u00a710).\n",
+                "enum": [
+                    "pathology",
+                    "microbiology",
+                    "biochemistry"
+                ],
+                "title": "SigningDiscipline"
+            },
+            "StorageTemperature": {
+                "type": "string",
+                "enum": [
+                    "ambient",
+                    "2_8c",
+                    "frozen"
+                ],
+                "title": "StorageTemperature"
+            },
+            "TestParameterRequest": {
+                "type": "object",
+                "description": "A parameter and, optionally, its full set of reference ranges. Option\nparameters need their options; calculated ones need a formula.",
+                "properties": {
+                    "parameter_name": {
+                        "type": "string",
+                        "maxLength": 150
+                    },
+                    "unit": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 30
+                    },
+                    "result_type": {
+                        "$ref": "#/components/schemas/ResultType"
+                    },
+                    "decimal_places": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 0,
+                        "maximum": 4
+                    },
+                    "options": {
+                        "type": [
+                            "array",
+                            "null"
+                        ],
+                        "items": {
+                            "type": "string",
+                            "maxLength": 100
+                        },
+                        "minItems": 2,
+                        "uniqueItems": true
+                    },
+                    "formula": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 500
+                    },
+                    "display_order": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 1000
+                    },
+                    "reference_ranges": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "gender": {
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/Gender"
+                                        },
+                                        {
+                                            "type": "null"
+                                        }
+                                    ]
+                                },
+                                "age_min_days": {
+                                    "type": [
+                                        "integer",
+                                        "null"
+                                    ],
+                                    "minimum": 0
+                                },
+                                "age_max_days": {
+                                    "type": [
+                                        "integer",
+                                        "null"
+                                    ],
+                                    "minimum": 0
+                                },
+                                "ref_low": {
+                                    "type": [
+                                        "number",
+                                        "null"
+                                    ]
+                                },
+                                "ref_high": {
+                                    "type": [
+                                        "number",
+                                        "null"
+                                    ]
+                                },
+                                "critical_low": {
+                                    "type": [
+                                        "number",
+                                        "null"
+                                    ]
+                                },
+                                "critical_high": {
+                                    "type": [
+                                        "number",
+                                        "null"
+                                    ]
+                                },
+                                "display_text": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ],
+                                    "maxLength": 100
+                                }
+                            }
+                        },
+                        "maxItems": 50
+                    },
+                    "code": {
+                        "type": "string",
+                        "maxLength": 30
+                    }
+                },
+                "required": [
+                    "parameter_name",
+                    "result_type",
+                    "code"
+                ],
+                "title": "TestParameterRequest"
+            },
+            "TestParameterResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "test_id": {
+                        "type": "string"
+                    },
+                    "code": {
+                        "type": "string"
+                    },
+                    "parameter_name": {
+                        "type": "string"
+                    },
+                    "unit": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "result_type": {
+                        "$ref": "#/components/schemas/ResultType"
+                    },
+                    "decimal_places": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "options": {
+                        "type": [
+                            "array",
+                            "null"
+                        ],
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "formula": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "display_order": {
+                        "type": "integer"
+                    },
+                    "reference_ranges": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "gender": {
+                                    "anyOf": [
+                                        {
+                                            "$ref": "#/components/schemas/Gender"
+                                        },
+                                        {
+                                            "type": "null"
+                                        }
+                                    ]
+                                },
+                                "age_min_days": {
+                                    "type": [
+                                        "integer",
+                                        "null"
+                                    ]
+                                },
+                                "age_max_days": {
+                                    "type": [
+                                        "integer",
+                                        "null"
+                                    ]
+                                },
+                                "ref_low": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "ref_high": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "critical_low": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "critical_high": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                },
+                                "display_text": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "gender",
+                                "age_min_days",
+                                "age_max_days",
+                                "ref_low",
+                                "ref_high",
+                                "critical_low",
+                                "critical_high",
+                                "display_text"
+                            ]
+                        }
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "test_id",
+                    "code",
+                    "parameter_name",
+                    "unit",
+                    "result_type",
+                    "decimal_places",
+                    "options",
+                    "formula",
+                    "display_order",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "TestParameterResource"
             },
             "UpdateOrganizationRequest": {
                 "type": "object",

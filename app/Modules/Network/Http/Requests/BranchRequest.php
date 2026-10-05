@@ -24,6 +24,7 @@ final class BranchRequest extends FormRequest
             'region_id' => [$required, 'uuid'],
             'name' => [$required, 'string', 'max:150'],
             'branch_type' => [$required, Rule::enum(BranchType::class)],
+            'mrp_price_list_id' => ['sometimes', 'nullable', 'uuid'],
             'nabl_certificate_no' => ['sometimes', 'nullable', 'string', 'max:50'],
             'nabl_valid_till' => ['sometimes', 'nullable', 'date_format:Y-m-d'],
             'hfr_id' => ['sometimes', 'nullable', 'string', 'max:50'],

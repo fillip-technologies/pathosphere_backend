@@ -31,6 +31,9 @@ final class Role extends BaseModel
 {
     use SoftDeletes;
 
+    /** Mirrors the column defaults, so new models report what the database stores. */
+    protected $attributes = ['is_system' => false];
+
     protected function casts(): array
     {
         return [

@@ -31,6 +31,12 @@ trait BuildsStaff
         });
     }
 
+    /** For tests that run the full seeders: use the seeded organization. */
+    protected function useSeededOrganization(): void
+    {
+        $this->organization = $this->asSystem(fn () => Organization::query()->firstOrFail());
+    }
+
     /**
      * @param  array<string, string|null>  $placement  region_id / franchise_id / branch_id / b2b_client_id
      * @param  array<string, mixed>  $attributes

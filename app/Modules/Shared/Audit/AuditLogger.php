@@ -64,6 +64,31 @@ final class AuditLogger
         ]);
     }
 
+    /**
+     * A change to a branch's configuration owned by another module (e.g. the
+     * tests a lab can run), recorded against the branch.
+     *
+     * @param  array<string, mixed>  $oldValues
+     * @param  array<string, mixed>  $newValues
+     */
+    public function recordForBranch(string $action, string $branchId, array $oldValues = [], array $newValues = []): AuditLog
+    {
+        return AuditLog::query()->create([
+            'organization_id' => $this->currentActor->organizationId()
+                ?? throw new LogicException("Cannot audit {$action}: the current actor has no organization."),
+            'user_id' => $this->currentActor->userId(),
+            'franchise_id' => null,
+            'branch_id' => $branchId,
+            'action' => $action,
+            'entity_type' => 'branches',
+            'entity_id' => $branchId,
+            'old_value' => $oldValues === [] ? null : $oldValues,
+            'new_value' => $newValues === [] ? null : $newValues,
+            'ip_address' => $this->request?->ip(),
+            'request_id' => Context::get('request_id'),
+        ]);
+    }
+
     private function organizationIdFor(Model $entity): string
     {
         $organizationId = $this->columnValue($entity, 'organization_id') ?? $this->currentActor->organizationId();
