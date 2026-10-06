@@ -1,5 +1,6 @@
 <?php
 
+use App\Modules\Auth\Http\Middleware\AuthenticatePerson;
 use App\Modules\Auth\Http\Middleware\AuthenticateStaff;
 use App\Modules\Auth\Http\Middleware\RequirePermission;
 use App\Modules\Shared\Errors\ApiExceptionRenderer;
@@ -27,6 +28,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'idempotent' => EnforceIdempotency::class,
             'staff' => AuthenticateStaff::class,
+            'person' => AuthenticatePerson::class,
             'permission' => RequirePermission::class,
         ]);
 

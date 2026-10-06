@@ -3,6 +3,7 @@
 namespace App\Modules\Auth;
 
 use App\Modules\Auth\Models\Role;
+use App\Modules\Auth\Services\SignedInPerson;
 use App\Modules\Auth\Services\StaffContext;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -15,6 +16,7 @@ final class AuthServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->scoped(StaffContext::class);
+        $this->app->scoped(SignedInPerson::class);
     }
 
     public function boot(): void

@@ -103,4 +103,27 @@ return [
         'mfa_issuer' => env('MFA_ISSUER', env('ORGANIZATION_NAME', 'Pathology Network')),
     ],
 
+    // Patient and doctor sign-in by OTP (spec §8.1, §10.3).
+    'otp' => [
+        'length' => 6,
+        'expiry_minutes' => 5,
+        'max_attempts' => 5,
+        'resend_after_seconds' => 30,
+        'daily_limit_per_phone' => 10,
+        // DLT template ID of the OTP SMS (spec §3); fill in once registered.
+        'sms_template_id' => env('OTP_SMS_TEMPLATE_ID'),
+    ],
+
+    // Patient health locker (spec §7.11, Engine 17).
+    'locker' => [
+        // Patient uploads: PDF or photo.
+        'upload_mimes' => ['pdf', 'jpg', 'jpeg', 'png'],
+        'upload_max_kb' => 10240,
+        // A share lasts this many days unless the patient picks fewer.
+        'share_default_days' => 7,
+        'share_max_days' => 30,
+        // Public share-link views per minute per IP address (spec §10.5).
+        'share_link_requests_per_minute' => 30,
+    ],
+
 ];

@@ -6,6 +6,8 @@ use App\Modules\Auth\Models\User;
 use App\Modules\Auth\Permissions\SystemRole;
 use App\Modules\Catalogue\Enums\SigningDiscipline;
 use App\Modules\Lab\Models\Report;
+use App\Modules\Locker\Models\PathologyReport;
+use App\Modules\Locker\Models\RecordAccessLog;
 use App\Modules\Shared\Audit\AuditLog;
 use App\Modules\Shared\Notifications\Notification;
 use Carbon\CarbonImmutable;
@@ -167,10 +169,13 @@ final class ReportJourneyTest extends TestCase
         $this->assertEqualsCanonicalizing(['Complete Blood Count', 'Lipid Profile'], $verification['tests']);
         $this->assertStringNotContainsString('127.4', (string) json_encode($verification));
 
-        // Staff download the same file; the view is recorded.
+        // Staff download the same file; both views are in the health record's access log.
         $this->actingAsStaff($this->pathologist)->get("/api/v1/reports/{$report['id']}/pdf")->assertOk();
-        $views = $this->asSystem(fn () => AuditLog::query()->where('entity_id', $report['id'])->where('action', 'report.pdf_viewed')->pluck('new_value')->all());
-        $this->assertSame(['signed_link', 'staff'], array_column($views, 'via'));
+        $recordId = PathologyReport::query()->where('report_id', $report['id'])->value('medical_record_id');
+        $views = RecordAccessLog::query()->where('medical_record_id', $recordId)->orderBy('accessed_at')->get();
+        $this->assertSame(['report_link', 'staff'], $views->map(fn (RecordAccessLog $log) => $log->actor_type->value)->all());
+        $this->assertSame([null, $this->pathologist->id], $views->pluck('actor_id')->all());
+        $this->assertSame(['download', 'download'], $views->map(fn (RecordAccessLog $log) => $log->action->value)->all());
 
         // Every report status change is audited.
         $statusChanges = $this->asSystem(fn () => AuditLog::query()

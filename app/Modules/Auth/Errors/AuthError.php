@@ -55,6 +55,38 @@ final class AuthError
         return new DomainError('FORBIDDEN', 'This endpoint is for staff accounts.', 403);
     }
 
+    public static function wrongAccountType(string $expected): DomainError
+    {
+        return new DomainError('FORBIDDEN', "This endpoint is for {$expected} accounts.", 403);
+    }
+
+    public static function otpInvalid(): DomainError
+    {
+        return new DomainError('OTP_INVALID', 'The code is incorrect.', 401);
+    }
+
+    public static function otpExpired(): DomainError
+    {
+        return new DomainError('OTP_EXPIRED', 'The code has expired. Request a new one.', 401);
+    }
+
+    public static function otpAttemptsExceeded(): DomainError
+    {
+        return new DomainError('OTP_ATTEMPTS_EXCEEDED', 'Too many wrong codes. Request a new one.', 401);
+    }
+
+    public static function otpResendTooSoon(int $retryAfterSeconds): DomainError
+    {
+        return new DomainError('OTP_RESEND_TOO_SOON', 'A code was sent moments ago. Wait before asking for another.', 429, [
+            ['field' => 'phone', 'retry_after_seconds' => $retryAfterSeconds],
+        ]);
+    }
+
+    public static function otpDailyLimitReached(): DomainError
+    {
+        return new DomainError('OTP_DAILY_LIMIT', 'Too many codes were sent to this phone today. Try again tomorrow.', 429);
+    }
+
     public static function roleNotAssignable(string $reason): DomainError
     {
         return new DomainError('ROLE_NOT_ASSIGNABLE', $reason, 403);

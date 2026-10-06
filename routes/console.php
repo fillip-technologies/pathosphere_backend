@@ -8,6 +8,8 @@ use App\Modules\Ledger\Jobs\AlertLowWalletBalances;
 use App\Modules\Ledger\Jobs\BuildSettlements;
 use App\Modules\Ledger\Jobs\HoldOverduePartners;
 use App\Modules\Ledger\Jobs\RemindB2bDues;
+use App\Modules\Locker\Jobs\ExpireRecordShares;
+use App\Modules\Locker\Jobs\SendDueReminders;
 use App\Modules\Network\Jobs\AlertExpiringNetworkPapers;
 use App\Modules\Network\Jobs\ExpireEndedAgreements;
 use App\Modules\Samples\Jobs\AlertExpiringStock;
@@ -85,5 +87,15 @@ Schedule::job(new AlertExpiringStock)
 // Yesterday's dashboard summary (spec §11 observability 4), after midnight in India.
 Schedule::job(new BuildDailyMetrics)
     ->dailyAt('01:30')
+    ->timezone('Asia/Kolkata')
+    ->withoutOverlapping();
+
+// Health locker (spec §7.11): due reminders, and shares past their end recorded as expired.
+Schedule::job(new SendDueReminders)
+    ->everyFifteenMinutes()
+    ->withoutOverlapping();
+
+Schedule::job(new ExpireRecordShares)
+    ->dailyAt('00:30')
     ->timezone('Asia/Kolkata')
     ->withoutOverlapping();

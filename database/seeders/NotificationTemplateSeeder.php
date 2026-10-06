@@ -95,6 +95,20 @@ class NotificationTemplateSeeder extends Seeder
         'stock_low' => [
             'sms' => [null, '{{branch_name}}: {{item_name}} batch {{batch_no}} is down to {{quantity}} {{unit}}, below its reorder level.'],
         ],
+        // Health locker (spec §7.11). Share links are long-lived secrets: email only, never SMS.
+        'medical_reminder' => [
+            'sms' => [null, 'Dear {{patient_name}}, reminder: {{message}}'],
+            'whatsapp' => [null, 'Hello {{patient_name}}, a reminder you set: {{message}}'],
+            'email' => ['Your health reminder', "Dear {{patient_name}},\n\nA reminder you set: {{message}}\n"],
+        ],
+        'records_shared_with_doctor' => [
+            'sms' => [null, '{{patient_name}} shared {{record_count}} health record(s) with you until {{expires_on}}. Sign in to the doctor app with this phone number to view them.'],
+            'whatsapp' => [null, '{{patient_name}} has shared {{record_count}} health record(s) with you until {{expires_on}}. Sign in to the doctor app with this phone number to view them.'],
+            'email' => ['{{patient_name}} shared health records with you', "{{patient_name}} has shared {{record_count}} health record(s) with you until {{expires_on}}. Sign in to the doctor app with your registered phone number to view them.\n"],
+        ],
+        'records_shared_by_email' => [
+            'email' => ['{{patient_name}} shared health records with you', "{{patient_name}} has shared {{record_count}} health record(s) with you. The links work until {{expires_on}} unless {{patient_name}} withdraws them:\n\n{{links}}\n"],
+        ],
     ];
 
     public function run(): void

@@ -864,6 +864,56 @@
                 }
             }
         },
+        "/me/record-access-logs": {
+            "get": {
+                "operationId": "accessLog.index",
+                "tags": [
+                    "AccessLog"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        },
+                                        "pagination": {
+                                            "type": "object",
+                                            "properties": {
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "limit": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "next_cursor",
+                                                "limit"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "pagination"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
         "/agent/orders": {
             "get": {
                 "operationId": "agent.orders",
@@ -2810,7 +2860,7 @@
         },
         "/webhooks/sms-dlr": {
             "post": {
-                "operationId": "modules.shared.deliveryWebhook_205",
+                "operationId": "modules.shared.deliveryWebhook_236",
                 "tags": [
                     "DeliveryWebhook"
                 ],
@@ -2846,7 +2896,7 @@
         },
         "/webhooks/whatsapp": {
             "post": {
-                "operationId": "modules.shared.deliveryWebhook_206",
+                "operationId": "modules.shared.deliveryWebhook_237",
                 "tags": [
                     "DeliveryWebhook"
                 ],
@@ -3322,6 +3372,142 @@
                 }
             }
         },
+        "/me/shared-records": {
+            "get": {
+                "operationId": "doctorRecord.index",
+                "tags": [
+                    "DoctorRecord"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        },
+                                        "pagination": {
+                                            "type": "object",
+                                            "properties": {
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "limit": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "next_cursor",
+                                                "limit"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "pagination"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/me/shared-records/{recordId}": {
+            "get": {
+                "operationId": "doctorRecord.show",
+                "tags": [
+                    "DoctorRecord"
+                ],
+                "parameters": [
+                    {
+                        "name": "recordId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`SharedRecordResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/SharedRecordResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/me/shared-records/{recordId}/file": {
+            "get": {
+                "operationId": "doctorRecord.file",
+                "tags": [
+                    "DoctorRecord"
+                ],
+                "parameters": [
+                    {
+                        "name": "recordId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/octet-stream": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Transfer-Encoding": {
+                                "required": true,
+                                "schema": {
+                                    "type": "string",
+                                    "enum": [
+                                        "chunked"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
         "/webhooks/esign": {
             "post": {
                 "operationId": "network.eSignWebhook",
@@ -3358,6 +3544,217 @@
                                 }
                             }
                         }
+                    }
+                }
+            }
+        },
+        "/me/family": {
+            "get": {
+                "operationId": "family.show",
+                "tags": [
+                    "Family"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "account_holder": {
+                                                    "type": "array",
+                                                    "items": {}
+                                                },
+                                                "viewing_patient_id": {
+                                                    "type": "string"
+                                                },
+                                                "members": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "array",
+                                                        "items": {}
+                                                    }
+                                                }
+                                            },
+                                            "required": [
+                                                "account_holder",
+                                                "viewing_patient_id",
+                                                "members"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "family.store",
+                "tags": [
+                    "Family"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/FamilyMemberRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`JsonResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/JsonResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/me/family/{memberId}": {
+            "get": {
+                "operationId": "family.showMember",
+                "tags": [
+                    "Family"
+                ],
+                "parameters": [
+                    {
+                        "name": "memberId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`FamilyMemberResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/FamilyMemberResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "patch": {
+                "operationId": "family.update",
+                "tags": [
+                    "Family"
+                ],
+                "parameters": [
+                    {
+                        "name": "memberId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/FamilyMemberRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`FamilyMemberResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/FamilyMemberResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "family.destroy",
+                "tags": [
+                    "Family"
+                ],
+                "parameters": [
+                    {
+                        "name": "memberId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
@@ -4102,6 +4499,78 @@
                                 }
                             }
                         }
+                    }
+                }
+            }
+        },
+        "/me/health-profile": {
+            "get": {
+                "operationId": "healthProfile.show",
+                "tags": [
+                    "HealthProfile"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`HealthProfileResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/HealthProfileResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "put": {
+                "operationId": "healthProfile.update",
+                "tags": [
+                    "HealthProfile"
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/HealthProfileRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`HealthProfileResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/HealthProfileResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
                     }
                 }
             }
@@ -6908,6 +7377,102 @@
                 }
             }
         },
+        "/auth/otp-challenges": {
+            "post": {
+                "operationId": "personSignIn.challenge",
+                "summary": "202 whether or not the phone is registered: the answer reveals nothing",
+                "tags": [
+                    "PersonSignIn"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/OtpChallengeRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "202": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "expires_at": {
+                                                    "type": "string"
+                                                },
+                                                "resend_after_seconds": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "expires_at",
+                                                "resend_after_seconds"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/auth/otp-verifications": {
+            "post": {
+                "operationId": "personSignIn.verify",
+                "tags": [
+                    "PersonSignIn"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/OtpVerificationRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {}
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
         "/price-lists": {
             "get": {
                 "operationId": "priceList.index",
@@ -7431,6 +7996,292 @@
                 }
             }
         },
+        "/me/reports": {
+            "get": {
+                "operationId": "record.reports",
+                "summary": "GET /me/reports: the lab reports from our network, newest first",
+                "tags": [
+                    "Record"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        },
+                                        "pagination": {
+                                            "type": "object",
+                                            "properties": {
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "limit": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "next_cursor",
+                                                "limit"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "pagination"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/me/records": {
+            "get": {
+                "operationId": "record.index",
+                "summary": "GET /me/records: every current record, newest first",
+                "tags": [
+                    "Record"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        },
+                                        "pagination": {
+                                            "type": "object",
+                                            "properties": {
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "limit": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "next_cursor",
+                                                "limit"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "pagination"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "record.store",
+                "tags": [
+                    "Record"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UploadRecordRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`JsonResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/JsonResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/me/records/{recordId}": {
+            "get": {
+                "operationId": "record.show",
+                "tags": [
+                    "Record"
+                ],
+                "parameters": [
+                    {
+                        "name": "recordId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`MedicalRecordDetailResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/MedicalRecordDetailResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/me/records/{recordId}/file": {
+            "get": {
+                "operationId": "record.file",
+                "summary": "GET /me/records/{id}/file?version=: the lab's PDF, or the uploaded file (newest version by default)",
+                "tags": [
+                    "Record"
+                ],
+                "parameters": [
+                    {
+                        "name": "recordId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/octet-stream": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Transfer-Encoding": {
+                                "required": true,
+                                "schema": {
+                                    "type": "string",
+                                    "enum": [
+                                        "chunked"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/me/records/{recordId}/documents": {
+            "post": {
+                "operationId": "record.addVersion",
+                "summary": "POST /me/records/{id}/documents: a new version of an uploaded file",
+                "tags": [
+                    "Record"
+                ],
+                "parameters": [
+                    {
+                        "name": "recordId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RecordFileRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`JsonResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/JsonResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
         "/regions": {
             "get": {
                 "operationId": "region.index",
@@ -7550,17 +8401,7 @@
                                     "type": "object",
                                     "properties": {
                                         "data": {
-                                            "allOf": [
-                                                {
-                                                    "$ref": "#/components/schemas/RegionResource"
-                                                },
-                                                {
-                                                    "type": "object",
-                                                    "required": [
-                                                        "children"
-                                                    ]
-                                                }
-                                            ]
+                                            "$ref": "#/components/schemas/RegionResource"
                                         }
                                     },
                                     "required": [
@@ -7656,6 +8497,180 @@
                     },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/me/reminders": {
+            "get": {
+                "operationId": "reminder.index",
+                "tags": [
+                    "Reminder"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        },
+                                        "pagination": {
+                                            "type": "object",
+                                            "properties": {
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "limit": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "next_cursor",
+                                                "limit"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "pagination"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "reminder.store",
+                "tags": [
+                    "Reminder"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ReminderRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`JsonResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/JsonResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/me/reminders/{reminderId}": {
+            "get": {
+                "operationId": "reminder.show",
+                "tags": [
+                    "Reminder"
+                ],
+                "parameters": [
+                    {
+                        "name": "reminderId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`ReminderResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ReminderResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/me/reminders/{reminderId}/dismiss": {
+            "post": {
+                "operationId": "reminder.dismiss",
+                "tags": [
+                    "Reminder"
+                ],
+                "parameters": [
+                    {
+                        "name": "reminderId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`ReminderResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ReminderResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
                     },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
@@ -9921,6 +10936,244 @@
                 }
             }
         },
+        "/me/shares": {
+            "get": {
+                "operationId": "share.index",
+                "tags": [
+                    "Share"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        },
+                                        "pagination": {
+                                            "type": "object",
+                                            "properties": {
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "limit": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "next_cursor",
+                                                "limit"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "pagination"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "share.store",
+                "tags": [
+                    "Share"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ShareRecordsRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`JsonResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/JsonResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/me/shares/{shareId}": {
+            "get": {
+                "operationId": "share.show",
+                "tags": [
+                    "Share"
+                ],
+                "parameters": [
+                    {
+                        "name": "shareId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`ShareResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ShareResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "share.destroy",
+                "summary": "Revokes at once: every link and doctor view stops working",
+                "tags": [
+                    "Share"
+                ],
+                "parameters": [
+                    {
+                        "name": "shareId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/shared-records/{token}": {
+            "get": {
+                "operationId": "shareLink.show",
+                "tags": [
+                    "ShareLink"
+                ],
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`SharedRecordResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/SharedRecordResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/shared-records/{token}/file": {
+            "get": {
+                "operationId": "shareLink.file",
+                "tags": [
+                    "ShareLink"
+                ],
+                "parameters": [
+                    {
+                        "name": "token",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/octet-stream": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Transfer-Encoding": {
+                                "required": true,
+                                "schema": {
+                                    "type": "string",
+                                    "enum": [
+                                        "chunked"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/auth/login": {
             "post": {
                 "operationId": "signIn.login",
@@ -10978,6 +12231,97 @@
                     },
                     "404": {
                         "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/me/trends": {
+            "get": {
+                "operationId": "trend.index",
+                "summary": "GET /me/trends: every parameter ever reported, with its latest value.\nA patient has at most a few hundred, so this is one page",
+                "tags": [
+                    "Trend"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {}
+                                        },
+                                        "pagination": {
+                                            "type": "object",
+                                            "properties": {
+                                                "next_cursor": {
+                                                    "type": "null"
+                                                },
+                                                "limit": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "next_cursor",
+                                                "limit"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "pagination"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/me/trends/{parameterCode}": {
+            "get": {
+                "operationId": "trend.show",
+                "summary": "GET /me/trends/{parameter_code}: every value, oldest first",
+                "tags": [
+                    "Trend"
+                ],
+                "parameters": [
+                    {
+                        "name": "parameterCode",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`TrendResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/TrendResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
                     },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
@@ -12767,6 +14111,30 @@
                 },
                 "title": "CollectSampleRequest"
             },
+            "ConsentPurpose": {
+                "type": "string",
+                "description": "Why records are shared (spec \u00a77.11 consents.purpose).\n",
+                "enum": [
+                    "treatment",
+                    "second_opinion",
+                    "insurance",
+                    "personal",
+                    "other"
+                ],
+                "title": "ConsentPurpose"
+            },
+            "ConsentStatus": {
+                "type": "string",
+                "description": "Consent lifecycle (spec \u00a77.11); mirrors ABDM consent artefacts.\n",
+                "enum": [
+                    "requested",
+                    "granted",
+                    "denied",
+                    "revoked",
+                    "expired"
+                ],
+                "title": "ConsentStatus"
+            },
             "CreateInterfaceAgentRequest": {
                 "type": "object",
                 "description": "A lab's interface agent and the addresses (or CIDR ranges) it may call from.",
@@ -13124,6 +14492,130 @@
                 ],
                 "title": "EnterResultsRequest"
             },
+            "FamilyMemberRequest": {
+                "type": "object",
+                "description": "A dependant without a UHID yet (POST), or changes to a member (PATCH).",
+                "properties": {
+                    "name": {
+                        "type": "string",
+                        "maxLength": 150
+                    },
+                    "relation": {
+                        "$ref": "#/components/schemas/FamilyRelation"
+                    },
+                    "dob": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date"
+                    }
+                },
+                "required": [
+                    "name",
+                    "relation"
+                ],
+                "title": "FamilyMemberRequest"
+            },
+            "FamilyMemberResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "relation": {
+                        "$ref": "#/components/schemas/FamilyRelation"
+                    },
+                    "dob": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "patient": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "id": {
+                                "type": "string"
+                            },
+                            "uhid": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "gender": {
+                                "$ref": "#/components/schemas/Gender"
+                            },
+                            "dob": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "age_years": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            },
+                            "phone": {
+                                "type": "string"
+                            },
+                            "abha_status": {
+                                "$ref": "#/components/schemas/AbhaStatus"
+                            }
+                        },
+                        "required": [
+                            "id",
+                            "uhid",
+                            "name",
+                            "gender",
+                            "dob",
+                            "age_years",
+                            "phone",
+                            "abha_status"
+                        ]
+                    },
+                    "can_switch": {
+                        "type": "boolean"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "name",
+                    "relation",
+                    "dob",
+                    "patient",
+                    "can_switch",
+                    "created_at"
+                ],
+                "title": "FamilyMemberResource"
+            },
+            "FamilyRelation": {
+                "type": "string",
+                "description": "How a family member relates to the account holder.\n",
+                "enum": [
+                    "spouse",
+                    "child",
+                    "parent",
+                    "sibling",
+                    "grandparent",
+                    "grandchild",
+                    "other"
+                ],
+                "title": "FamilyRelation"
+            },
             "FranchiseDocumentResource": {
                 "type": "object",
                 "properties": {
@@ -13451,6 +14943,99 @@
                     "unknown"
                 ],
                 "title": "Gender"
+            },
+            "HealthProfileRequest": {
+                "type": "object",
+                "description": "The whole health profile (PUT): fields left out are cleared.",
+                "properties": {
+                    "blood_group": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "enum": [
+                            "A+",
+                            "A-",
+                            "B+",
+                            "B-",
+                            "AB+",
+                            "AB-",
+                            "O+",
+                            "O-",
+                            null
+                        ]
+                    },
+                    "allergies": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 2000
+                    },
+                    "chronic_conditions": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 2000
+                    },
+                    "health_summary": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 2000
+                    }
+                },
+                "title": "HealthProfileRequest"
+            },
+            "HealthProfileResource": {
+                "type": "object",
+                "properties": {
+                    "patient_id": {
+                        "type": "string"
+                    },
+                    "blood_group": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "allergies": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "chronic_conditions": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "health_summary": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "updated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "patient_id",
+                    "blood_group",
+                    "allergies",
+                    "chronic_conditions",
+                    "health_summary",
+                    "updated_at"
+                ],
+                "title": "HealthProfileResource"
             },
             "HomeCollectionResource": {
                 "type": "object",
@@ -14598,6 +16183,153 @@
                 },
                 "title": "MarkSettledRequest"
             },
+            "MedicalRecordDetailResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "patient_id": {
+                        "type": "string"
+                    },
+                    "category": {
+                        "type": "object",
+                        "properties": {
+                            "code": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "icon": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "code",
+                            "name",
+                            "icon"
+                        ]
+                    },
+                    "source": {
+                        "$ref": "#/components/schemas/RecordSource"
+                    },
+                    "record_date": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string"
+                    },
+                    "provider_facility": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "is_current": {
+                        "type": "boolean"
+                    },
+                    "superseded_by_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "lab_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "abnormal_count": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 0
+                    },
+                    "file_versions": {
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "test_code": {
+                                    "type": "string"
+                                },
+                                "test_name": {
+                                    "type": "string"
+                                },
+                                "parameters": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "test_code",
+                                "test_name",
+                                "parameters"
+                            ]
+                        }
+                    },
+                    "documents": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "version": {
+                                    "type": "integer"
+                                },
+                                "mime_type": {
+                                    "type": "string"
+                                },
+                                "size_bytes": {
+                                    "type": "integer"
+                                },
+                                "checksum": {
+                                    "type": "string"
+                                },
+                                "uploaded_at": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "version",
+                                "mime_type",
+                                "size_bytes",
+                                "checksum",
+                                "uploaded_at"
+                            ]
+                        }
+                    }
+                },
+                "required": [
+                    "id",
+                    "patient_id",
+                    "category",
+                    "source",
+                    "record_date",
+                    "title",
+                    "provider_facility",
+                    "is_current",
+                    "superseded_by_id",
+                    "lab_name",
+                    "abnormal_count",
+                    "file_versions",
+                    "created_at",
+                    "results",
+                    "documents"
+                ],
+                "title": "MedicalRecordDetailResource"
+            },
             "MergePatientRequest": {
                 "type": "object",
                 "properties": {
@@ -14988,6 +16720,60 @@
                     "suspended"
                 ],
                 "title": "OrganizationStatus"
+            },
+            "OtpChallengeRequest": {
+                "type": "object",
+                "description": "Ask for a sign-in code by SMS: a patient or a referring doctor.",
+                "properties": {
+                    "phone": {
+                        "type": "string",
+                        "pattern": "^\\+?\\d{10,15}$"
+                    },
+                    "account_type": {
+                        "type": "string",
+                        "enum": [
+                            "patient",
+                            "doctor"
+                        ]
+                    }
+                },
+                "required": [
+                    "phone",
+                    "account_type"
+                ],
+                "title": "OtpChallengeRequest"
+            },
+            "OtpVerificationRequest": {
+                "type": "object",
+                "properties": {
+                    "phone": {
+                        "type": "string",
+                        "pattern": "^\\+?\\d{10,15}$"
+                    },
+                    "account_type": {
+                        "type": "string",
+                        "enum": [
+                            "patient",
+                            "doctor"
+                        ]
+                    },
+                    "code": {
+                        "type": "string"
+                    },
+                    "device_info": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 255
+                    }
+                },
+                "required": [
+                    "phone",
+                    "account_type",
+                    "code"
+                ],
+                "title": "OtpVerificationRequest"
             },
             "PackageRequest": {
                 "type": "object",
@@ -15635,6 +17421,33 @@
                 ],
                 "title": "ReceiveManifestRequest"
             },
+            "RecordFileRequest": {
+                "type": "object",
+                "description": "A new version of an uploaded record's file (multipart).",
+                "properties": {
+                    "file": {
+                        "type": "string",
+                        "format": "binary",
+                        "contentMediaType": "application/octet-stream",
+                        "description": "Maximum file size: 10240 kilobytes."
+                    }
+                },
+                "required": [
+                    "file"
+                ],
+                "title": "RecordFileRequest"
+            },
+            "RecordSource": {
+                "type": "string",
+                "description": "Where a health-locker record came from (spec \u00a77.11).\n",
+                "enum": [
+                    "own_lab",
+                    "abdm",
+                    "digilocker",
+                    "upload"
+                ],
+                "title": "RecordSource"
+            },
             "RefreshTokenRequest": {
                 "type": "object",
                 "properties": {
@@ -15818,6 +17631,88 @@
                     "reason"
                 ],
                 "title": "RejectSampleRequest"
+            },
+            "ReminderRequest": {
+                "type": "object",
+                "properties": {
+                    "remind_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "message": {
+                        "type": "string",
+                        "maxLength": 500
+                    },
+                    "medical_record_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "uuid"
+                    }
+                },
+                "required": [
+                    "remind_at",
+                    "message"
+                ],
+                "title": "ReminderRequest"
+            },
+            "ReminderResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "patient_id": {
+                        "type": "string"
+                    },
+                    "medical_record_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "remind_at": {
+                        "type": "string"
+                    },
+                    "message": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/ReminderStatus"
+                    },
+                    "sent_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "patient_id",
+                    "medical_record_id",
+                    "remind_at",
+                    "message",
+                    "status",
+                    "sent_at",
+                    "created_at"
+                ],
+                "title": "ReminderResource"
+            },
+            "ReminderStatus": {
+                "type": "string",
+                "description": "Follow-up reminder lifecycle (spec \u00a77.11 medical_reminders.status).\n",
+                "enum": [
+                    "pending",
+                    "sent",
+                    "dismissed"
+                ],
+                "title": "ReminderStatus"
             },
             "ReportDelivery": {
                 "type": "string",
@@ -16585,6 +18480,223 @@
                 ],
                 "title": "SettlementStatus"
             },
+            "ShareRecordsRequest": {
+                "type": "object",
+                "description": "Share records with a registered doctor (by phone), an email address or a link.",
+                "properties": {
+                    "medical_record_ids": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "minItems": 1,
+                        "maxItems": 50,
+                        "uniqueItems": true
+                    },
+                    "shared_with": {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "$ref": "#/components/schemas/ShareTarget"
+                            },
+                            "doctor_phone": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "pattern": "^\\+?\\d{10,15}$"
+                            },
+                            "email": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ],
+                                "format": "email",
+                                "maxLength": 150
+                            }
+                        },
+                        "required": [
+                            "type"
+                        ]
+                    },
+                    "purpose": {
+                        "$ref": "#/components/schemas/ConsentPurpose"
+                    },
+                    "valid_for_days": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ],
+                        "minimum": 1,
+                        "maximum": 30
+                    }
+                },
+                "required": [
+                    "medical_record_ids",
+                    "shared_with",
+                    "purpose"
+                ],
+                "title": "ShareRecordsRequest"
+            },
+            "ShareResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "patient_id": {
+                        "type": "string"
+                    },
+                    "shared_with": {
+                        "type": "object",
+                        "properties": {
+                            "type": {
+                                "anyOf": [
+                                    {
+                                        "$ref": "#/components/schemas/ShareTarget"
+                                    },
+                                    {
+                                        "type": "null"
+                                    }
+                                ]
+                            },
+                            "name": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "type",
+                            "name"
+                        ]
+                    },
+                    "purpose": {
+                        "$ref": "#/components/schemas/ConsentPurpose"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/ConsentStatus"
+                    },
+                    "medical_record_ids": {
+                        "type": "array",
+                        "items": {}
+                    },
+                    "granted_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "expires_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "revoked_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "links": {
+                        "type": "array",
+                        "description": "Shown once, when a link share is made: only hashes are stored.",
+                        "items": {}
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "patient_id",
+                    "shared_with",
+                    "purpose",
+                    "status",
+                    "medical_record_ids",
+                    "granted_at",
+                    "expires_at",
+                    "revoked_at",
+                    "created_at"
+                ],
+                "title": "ShareResource"
+            },
+            "ShareTarget": {
+                "type": "string",
+                "description": "Who a record is shared with (spec \u00a77.11 record_shares.shared_with_type).\n",
+                "enum": [
+                    "doctor",
+                    "email",
+                    "link"
+                ],
+                "title": "ShareTarget"
+            },
+            "SharedRecordResource": {
+                "type": "object",
+                "properties": {
+                    "record": {
+                        "type": "string"
+                    },
+                    "patient": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "name": {
+                                "type": "string"
+                            },
+                            "uhid": {
+                                "type": "string"
+                            },
+                            "gender": {
+                                "$ref": "#/components/schemas/Gender"
+                            },
+                            "age_years": {
+                                "type": [
+                                    "integer",
+                                    "null"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "name",
+                            "uhid",
+                            "gender",
+                            "age_years"
+                        ]
+                    },
+                    "share": {
+                        "type": "object",
+                        "properties": {
+                            "purpose": {
+                                "$ref": "#/components/schemas/ConsentPurpose"
+                            },
+                            "shared_at": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "expires_at": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "purpose",
+                            "shared_at",
+                            "expires_at"
+                        ]
+                    }
+                },
+                "required": [
+                    "record",
+                    "patient",
+                    "share"
+                ],
+                "title": "SharedRecordResource"
+            },
             "SignInRequest": {
                 "type": "object",
                 "properties": {
@@ -17187,6 +19299,105 @@
                 ],
                 "title": "TestParameterResource"
             },
+            "TrendResource": {
+                "type": "object",
+                "properties": {
+                    "parameter_code": {
+                        "type": "string"
+                    },
+                    "parameter_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "unit": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "point_count": {
+                        "type": "integer"
+                    },
+                    "direction": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "latest": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "record_date": {
+                                "type": "string"
+                            },
+                            "medical_record_id": {
+                                "type": "string"
+                            },
+                            "value": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "value_numeric": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "unit": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "reference_range": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "flag": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "lab_name": {
+                                "type": "string"
+                            }
+                        },
+                        "required": [
+                            "record_date",
+                            "medical_record_id",
+                            "value",
+                            "value_numeric",
+                            "unit",
+                            "reference_range",
+                            "flag",
+                            "lab_name"
+                        ]
+                    },
+                    "points": {
+                        "type": "array",
+                        "items": {}
+                    }
+                },
+                "required": [
+                    "parameter_code",
+                    "parameter_name",
+                    "unit",
+                    "point_count",
+                    "direction",
+                    "latest"
+                ],
+                "title": "TrendResource"
+            },
             "UpdateOrganizationRequest": {
                 "type": "object",
                 "properties": {
@@ -17297,6 +19508,43 @@
                     "file"
                 ],
                 "title": "UploadFranchiseDocumentRequest"
+            },
+            "UploadRecordRequest": {
+                "type": "object",
+                "description": "A record the patient adds (multipart): what it is, when it is from, and the file.",
+                "properties": {
+                    "category": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string",
+                        "maxLength": 200
+                    },
+                    "record_date": {
+                        "type": "string",
+                        "format": "date"
+                    },
+                    "provider_facility": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 200
+                    },
+                    "file": {
+                        "type": "string",
+                        "format": "binary",
+                        "contentMediaType": "application/octet-stream",
+                        "description": "Maximum file size: 10240 kilobytes."
+                    }
+                },
+                "required": [
+                    "category",
+                    "title",
+                    "record_date",
+                    "file"
+                ],
+                "title": "UploadRecordRequest"
             },
             "UserRequest": {
                 "type": "object",

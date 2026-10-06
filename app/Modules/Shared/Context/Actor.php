@@ -24,4 +24,14 @@ final class Actor
     {
         return new self(null, $organizationId, true);
     }
+
+    /**
+     * A patient or doctor signed in through their own guard (spec §4: no
+     * staff role). They are not rows in `users`, so actor columns stay null;
+     * the health locker records who they are in record_access_logs.
+     */
+    public static function external(string $organizationId): self
+    {
+        return new self(null, $organizationId, false);
+    }
 }

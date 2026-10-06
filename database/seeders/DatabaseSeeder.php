@@ -11,8 +11,8 @@ use Illuminate\Database\Seeder;
 /**
  * Seeds run as the system, with an explicit system scope (spec §4.3).
  *
- * Production: permissions, system roles, the organization and the first
- * Super Admin. Local/testing also gets the demo network of spec §11.6 with
+ * Production: permissions, system roles, the organization, the first
+ * Super Admin, message templates and health-locker record categories. Local/testing also gets the demo network of spec §11.6 with
  * its franchise agreements, and local the demo signatories.
  */
 class DatabaseSeeder extends Seeder
@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
                 OrganizationSeeder::class,
                 SuperAdminSeeder::class,
                 NotificationTemplateSeeder::class,
+                RecordCategorySeeder::class,
             ]);
 
             if (app()->environment('local', 'testing')) {

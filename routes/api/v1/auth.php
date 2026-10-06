@@ -14,8 +14,10 @@ Route::middleware('throttle:sign-in')->prefix('auth')->group(function (): void {
     Route::post('/refresh', [SignInController::class, 'refresh']);
 });
 
+// Any signed-in account: staff, patient or doctor.
+Route::post('/auth/logout', [SignInController::class, 'logout'])->middleware('auth:sanctum');
+
 Route::middleware(['auth:sanctum', 'staff'])->group(function (): void {
-    Route::post('/auth/logout', [SignInController::class, 'logout']);
     Route::get('/me', MeController::class);
 
     Route::middleware('permission:manage_staff,manage_franchise_staff,manage_branch_staff')->group(function (): void {

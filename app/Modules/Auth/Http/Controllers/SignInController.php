@@ -6,15 +6,16 @@ use App\Modules\Auth\Http\Requests\MfaEnrollmentRequest;
 use App\Modules\Auth\Http\Requests\MfaVerificationRequest;
 use App\Modules\Auth\Http\Requests\RefreshTokenRequest;
 use App\Modules\Auth\Http\Requests\SignInRequest;
+use App\Modules\Auth\Models\Account;
 use App\Modules\Auth\Services\SignInResult;
-use App\Modules\Auth\Services\StaffContext;
 use App\Modules\Auth\Services\StaffSignIn;
 use App\Modules\Auth\Services\TokenIssuer;
 use App\Modules\Shared\Http\Responses\ApiResponse;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-/** Staff sign-in, MFA, token refresh and sign-out (spec §8 Auth). */
+/** Staff sign-in and MFA; token refresh and sign-out for every account (spec §8 Auth). */
 final class SignInController
 {
     public function __construct(private readonly StaffSignIn $signIn) {}
@@ -50,9 +51,10 @@ final class SignInController
         return new JsonResponse(['data' => SignInResult::authenticated($tokens)->toArray()]);
     }
 
-    public function logout(StaffContext $staff, TokenIssuer $tokenIssuer): Response
+    public function logout(Request $request, TokenIssuer $tokenIssuer): Response
     {
-        $session = $staff->session();
+        $account = $request->user();
+        $session = $account instanceof Account ? $tokenIssuer->sessionForAccessToken($account->currentAccessToken()) : null;
 
         if ($session !== null) {
             $tokenIssuer->revoke($session);
