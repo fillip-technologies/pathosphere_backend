@@ -100,6 +100,14 @@ final class NetworkDirectory
         return Branch::query()->pluck('id')->all();
     }
 
+    /** A branch the caller can see, with its coordinates (which may be unset); null when it is not visible. */
+    public function branchLocation(string $branchId): ?BranchLocation
+    {
+        $branch = Branch::query()->find($branchId);
+
+        return $branch === null ? null : new BranchLocation($branch->id, $branch->latitude, $branch->longitude);
+    }
+
     /** Pricing facts for a branch the caller can see; null when it is not visible. */
     public function pricingProfile(string $branchId): ?BranchPricingProfile
     {

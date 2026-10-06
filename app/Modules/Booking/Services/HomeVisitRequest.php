@@ -14,5 +14,8 @@ final class HomeVisitRequest
         public readonly CarbonImmutable $slotStart,
         public readonly CarbonImmutable $slotEnd,
         public readonly Money $collectionCharge,
+        /** Given together or not at all; null leaves placing the address to the geocoder. */
+        public readonly ?string $latitude = null,
+        public readonly ?string $longitude = null,
     ) {}
 }

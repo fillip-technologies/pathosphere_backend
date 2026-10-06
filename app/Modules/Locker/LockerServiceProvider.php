@@ -6,9 +6,13 @@ use App\Modules\Lab\Events\ReportPdfViewed;
 use App\Modules\Lab\Events\ReportReleased;
 use App\Modules\Locker\Console\BackfillLocker;
 use App\Modules\Locker\Contracts\AbdmHipGateway;
+use App\Modules\Locker\Contracts\DigiLocker;
 use App\Modules\Locker\Http\Middleware\ResolveDoctor;
 use App\Modules\Locker\Http\Middleware\ResolvePatientProfile;
+use App\Modules\Locker\Infrastructure\ApiSetuDigiLocker;
+use App\Modules\Locker\Infrastructure\DisabledDigiLocker;
 use App\Modules\Locker\Infrastructure\FakeAbdmHipGateway;
+use App\Modules\Locker\Infrastructure\FakeDigiLocker;
 use App\Modules\Locker\Listeners\CopyReleasedReportToLocker;
 use App\Modules\Locker\Listeners\LinkReleasedReportToAbha;
 use App\Modules\Locker\Listeners\LogReportPdfView;
@@ -39,6 +43,18 @@ final class LockerServiceProvider extends ServiceProvider
             default => throw new LogicException('Only the fake ABDM HIP gateway exists until sandbox onboarding (ABDM_HIP_GATEWAY=fake).'),
         });
 
+        // DigiLocker (spec §3): off until partner onboarding; the fake (one instance, so it keeps its sign-ins) for local use.
+        $this->app->singleton(DigiLocker::class, fn () => match (config('services.digilocker.client')) {
+            'api_setu' => new ApiSetuDigiLocker(
+                (string) config('services.digilocker.base_url'),
+                (string) config('services.digilocker.client_id'),
+                (string) config('services.digilocker.client_secret'),
+                (string) config('services.digilocker.redirect_uri'),
+            ),
+            'fake' => new FakeDigiLocker,
+            default => new DisabledDigiLocker,
+        });
+
         $this->commands([BackfillLocker::class]);
     }
 
@@ -58,6 +74,8 @@ final class LockerServiceProvider extends ServiceProvider
             Limit::perMinute(20)->by('otp-verify-ip:'.$request->ip()),
             Limit::perMinute(10)->by('otp-verify-phone:'.preg_replace('/\D/', '', (string) $request->input('phone'))),
         ]);
+        // DigiLocker calls cost a round trip to a government service; one patient needs only a few a minute.
+        RateLimiter::for('digilocker', fn (Request $request) => Limit::perMinute(30)->by('digilocker:'.($request->user()?->getAuthIdentifier() ?? $request->ip())));
         RateLimiter::for('share-links', fn (Request $request) => Limit::perMinute((int) config('pathology.locker.share_link_requests_per_minute'))->by('share-link:'.$request->ip()));
 
         Event::listen(ReportReleased::class, CopyReleasedReportToLocker::class);

@@ -35,6 +35,9 @@ final class BookOrderRequest extends FormRequest
             'home_collection.slot_start' => ['required_with:home_collection', 'date', 'after:now'],
             'home_collection.slot_end' => ['required_with:home_collection', 'date', 'after:home_collection.slot_start'],
             'home_collection.collection_charge' => ['nullable', 'decimal:0,2', 'min:0'],
+            // A pin dropped on the map by the desk or the patient app; otherwise the geocoder places the address.
+            'home_collection.latitude' => ['nullable', 'required_with:home_collection.longitude', 'decimal:0,6', 'between:-90,90'],
+            'home_collection.longitude' => ['nullable', 'required_with:home_collection.latitude', 'decimal:0,6', 'between:-180,180'],
         ];
     }
 
@@ -96,6 +99,8 @@ final class BookOrderRequest extends FormRequest
             CarbonImmutable::parse($visit['slot_start'])->utc(),
             CarbonImmutable::parse($visit['slot_end'])->utc(),
             Money::fromString((string) ($visit['collection_charge'] ?? '0')),
+            isset($visit['latitude']) ? (string) $visit['latitude'] : null,
+            isset($visit['longitude']) ? (string) $visit['longitude'] : null,
         );
     }
 }

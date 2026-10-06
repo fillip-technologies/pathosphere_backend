@@ -43,4 +43,14 @@ final class LedgerError
     {
         return new DomainError('WALLET_TOPUP_NOT_ALLOWED', 'Only a franchise with an agreement, not terminated, can top up its wallet.', 422);
     }
+
+    public static function accountingPeriodOpen(string $month): DomainError
+    {
+        return new DomainError('ACCOUNTING_PERIOD_OPEN', "{$month} has not ended yet. Export a month once it is over.", 422, [['field' => 'month']]);
+    }
+
+    public static function accountingExportFailed(): DomainError
+    {
+        return new DomainError('ACCOUNTING_EXPORT_FAILED', 'This export could not be built. Ask for a new one.', 409);
+    }
 }

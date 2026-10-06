@@ -27,6 +27,32 @@ final class StaffDirectory
         return $user !== null && in_array($permission, $user->role->permissions(), true);
     }
 
+    /**
+     * Active staff based at the branch whose role holds the permission, e.g.
+     * the phlebotomists a day's home visits can go to.
+     *
+     * @return list<string> user IDs
+     */
+    public function activeStaffWithPermissionAt(string $branchId, Permission $permission): array
+    {
+        return User::query()
+            ->with('role.permissionEntries')
+            ->where('branch_id', $branchId)
+            ->where('status', UserStatus::Active)
+            ->orderBy('id')
+            ->get()
+            ->filter(fn (User $user): bool => in_array($permission, $user->role->permissions(), true))
+            ->pluck('id')
+            ->values()
+            ->all();
+    }
+
+    /** The branch a staff member the caller can see is based at; null when not visible or not branch-based. */
+    public function visibleStaffBranchId(string $userId): ?string
+    {
+        return User::query()->whereKey($userId)->value('branch_id');
+    }
+
     public function hasStaffInRegion(string $regionId): bool
     {
         return User::query()->withoutGlobalScope(ScopeFilter::class)->where('region_id', $regionId)->exists();

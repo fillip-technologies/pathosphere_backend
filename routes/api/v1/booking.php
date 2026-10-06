@@ -2,6 +2,7 @@
 
 use App\Modules\Booking\Http\Controllers\AbdmCallbackController;
 use App\Modules\Booking\Http\Controllers\AbhaController;
+use App\Modules\Booking\Http\Controllers\CollectionRouteController;
 use App\Modules\Booking\Http\Controllers\DoctorController;
 use App\Modules\Booking\Http\Controllers\HomeCollectionController;
 use App\Modules\Booking\Http\Controllers\InvoiceController;
@@ -75,4 +76,11 @@ Route::middleware(['auth:sanctum', 'staff'])->group(function (): void {
         ->middleware('permission:manage_home_collection');
     Route::post('/home-collections/{homeCollection}/status', [HomeCollectionController::class, 'updateStatus'])
         ->middleware('permission:manage_home_collection,mark_collected');
+
+    // Routes (spec §5.3): auto-assign by distance, and each phlebotomist's order of visits.
+    Route::post('/home-collection-assignments', [CollectionRouteController::class, 'assign'])
+        ->middleware('permission:manage_home_collection');
+    Route::get('/phlebotomists/{phlebotomistId}/route', [CollectionRouteController::class, 'show'])
+        ->whereUuid('phlebotomistId')
+        ->middleware('permission:manage_home_collection,view_assigned_collections');
 });

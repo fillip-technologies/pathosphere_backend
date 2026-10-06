@@ -36,6 +36,12 @@ final class PrivatePaths
         return sprintf('statements/%s/%s.pdf', $periodEnd->format('Y/m'), $settlementId);
     }
 
+    /** A month of vouchers for Tally (xml) or Zoho Books (csv). */
+    public static function accountingExport(string $exportId, DateTimeInterface $periodStart, string $extension): string
+    {
+        return sprintf('exports/accounting/%s/%s.%s', $periodStart->format('Y/m'), $exportId, self::cleanExtension($extension));
+    }
+
     public static function signature(string $signatoryId): string
     {
         return sprintf('signatures/%s.png', $signatoryId);

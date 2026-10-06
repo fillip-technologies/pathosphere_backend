@@ -35,6 +35,15 @@ return [
         'discount_approval_percent' => '10',
     ],
 
+    // Home collection routes (spec §5.3): estimates until a maps vendor gives real travel times.
+    'home_collection' => [
+        'average_speed_kmh' => 20,
+        // Time at the patient's home: identification, draw, labels, payment.
+        'visit_minutes' => 15,
+        // Roads are longer than the straight line; 130 means 30% longer.
+        'road_factor_percent' => 130,
+    ],
+
     // Samples and logistics (spec §5.4). Rejection reasons are a lookup list
     // (spec §6): add reasons here, never rename a key that is in use.
     'samples' => [
@@ -92,6 +101,49 @@ return [
         ],
     ],
 
+    // Accounting export (spec §3: Tally XML, Zoho Books; export only). Agree
+    // these names with the CA: they must match the ledgers in Tally or the
+    // accounts in Zoho. Placeholders: {branch_code}, {code}, {name}. Groups
+    // are Tally's (used when the import creates a ledger).
+    'accounting' => [
+        // The company name as it appears in Tally; the import goes into this company.
+        'tally_company' => env('TALLY_COMPANY_NAME') ?: env('ORGANIZATION_LEGAL_NAME', 'Pathology Network Private Limited'),
+        'currency' => 'INR',
+        // Zoho books customer and partner balances to this account, against the contact.
+        'zoho_receivables_account' => 'Accounts Receivable',
+        'accounts' => [
+            'patients' => ['name' => 'Patients - {branch_code}', 'group' => 'Sundry Debtors'],
+            'b2b_client' => ['name' => '{name} ({code})', 'group' => 'Sundry Debtors'],
+            'franchise' => ['name' => '{name} ({code})', 'group' => 'Sundry Debtors'],
+            'franchise_online_collections' => ['name' => 'Franchise Online Collections', 'group' => 'Suspense A/c'],
+            'sales' => ['name' => 'Diagnostic Services', 'group' => 'Sales Accounts'],
+            'discount' => ['name' => 'Discount Allowed', 'group' => 'Indirect Expenses'],
+            'output_tax' => ['name' => 'Output GST', 'group' => 'Duties & Taxes'],
+        ],
+        // Where money paid in each mode is received.
+        'money_accounts' => [
+            'cash' => ['name' => 'Cash - {branch_code}', 'group' => 'Cash-in-Hand'],
+            'card' => ['name' => 'Bank - Collections', 'group' => 'Bank Accounts'],
+            'upi' => ['name' => 'Bank - Collections', 'group' => 'Bank Accounts'],
+            'netbanking' => ['name' => 'Bank - Collections', 'group' => 'Bank Accounts'],
+            'wallet' => ['name' => 'Bank - Collections', 'group' => 'Bank Accounts'],
+            'credit_note' => ['name' => 'Customer Credit Notes', 'group' => 'Current Liabilities'],
+        ],
+        // The other side of each franchise ledger row type.
+        'partner_entry_accounts' => [
+            'wallet_topup' => ['name' => 'Bank - Collections', 'group' => 'Bank Accounts'],
+            'partner_charge' => ['name' => 'Franchise Test Charges', 'group' => 'Sales Accounts'],
+            'refund_reversal' => ['name' => 'Franchise Test Charges', 'group' => 'Sales Accounts'],
+            'commission' => ['name' => 'Franchise Commission', 'group' => 'Direct Expenses'],
+            'franchise_fee' => ['name' => 'Franchise Fees', 'group' => 'Indirect Incomes'],
+            'security_deposit' => ['name' => 'Franchise Security Deposits', 'group' => 'Current Liabilities'],
+            'kit_supply' => ['name' => 'Kit Sales', 'group' => 'Sales Accounts'],
+            'payment_received' => ['name' => 'Bank - Collections', 'group' => 'Bank Accounts'],
+            'payout' => ['name' => 'Bank - Collections', 'group' => 'Bank Accounts'],
+            'adjustment' => ['name' => 'Franchise Adjustments', 'group' => 'Indirect Expenses'],
+        ],
+    ],
+
     // Staff authentication (spec §8.1, §10.3–10.4).
     'auth' => [
         'access_token_minutes' => 15,
@@ -125,6 +177,18 @@ return [
         'share_max_days' => 30,
         // Public share-link views per minute per IP address (spec §10.5).
         'share_link_requests_per_minute' => 30,
+    ],
+
+    // DigiLocker pull into the health locker (spec §3, Phase 9).
+    'digilocker' => [
+        // From starting a connection to the patient coming back from DigiLocker.
+        'authorization_minutes' => 10,
+        // How long a connected session may list and import, at most (DigiLocker's own token may end sooner).
+        'connection_minutes' => 30,
+        // Locker category of a document by its DigiLocker type; anything else is `other`.
+        'category_by_doc_type' => [
+            'VACER' => 'vaccination',
+        ],
     ],
 
     // ABDM milestone M2: our labs as Health Information Providers (spec §5.7).

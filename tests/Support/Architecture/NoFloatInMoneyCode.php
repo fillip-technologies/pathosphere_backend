@@ -12,6 +12,8 @@ final class NoFloatInMoneyCode implements ArchitectureRule
     private const ALLOWED_FILES = [
         // FHIR Observation values must be JSON numbers (lab results, never money).
         'app/Modules/Locker/Domain/DiagnosticReportRecord.php',
+        // Haversine trigonometry for home-collection routes; returns whole metres.
+        'app/Modules/Booking/Domain/RoadDistance.php',
     ];
 
     public function description(): string

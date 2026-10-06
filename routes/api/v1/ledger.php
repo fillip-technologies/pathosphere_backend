@@ -1,5 +1,6 @@
 <?php
 
+use App\Modules\Ledger\Http\Controllers\AccountingExportController;
 use App\Modules\Ledger\Http\Controllers\LedgerController;
 use App\Modules\Ledger\Http\Controllers\SettlementController;
 use App\Modules\Ledger\Http\Controllers\WalletTopupController;
@@ -34,5 +35,13 @@ Route::middleware(['auth:sanctum', 'staff'])->group(function (): void {
         Route::post('/settlements/{settlement}/approve', [SettlementController::class, 'approve']);
         Route::post('/settlements/{settlement}/dispute', [SettlementController::class, 'dispute']);
         Route::post('/settlements/{settlement}/mark-settled', [SettlementController::class, 'markSettled']);
+    });
+
+    // Monthly journals for the company's books (spec §3: Tally XML, Zoho Books; export only).
+    Route::middleware('permission:export_accounts')->group(function (): void {
+        Route::get('/accounting-exports', [AccountingExportController::class, 'index']);
+        Route::post('/accounting-exports', [AccountingExportController::class, 'store']);
+        Route::get('/accounting-exports/{accountingExport}', [AccountingExportController::class, 'show']);
+        Route::get('/accounting-exports/{accountingExport}/file', [AccountingExportController::class, 'file']);
     });
 });

@@ -32,6 +32,7 @@ enum Permission: string
     case ApproveSettlement = 'approve_settlement';
     case PostLedgerAdjustment = 'post_ledger_adjustment';
     case ApproveRefund = 'approve_refund';
+    case ExportAccounts = 'export_accounts';
 
     // Franchise management
     case OnboardFranchise = 'onboard_franchise';
@@ -95,7 +96,7 @@ enum Permission: string
             self::ManageOrganization, self::ManageRoles, self::ManageBranches, self::ManageRouting,
             self::ManageCatalog, self::ManagePriceLists, self::ManageSignatories, self::ManageNotifications,
             self::ManageB2b, self::ViewAllReports, self::ViewAllInvoices, self::ViewHqDashboard,
-            self::ApproveSettlement, self::PostLedgerAdjustment => $organizationOnly,
+            self::ApproveSettlement, self::PostLedgerAdjustment, self::ExportAccounts => $organizationOnly,
 
             self::OnboardFranchise, self::VerifyKyc, self::ApproveAgreement, self::SuspendFranchise,
             self::ViewRegionDashboard, self::ViewBranches, self::ViewReports, self::ManageStaff => $regionAndUp,
@@ -145,7 +146,7 @@ enum Permission: string
             self::ReleaseReport, self::ViewAllReports, self::ViewReports, self::ViewBranchReports,
             self::ViewClientReports => 'lab',
             self::ApproveSettlement, self::PostLedgerAdjustment, self::ViewLedger, self::TopupWallet,
-            self::ViewClientLedger => 'ledger',
+            self::ViewClientLedger, self::ExportAccounts => 'ledger',
             self::ManageNotifications => 'shared',
             self::ViewHqDashboard, self::ViewRegionDashboard, self::ViewFranchiseDashboard,
             self::ViewBranchDashboard => 'dashboards',

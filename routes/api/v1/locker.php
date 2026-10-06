@@ -3,6 +3,7 @@
 use App\Modules\Locker\Http\Controllers\AbdmConsentController;
 use App\Modules\Locker\Http\Controllers\AbdmHipCallbackController;
 use App\Modules\Locker\Http\Controllers\AccessLogController;
+use App\Modules\Locker\Http\Controllers\DigiLockerController;
 use App\Modules\Locker\Http\Controllers\DoctorRecordController;
 use App\Modules\Locker\Http\Controllers\FamilyController;
 use App\Modules\Locker\Http\Controllers\HealthProfileController;
@@ -65,6 +66,15 @@ Route::middleware(['auth:sanctum', 'person:patient', 'patient-profile'])->prefix
 
     // What the patient allowed other health systems to receive through ABDM (granted in their ABHA app).
     Route::get('/abdm-consents', [AbdmConsentController::class, 'index']);
+
+    // DigiLocker pull (spec §3, Phase 9): the patient signs in at DigiLocker and picks documents to keep.
+    Route::middleware('throttle:digilocker')->group(function (): void {
+        Route::post('/digilocker-sessions', [DigiLockerController::class, 'store']);
+        Route::get('/digilocker-sessions/{sessionId}', [DigiLockerController::class, 'show'])->whereUuid('sessionId');
+        Route::post('/digilocker-sessions/{sessionId}/authorization', [DigiLockerController::class, 'authorize'])->whereUuid('sessionId');
+        Route::get('/digilocker-sessions/{sessionId}/documents', [DigiLockerController::class, 'documents'])->whereUuid('sessionId');
+        Route::post('/digilocker-sessions/{sessionId}/imports', [DigiLockerController::class, 'import'])->whereUuid('sessionId');
+    });
 });
 
 // The referring doctor's app: records shared with them by consent.

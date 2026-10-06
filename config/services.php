@@ -43,6 +43,16 @@ return [
         'cm_id' => env('ABDM_CM_ID', 'sbx'),
     ],
 
+    // DigiLocker Authorized Partner API via API Setu (spec §3): `disabled` until onboarding, `fake` locally.
+    'digilocker' => [
+        'client' => env('DIGILOCKER_CLIENT', 'disabled'),
+        'base_url' => env('DIGILOCKER_BASE_URL', 'https://digilocker.meripehchaan.gov.in'),
+        'client_id' => env('DIGILOCKER_CLIENT_ID', ''),
+        'client_secret' => env('DIGILOCKER_CLIENT_SECRET', ''),
+        // The patient app's address DigiLocker sends the patient back to (registered at onboarding).
+        'redirect_uri' => env('DIGILOCKER_REDIRECT_URI', ''),
+    ],
+
     'razorpay' => [
         'key_id' => env('RAZORPAY_KEY_ID', ''),
         'key_secret' => env('RAZORPAY_KEY_SECRET', ''),

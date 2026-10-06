@@ -27,7 +27,9 @@ final class HomeCollectionService
 
     public function createForOrder(Order $order, HomeVisitRequest $visit): HomeCollection
     {
-        $coordinates = $this->geocoder->geocode($visit->address, $visit->pincode);
+        $coordinates = $visit->latitude !== null && $visit->longitude !== null
+            ? ['latitude' => $visit->latitude, 'longitude' => $visit->longitude]
+            : $this->geocoder->geocode($visit->address, $visit->pincode);
 
         $collection = new HomeCollection([
             'order_id' => $order->id,

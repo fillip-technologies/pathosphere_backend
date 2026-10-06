@@ -2,8 +2,11 @@
 
 namespace App\Modules\Locker\Services;
 
+use App\Modules\Locker\Contracts\DigiLocker\DigiLockerDocument;
+use App\Modules\Locker\Contracts\DigiLocker\DigiLockerFile;
 use App\Modules\Locker\Enums\RecordSource;
 use App\Modules\Locker\Errors\LockerError;
+use App\Modules\Locker\Models\ExternalHealthRecord;
 use App\Modules\Locker\Models\MedicalDocument;
 use App\Modules\Locker\Models\MedicalRecord;
 use App\Modules\Locker\Models\RecordCategory;
@@ -73,7 +76,7 @@ final class LockerRecords
             $record->save();
             $this->auditLogger->recordCreated('medical_record.uploaded', $record);
 
-            $this->storeDocument($record, $file, 1);
+            $this->storeDocument($record, (string) $file->get(), (string) $file->getMimeType(), (string) ($file->extension() ?: $file->getClientOriginalExtension()), 1);
 
             return $record;
         });
@@ -94,26 +97,64 @@ final class LockerRecords
             // Serialise versions of one record.
             MedicalRecord::query()->whereKey($record->id)->lockForUpdate()->first();
             $next = (int) MedicalDocument::query()->where('medical_record_id', $record->id)->max('version') + 1;
-            $this->storeDocument($record, $file, $next);
+            $this->storeDocument($record, (string) $file->get(), (string) $file->getMimeType(), (string) ($file->extension() ?: $file->getClientOriginalExtension()), $next);
         });
 
         return $this->find($viewer, $record->id);
     }
 
-    private function storeDocument(MedicalRecord $record, UploadedFile $file, int $version): void
+    /**
+     * A document fetched from the patient's DigiLocker, with where it came
+     * from (spec §7.11 external_health_records). The file is stored like an
+     * upload; the record cannot get new versions, DigiLocker's copy is the
+     * original. Caller has checked the document is not in any locker yet.
+     */
+    public function importFromDigiLocker(PatientViewer $viewer, DigiLockerDocument $source, DigiLockerFile $file, string $categoryCode, string $title, string $extension): MedicalRecord
+    {
+        $categoryId = (string) RecordCategory::query()->where('code', $categoryCode)->value('id');
+        $patientId = $viewer->profile()->id;
+
+        $record = DB::transaction(function () use ($source, $file, $categoryId, $patientId, $title, $extension): MedicalRecord {
+            $record = new MedicalRecord([
+                'source' => RecordSource::Digilocker,
+                'record_date' => ($source->issuedOn ?? CarbonImmutable::now('Asia/Kolkata'))->toDateString(),
+                'title' => mb_substr($title, 0, 200),
+                'provider_facility' => $source->issuer === null ? null : mb_substr($source->issuer, 0, 200),
+            ]);
+            $record->patient_id = $patientId;
+            $record->category_id = $categoryId;
+            $record->save();
+
+            // Unique (source, external_id): a second import of the same document fails here.
+            $provenance = new ExternalHealthRecord([
+                'source' => RecordSource::Digilocker,
+                'external_id' => $source->uri,
+                'fetched_at' => CarbonImmutable::now(),
+            ]);
+            $provenance->patient_id = $patientId;
+            $provenance->medical_record_id = $record->id;
+            $provenance->save();
+
+            $this->auditLogger->recordCreated('medical_record.imported', $record);
+            $this->storeDocument($record, $file->contents, $file->mimeType, $extension, 1);
+
+            return $record;
+        });
+
+        return $this->find($viewer, $record->id);
+    }
+
+    private function storeDocument(MedicalRecord $record, string $contents, string $mimeType, string $extension, int $version): void
     {
         $document = new MedicalDocument([
-            'mime_type' => mb_substr((string) $file->getMimeType(), 0, 60),
+            'mime_type' => mb_substr($mimeType, 0, 60),
             'version' => $version,
             'uploaded_at' => CarbonImmutable::now(),
         ]);
         $document->id = $document->newUniqueId();
         $document->medical_record_id = $record->id;
 
-        $stored = $this->files->putNew(
-            PrivatePaths::lockerUpload($record->patient_id, $document->id, (string) ($file->extension() ?: $file->getClientOriginalExtension())),
-            (string) $file->get(),
-        );
+        $stored = $this->files->putNew(PrivatePaths::lockerUpload($record->patient_id, $document->id, $extension), $contents);
         $document->file_path = $stored->path;
         $document->checksum = $stored->sha256;
         $document->size_bytes = $stored->sizeBytes;

@@ -51,6 +51,7 @@ enum SystemRole: string
             self::HqFinance => [
                 Permission::ManagePriceLists, Permission::ApproveSettlement, Permission::PostLedgerAdjustment,
                 Permission::ViewAllInvoices, Permission::ApproveRefund, Permission::ViewLedger,
+                Permission::ExportAccounts,
             ],
             self::FranchiseManager => [
                 Permission::OnboardFranchise, Permission::VerifyKyc, Permission::ApproveAgreement,
@@ -87,7 +88,7 @@ enum SystemRole: string
         return match ($this) {
             self::SuperAdmin => 'Everything in the organization, including roles and settings.',
             self::HqOperations => 'Branches, routing, catalogue and network-wide reports.',
-            self::HqFinance => 'Price lists, settlements, ledger adjustments and invoices.',
+            self::HqFinance => 'Price lists, settlements, ledger adjustments, invoices and accounting exports.',
             self::FranchiseManager => 'Franchise onboarding, KYC, agreements and suspension.',
             self::RegionalManager => 'Read-only oversight of one region.',
             self::FranchiseOwner => 'The franchise dashboard, ledger, wallet and staff.',

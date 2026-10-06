@@ -1010,6 +1010,212 @@
                 }
             }
         },
+        "/accounting-exports": {
+            "get": {
+                "operationId": "accountingExport.index",
+                "tags": [
+                    "AccountingExport"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        },
+                                        "pagination": {
+                                            "type": "object",
+                                            "properties": {
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "limit": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "next_cursor",
+                                                "limit"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "pagination"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "accountingExport.store",
+                "summary": "202: the file is built in the background; poll the export or its file",
+                "tags": [
+                    "AccountingExport"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AccountingExportRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "202": {
+                        "description": "`JsonResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/JsonResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/accounting-exports/{accountingExport}": {
+            "get": {
+                "operationId": "accountingExport.show",
+                "tags": [
+                    "AccountingExport"
+                ],
+                "parameters": [
+                    {
+                        "name": "accountingExport",
+                        "in": "path",
+                        "required": true,
+                        "description": "The accounting export ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`AccountingExportResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/AccountingExportResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/accounting-exports/{accountingExport}/file": {
+            "get": {
+                "operationId": "accountingExport.file",
+                "summary": "The file; 202 while it is still being built",
+                "tags": [
+                    "AccountingExport"
+                ],
+                "parameters": [
+                    {
+                        "name": "accountingExport",
+                        "in": "path",
+                        "required": true,
+                        "description": "The accounting export ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/octet-stream": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Transfer-Encoding": {
+                                "required": true,
+                                "schema": {
+                                    "type": "string",
+                                    "enum": [
+                                        "chunked"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "202": {
+                        "description": "`JsonResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/JsonResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
         "/agent/orders": {
             "get": {
                 "operationId": "agent.orders",
@@ -2252,6 +2458,105 @@
                 }
             }
         },
+        "/home-collection-assignments": {
+            "post": {
+                "operationId": "collectionRoute.assign",
+                "summary": "POST /home-collection-assignments: share a branch's waiting visits of one day among its phlebotomists",
+                "tags": [
+                    "CollectionRoute"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AutoAssignVisitsRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`AutoAssignmentResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/AutoAssignmentResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/phlebotomists/{phlebotomistId}/route": {
+            "get": {
+                "operationId": "collectionRoute.show",
+                "summary": "GET /phlebotomists/{id}/route?date=: the visits still to make, in order",
+                "tags": [
+                    "CollectionRoute"
+                ],
+                "parameters": [
+                    {
+                        "name": "phlebotomistId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "date",
+                        "in": "query",
+                        "description": "A business day in India; today when left out.",
+                        "schema": {
+                            "type": "string",
+                            "format": "date"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`PhlebotomistRouteResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/PhlebotomistRouteResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
         "/dashboards/hq": {
             "get": {
                 "operationId": "dashboard.hq",
@@ -2956,7 +3261,7 @@
         },
         "/webhooks/sms-dlr": {
             "post": {
-                "operationId": "modules.shared.deliveryWebhook_238",
+                "operationId": "modules.shared.deliveryWebhook_249",
                 "tags": [
                     "DeliveryWebhook"
                 ],
@@ -2992,7 +3297,7 @@
         },
         "/webhooks/whatsapp": {
             "post": {
-                "operationId": "modules.shared.deliveryWebhook_239",
+                "operationId": "modules.shared.deliveryWebhook_250",
                 "tags": [
                     "DeliveryWebhook"
                 ],
@@ -3243,6 +3548,266 @@
                     },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/me/digilocker-sessions": {
+            "post": {
+                "operationId": "digiLocker.store",
+                "summary": "POST /me/digilocker-sessions: send the patient to authorization_url",
+                "tags": [
+                    "DigiLocker"
+                ],
+                "responses": {
+                    "201": {
+                        "description": "`JsonResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/JsonResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/me/digilocker-sessions/{sessionId}": {
+            "get": {
+                "operationId": "digiLocker.show",
+                "tags": [
+                    "DigiLocker"
+                ],
+                "parameters": [
+                    {
+                        "name": "sessionId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`DigiLockerSessionResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/DigiLockerSessionResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/me/digilocker-sessions/{sessionId}/authorization": {
+            "post": {
+                "operationId": "digiLocker.authorize",
+                "summary": "POST /me/digilocker-sessions/{id}/authorization: the code and state DigiLocker returned",
+                "tags": [
+                    "DigiLocker"
+                ],
+                "parameters": [
+                    {
+                        "name": "sessionId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DigiLockerAuthorizationRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`DigiLockerSessionResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/DigiLockerSessionResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/me/digilocker-sessions/{sessionId}/documents": {
+            "get": {
+                "operationId": "digiLocker.documents",
+                "summary": "GET /me/digilocker-sessions/{id}/documents: what DigiLocker holds, in one page",
+                "tags": [
+                    "DigiLocker"
+                ],
+                "parameters": [
+                    {
+                        "name": "sessionId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {}
+                                        },
+                                        "pagination": {
+                                            "type": "object",
+                                            "properties": {
+                                                "next_cursor": {
+                                                    "type": "null"
+                                                },
+                                                "limit": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "next_cursor",
+                                                "limit"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "pagination"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/me/digilocker-sessions/{sessionId}/imports": {
+            "post": {
+                "operationId": "digiLocker.import",
+                "summary": "POST /me/digilocker-sessions/{id}/imports: 201 with the new record, 200 when it was already here",
+                "tags": [
+                    "DigiLocker"
+                ],
+                "parameters": [
+                    {
+                        "name": "sessionId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/DigiLockerImportRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`JsonResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/JsonResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "200": {
+                        "description": "`MedicalRecordDetailResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/MedicalRecordDetailResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
                     }
                 }
             }
@@ -13123,6 +13688,146 @@
                 ],
                 "title": "AbhaStatus"
             },
+            "AccountingExportFormat": {
+                "type": "string",
+                "description": "The accounting package a file is made for.\n| |\n|---|\n| `tally_xml` <br/> Tally Prime / ERP 9 XML import (Gateway of Tally \u2192 Import \u2192 Vouchers). |\n| `zoho_books_csv` <br/> Zoho Books manual journal import (CSV). |",
+                "enum": [
+                    "tally_xml",
+                    "zoho_books_csv"
+                ],
+                "title": "AccountingExportFormat"
+            },
+            "AccountingExportKind": {
+                "type": "string",
+                "description": "What an accounting export holds (spec \u00a73: monthly sales and settlement journals). sales: company branches' invoices, receipts and refunds. partner_ledger: franchise account movements, which settlements are built from.\n",
+                "enum": [
+                    "sales",
+                    "partner_ledger"
+                ],
+                "title": "AccountingExportKind"
+            },
+            "AccountingExportRequest": {
+                "type": "object",
+                "properties": {
+                    "kind": {
+                        "$ref": "#/components/schemas/AccountingExportKind"
+                    },
+                    "format": {
+                        "$ref": "#/components/schemas/AccountingExportFormat"
+                    },
+                    "month": {
+                        "type": "string",
+                        "description": "A calendar month that has ended, e.g. 2026-09."
+                    }
+                },
+                "required": [
+                    "kind",
+                    "format",
+                    "month"
+                ],
+                "title": "AccountingExportRequest"
+            },
+            "AccountingExportResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "kind": {
+                        "$ref": "#/components/schemas/AccountingExportKind"
+                    },
+                    "format": {
+                        "$ref": "#/components/schemas/AccountingExportFormat"
+                    },
+                    "period_start": {
+                        "type": "string"
+                    },
+                    "period_end": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/AccountingExportStatus"
+                    },
+                    "voucher_count": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "total_amount": {
+                        "type": [
+                            "object",
+                            "null"
+                        ]
+                    },
+                    "checksum": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "size_bytes": {
+                        "type": [
+                            "integer",
+                            "null"
+                        ]
+                    },
+                    "error_message": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "file_url": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "requested_by": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "generated_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "created_at": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "kind",
+                    "format",
+                    "period_start",
+                    "period_end",
+                    "status",
+                    "voucher_count",
+                    "total_amount",
+                    "checksum",
+                    "size_bytes",
+                    "error_message",
+                    "file_url",
+                    "requested_by",
+                    "generated_at",
+                    "created_at"
+                ],
+                "title": "AccountingExportResource"
+            },
+            "AccountingExportStatus": {
+                "type": "string",
+                "enum": [
+                    "queued",
+                    "ready",
+                    "failed"
+                ],
+                "title": "AccountingExportStatus"
+            },
             "AddOrderItemsRequest": {
                 "type": "object",
                 "description": "POST /orders/{id}/items: add-on tests with their own invoice.",
@@ -13502,6 +14207,51 @@
                 ],
                 "title": "AssignPhlebotomistRequest"
             },
+            "AutoAssignVisitsRequest": {
+                "type": "object",
+                "properties": {
+                    "branch_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "date": {
+                        "type": "string",
+                        "format": "date",
+                        "description": "A business day in India."
+                    }
+                },
+                "required": [
+                    "branch_id",
+                    "date"
+                ],
+                "title": "AutoAssignVisitsRequest"
+            },
+            "AutoAssignmentResource": {
+                "type": "object",
+                "properties": {
+                    "branch_id": {
+                        "type": "string"
+                    },
+                    "date": {
+                        "type": "string"
+                    },
+                    "assigned": {
+                        "type": "array",
+                        "items": {}
+                    },
+                    "unassigned": {
+                        "type": "array",
+                        "items": {}
+                    }
+                },
+                "required": [
+                    "branch_id",
+                    "date",
+                    "assigned",
+                    "unassigned"
+                ],
+                "title": "AutoAssignmentResource"
+            },
             "B2bClientRequest": {
                 "type": "object",
                 "description": "Create (POST) and partial update (PATCH) of a B2B client. The code is set once.",
@@ -13839,6 +14589,23 @@
                                     "null"
                                 ],
                                 "minimum": 0
+                            },
+                            "latitude": {
+                                "type": [
+                                    "number",
+                                    "null"
+                                ],
+                                "description": "A pin dropped on the map by the desk or the patient app; otherwise the geocoder places the address.",
+                                "minimum": -90,
+                                "maximum": 90
+                            },
+                            "longitude": {
+                                "type": [
+                                    "number",
+                                    "null"
+                                ],
+                                "minimum": -180,
+                                "maximum": 180
                             }
                         }
                     }
@@ -14373,6 +15140,80 @@
                     "amount"
                 ],
                 "title": "DeskPaymentRequest"
+            },
+            "DigiLockerAuthorizationRequest": {
+                "type": "object",
+                "description": "What DigiLocker sent the patient back with.",
+                "properties": {
+                    "code": {
+                        "type": "string",
+                        "maxLength": 500
+                    },
+                    "state": {
+                        "type": "string",
+                        "maxLength": 100
+                    }
+                },
+                "required": [
+                    "code",
+                    "state"
+                ],
+                "title": "DigiLockerAuthorizationRequest"
+            },
+            "DigiLockerImportRequest": {
+                "type": "object",
+                "description": "One DigiLocker document to keep; category and title default from DigiLocker.",
+                "properties": {
+                    "uri": {
+                        "type": "string",
+                        "maxLength": 150
+                    },
+                    "category": {
+                        "type": "string"
+                    },
+                    "title": {
+                        "type": "string",
+                        "maxLength": 200
+                    }
+                },
+                "required": [
+                    "uri"
+                ],
+                "title": "DigiLockerImportRequest"
+            },
+            "DigiLockerSessionResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "status": {
+                        "type": "string"
+                    },
+                    "authorization_url": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "digilocker_account_name": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "expires_at": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "id",
+                    "status",
+                    "authorization_url",
+                    "digilocker_account_name",
+                    "expires_at"
+                ],
+                "title": "DigiLockerSessionResource"
             },
             "DispatchManifestRequest": {
                 "type": "object",
@@ -17291,6 +18132,60 @@
                     "failed"
                 ],
                 "title": "PaymentStatus"
+            },
+            "PhlebotomistRouteResource": {
+                "type": "object",
+                "properties": {
+                    "phlebotomist_id": {
+                        "type": "string"
+                    },
+                    "date": {
+                        "type": "string"
+                    },
+                    "start": {
+                        "type": [
+                            "object",
+                            "null"
+                        ],
+                        "properties": {
+                            "branch_id": {
+                                "type": "string"
+                            },
+                            "latitude": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            },
+                            "longitude": {
+                                "type": [
+                                    "string",
+                                    "null"
+                                ]
+                            }
+                        },
+                        "required": [
+                            "branch_id",
+                            "latitude",
+                            "longitude"
+                        ]
+                    },
+                    "total_distance_m": {
+                        "type": "number"
+                    },
+                    "stops": {
+                        "type": "array",
+                        "items": {}
+                    }
+                },
+                "required": [
+                    "phlebotomist_id",
+                    "date",
+                    "start",
+                    "total_distance_m",
+                    "stops"
+                ],
+                "title": "PhlebotomistRouteResource"
             },
             "PriceListImportRequest": {
                 "type": "object",
