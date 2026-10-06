@@ -41,6 +41,13 @@ final class PrivateFileStore
         return $this->disk()->exists($path);
     }
 
+    public function contents(string $path): string
+    {
+        $this->assertSafePath($path);
+
+        return (string) $this->disk()->get($path);
+    }
+
     public function sha256(string $path): string
     {
         $this->assertSafePath($path);

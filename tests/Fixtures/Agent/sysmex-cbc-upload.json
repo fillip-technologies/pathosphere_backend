@@ -1,0 +1,9 @@
+{
+  "results": [
+    {"barcode": "{{barcode}}", "test_code": "CBC", "parameter_code": "HB", "value": "13.6", "instrument": "Sysmex XN-550 #2", "measured_at": "2026-10-12T10:41:07+05:30"},
+    {"barcode": "{{barcode}}", "test_code": "CBC", "parameter_code": "TLC", "value": 8.25, "instrument": "Sysmex XN-550 #2", "measured_at": "2026-10-12T10:41:07+05:30"},
+    {"barcode": "{{barcode}}", "test_code": "CBC", "parameter_code": "PLT", "value": "231", "instrument": "Sysmex XN-550 #2", "measured_at": "2026-10-12T10:41:07+05:30"},
+    {"barcode": "{{barcode}}", "test_code": "CBC", "parameter_code": "RBC", "value": "4.52", "instrument": "Sysmex XN-550 #2", "measured_at": "2026-10-12T10:41:07+05:30"},
+    {"barcode": "{{barcode}}", "test_code": "CBC", "parameter_code": "PCV", "value": "40.1", "instrument": "Sysmex XN-550 #2", "measured_at": "2026-10-12T10:41:07+05:30"}
+  ]
+}

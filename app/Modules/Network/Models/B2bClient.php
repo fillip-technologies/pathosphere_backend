@@ -27,6 +27,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string $name
  * @property Money $credit_limit
  * @property Money $current_balance
+ * @property bool $withhold_reports_when_overdue
  * @property B2bClientStatus $status
  */
 final class B2bClient extends BaseModel implements HasScopeColumns
@@ -39,7 +40,7 @@ final class B2bClient extends BaseModel implements HasScopeColumns
     use SoftDeletes;
 
     /** Mirrors the column defaults, so new models report what the database stores. */
-    protected $attributes = ['credit_limit' => '0.00', 'credit_days' => 30, 'current_balance' => '0.00'];
+    protected $attributes = ['credit_limit' => '0.00', 'credit_days' => 30, 'current_balance' => '0.00', 'withhold_reports_when_overdue' => false];
 
     protected function casts(): array
     {
@@ -48,6 +49,7 @@ final class B2bClient extends BaseModel implements HasScopeColumns
             'credit_limit' => MoneyCast::class,
             'current_balance' => MoneyCast::class,
             'status' => B2bClientStatus::class,
+            'withhold_reports_when_overdue' => 'boolean',
         ];
     }
 

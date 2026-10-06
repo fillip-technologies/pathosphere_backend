@@ -121,10 +121,10 @@ final class SampleJourneyTest extends TestCase
             );
         }
 
-        // The lipid test now belongs to the reference lab; the CBC stays at the clinical lab.
+        // The lipid test now belongs to the reference lab, on its bench since the scan; the CBC stays at the clinical lab.
         $items = array_column($this->actingAsStaff($this->frontDesk)->getJson("/api/v1/orders/{$order['id']}")->json('data.items'), null, 'test_id');
         $this->assertSame($this->branchId('PATREF'), $items[$this->testItem('LIPID')['test_id']]['processing_branch_id']);
-        $this->assertSame('collected', $items[$this->testItem('LIPID')['test_id']]['status']);
+        $this->assertSame('processing', $items[$this->testItem('LIPID')['test_id']]['status']);
         $this->assertSame($this->branchId('PATCL1'), $items[$this->testItem('CBC')['test_id']]['processing_branch_id']);
 
         // Every status change on the way is audited.

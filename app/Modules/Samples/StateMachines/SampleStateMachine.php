@@ -10,7 +10,8 @@ use App\Modules\Shared\StateMachines\StateMachine;
  * - collected → received: a sample drawn at the lab that tests it is
  *   accessioned there without a manifest;
  * - received → in_transit: a lab that cannot run the tests re-routes the
- *   sample and forwards it on a new manifest (spec §5.4 step 6).
+ *   sample and forwards it on a new manifest (spec §5.4 step 6);
+ * - processed → in_process: a supervisor orders a rerun from the same tube.
  *
  * Rejection is terminal; the redraw is a new sample.
  */
@@ -24,7 +25,7 @@ final class SampleStateMachine extends StateMachine
             'in_transit' => ['received'],
             'received' => ['rejected', 'in_process', 'in_transit'],
             'in_process' => ['processed'],
-            'processed' => ['stored'],
+            'processed' => ['stored', 'in_process'],
             'stored' => ['discarded'],
         ];
     }

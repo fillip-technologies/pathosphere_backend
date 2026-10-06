@@ -8,7 +8,7 @@ namespace Tests\Support\Architecture;
  */
 final class VendorCodeStaysInInfrastructure implements ArchitectureRule
 {
-    private const VENDOR_NAMESPACES = ['Razorpay', 'Spatie\\\\Browsershot', 'Aws', 'SendGrid', 'Twilio', 'Google', 'GuzzleHttp'];
+    private const VENDOR_NAMESPACES = ['Razorpay', 'Spatie\\\\Browsershot', 'Aws', 'SendGrid', 'Twilio', 'Google', 'GuzzleHttp', 'chillerlan'];
 
     public function description(): string
     {

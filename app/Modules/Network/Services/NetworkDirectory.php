@@ -172,6 +172,46 @@ final class NetworkDirectory
         });
     }
 
+    /**
+     * What a report prints about a site (spec §10: NABL and registration of
+     * the processing lab, name of the collection centre).
+     */
+    public function letterhead(string $branchId): BranchLetterhead
+    {
+        return $this->currentScope->runAs(ScopeContext::system(), function () use ($branchId): BranchLetterhead {
+            $branch = Branch::query()->withTrashed()->findOrFail($branchId);
+
+            return new BranchLetterhead(
+                $branch->id,
+                $branch->branch_code,
+                $branch->name,
+                $branch->address,
+                $branch->phone,
+                $branch->nabl_certificate_no,
+                $branch->nabl_valid_till,
+                $branch->clinical_establishment_reg_no,
+            );
+        });
+    }
+
+    /** The brand printed on reports. */
+    public function organizationName(string $organizationId): string
+    {
+        return $this->currentScope->runAs(
+            ScopeContext::system($organizationId),
+            fn (): string => (string) Organization::query()->whereKey($organizationId)->value('name'),
+        );
+    }
+
+    /** Whether the client's reports wait while it has overdue invoices (spec §12: B2B only, per client). */
+    public function b2bClientWithholdsReports(string $b2bClientId): bool
+    {
+        return $this->currentScope->runAs(
+            ScopeContext::system(),
+            fn (): bool => (bool) B2bClient::query()->whereKey($b2bClientId)->value('withhold_reports_when_overdue'),
+        );
+    }
+
     /** An active reference or clinical lab of the organization, visible to the caller or not. */
     public function isOperatingLab(string $organizationId, string $branchId): bool
     {

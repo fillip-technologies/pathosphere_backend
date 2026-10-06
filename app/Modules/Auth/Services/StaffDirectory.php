@@ -31,4 +31,23 @@ final class StaffDirectory
     {
         return User::query()->withoutGlobalScope(ScopeFilter::class)->where('region_id', $regionId)->exists();
     }
+
+    /** An active staff member of the organization whose role holds the permission, wherever they are based. */
+    public function isActiveStaffWithPermission(string $organizationId, string $userId, Permission $permission): bool
+    {
+        $user = User::query()->with('role.permissionEntries')->whereKey($userId)->where('organization_id', $organizationId)->where('status', UserStatus::Active)->first();
+
+        return $user !== null && in_array($permission, $user->role->permissions(), true);
+    }
+
+    /**
+     * Names printed on reports and shown in lists, e.g. who verified a result.
+     *
+     * @param  list<string>  $userIds
+     * @return array<string, string> by user ID
+     */
+    public function names(array $userIds): array
+    {
+        return User::query()->withoutGlobalScope(ScopeFilter::class)->withTrashed()->whereKey(array_values(array_unique($userIds)))->pluck('name', 'id')->all();
+    }
 }

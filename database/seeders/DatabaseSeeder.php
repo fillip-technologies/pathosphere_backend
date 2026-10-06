@@ -12,7 +12,8 @@ use Illuminate\Database\Seeder;
  * Seeds run as the system, with an explicit system scope (spec §4.3).
  *
  * Production: permissions, system roles, the organization and the first
- * Super Admin. Local/testing also gets the demo network of spec §11.6.
+ * Super Admin. Local/testing also gets the demo network of spec §11.6, and
+ * local the demo signatories.
  */
 class DatabaseSeeder extends Seeder
 {
@@ -28,6 +29,11 @@ class DatabaseSeeder extends Seeder
 
             if (app()->environment('local', 'testing')) {
                 $this->call([DevelopmentNetworkSeeder::class, DevelopmentCatalogueSeeder::class]);
+            }
+
+            // Writes signature images to private storage, so not in automated tests.
+            if (app()->environment('local')) {
+                $this->call([DevelopmentLabSeeder::class]);
             }
         }));
     }

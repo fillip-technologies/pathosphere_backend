@@ -2,7 +2,11 @@
 
 namespace App\Modules\Shared\Http\Pagination;
 
+use Closure;
 use Illuminate\Contracts\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
@@ -25,6 +29,20 @@ final class CursorPage
      */
     public static function respond(Builder $query, Request $request, string $resourceClass): JsonResponse
     {
+        return self::respondWith($query, $request, fn (Collection $rows) => $resourceClass::collection($rows)->resolve($request));
+    }
+
+    /**
+     * For lists whose rows need facts loaded in one batch per page, e.g. from
+     * another module's service, instead of one lookup per row.
+     *
+     * @template TModel of Model
+     *
+     * @param  EloquentBuilder<TModel>  $query
+     * @param  Closure(Collection<int, TModel>): array<int, mixed>  $presentPage
+     */
+    public static function respondWith(Builder $query, Request $request, Closure $presentPage): JsonResponse
+    {
         $limit = self::limit($request);
 
         // A unique, time-ordered tie-breaker keeps cursors stable (UUIDv7 ids).
@@ -35,7 +53,7 @@ final class CursorPage
         $page = $query->cursorPaginate(perPage: $limit, cursorName: 'cursor');
 
         return new JsonResponse([
-            'data' => $resourceClass::collection($page->getCollection())->resolve($request),
+            'data' => $presentPage($page->getCollection()),
             'pagination' => [
                 'next_cursor' => $page->nextCursor()?->encode(),
                 'limit' => $limit,

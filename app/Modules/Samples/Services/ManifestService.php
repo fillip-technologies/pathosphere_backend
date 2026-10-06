@@ -11,6 +11,7 @@ use App\Modules\Samples\Enums\SampleStatus;
 use App\Modules\Samples\Errors\SampleError;
 use App\Modules\Samples\Events\ManifestDispatched;
 use App\Modules\Samples\Events\ManifestReceived;
+use App\Modules\Samples\Events\SampleReceived;
 use App\Modules\Samples\Models\Manifest;
 use App\Modules\Samples\Models\ManifestItem;
 use App\Modules\Samples\Models\Sample;
@@ -338,7 +339,11 @@ final class ManifestService
 
         if ($scan->condition === ManifestItemCondition::Rejected) {
             $this->rejections->reject($item->sample, (string) $scan->rejectionReason, $scan->rejectionNote);
+
+            return;
         }
+
+        event(new SampleReceived($item->sample->id, $item->sample->organization_id));
     }
 
     /** @param  BaseCollection<string, ManifestItem>  $items */

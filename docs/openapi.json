@@ -864,6 +864,126 @@
                 }
             }
         },
+        "/agent/orders": {
+            "get": {
+                "operationId": "agent.orders",
+                "summary": "GET /agent/orders?since=: tests waiting for results at the agent's lab,\nchanged since the given time, with the parameter codes analysers report",
+                "tags": [
+                    "Agent"
+                ],
+                "parameters": [
+                    {
+                        "name": "since",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        },
+                                        "pagination": {
+                                            "type": "object",
+                                            "properties": {
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "limit": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "next_cursor",
+                                                "limit"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "pagination"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/agent/results": {
+            "post": {
+                "operationId": "agent.results",
+                "summary": "POST /agent/results: always 200 with what was accepted, unchanged (replays) and rejected",
+                "tags": [
+                    "Agent"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AgentResultsRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "accepted": {
+                                                    "type": "integer"
+                                                },
+                                                "unchanged": {
+                                                    "type": "integer"
+                                                },
+                                                "rejected": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    },
+                                                    "minItems": 0,
+                                                    "maxItems": 0
+                                                }
+                                            },
+                                            "required": [
+                                                "accepted",
+                                                "unchanged",
+                                                "rejected"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
         "/audit-logs": {
             "get": {
                 "operationId": "auditLog.index",
@@ -1266,6 +1386,78 @@
                     },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/webhooks/sms-dlr": {
+            "post": {
+                "operationId": "modules.shared.deliveryWebhook_148",
+                "tags": [
+                    "DeliveryWebhook"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "updated": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "updated"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/webhooks/whatsapp": {
+            "post": {
+                "operationId": "modules.shared.deliveryWebhook_149",
+                "tags": [
+                    "DeliveryWebhook"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "updated": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "updated"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -2035,6 +2227,198 @@
                     },
                     "422": {
                         "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/interface-agents": {
+            "get": {
+                "operationId": "interfaceAgent.index",
+                "tags": [
+                    "InterfaceAgent"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        },
+                                        "pagination": {
+                                            "type": "object",
+                                            "properties": {
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "limit": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "next_cursor",
+                                                "limit"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "pagination"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "interfaceAgent.store",
+                "summary": "The key is in this response only; store it in the agent's configuration",
+                "tags": [
+                    "InterfaceAgent"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/CreateInterfaceAgentRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "branch_id": {
+                                                    "type": "string"
+                                                },
+                                                "name": {
+                                                    "type": "string"
+                                                },
+                                                "key_prefix": {
+                                                    "type": "string"
+                                                },
+                                                "allowed_ips": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "is_active": {
+                                                    "type": "boolean"
+                                                },
+                                                "last_seen_at": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "created_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "api_key": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "id",
+                                                "branch_id",
+                                                "name",
+                                                "key_prefix",
+                                                "allowed_ips",
+                                                "is_active",
+                                                "last_seen_at",
+                                                "created_at",
+                                                "api_key"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Location": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/interface-agents/{interfaceAgent}/revoke": {
+            "post": {
+                "operationId": "interfaceAgent.revoke",
+                "tags": [
+                    "InterfaceAgent"
+                ],
+                "parameters": [
+                    {
+                        "name": "interfaceAgent",
+                        "in": "path",
+                        "required": true,
+                        "description": "The interface agent ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`InterfaceAgentResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/InterfaceAgentResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
                     }
                 }
             }
@@ -4471,6 +4855,102 @@
                 }
             }
         },
+        "/verify/{qrCode}": {
+            "get": {
+                "operationId": "publicReport.verify",
+                "summary": "GET /verify/{qr_code} (rate-limited): is this report genuine?",
+                "tags": [
+                    "PublicReport"
+                ],
+                "parameters": [
+                    {
+                        "name": "qrCode",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "anyOf": [
+                                                {
+                                                    "type": "object",
+                                                    "additionalProperties": {}
+                                                },
+                                                {
+                                                    "type": "object"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    }
+                }
+            }
+        },
+        "/report-links/{reportId}": {
+            "get": {
+                "operationId": "report-links.show",
+                "summary": "GET /report-links/{report}?expires&signature: the PDF behind a link sent to the patient or doctor",
+                "tags": [
+                    "PublicReport"
+                ],
+                "parameters": [
+                    {
+                        "name": "reportId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/octet-stream": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Transfer-Encoding": {
+                                "required": true,
+                                "schema": {
+                                    "type": "string",
+                                    "enum": [
+                                        "chunked"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    }
+                }
+            }
+        },
         "/regions": {
             "get": {
                 "operationId": "region.index",
@@ -4699,6 +5179,779 @@
                     },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/reports": {
+            "get": {
+                "operationId": "report.index",
+                "tags": [
+                    "Report"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        },
+                                        "pagination": {
+                                            "type": "object",
+                                            "properties": {
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "limit": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "next_cursor",
+                                                "limit"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "pagination"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/reports/{report}": {
+            "get": {
+                "operationId": "report.show",
+                "tags": [
+                    "Report"
+                ],
+                "parameters": [
+                    {
+                        "name": "report",
+                        "in": "path",
+                        "required": true,
+                        "description": "The report ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`ReportDetailResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ReportDetailResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/reports/{report}/pdf": {
+            "get": {
+                "operationId": "report.pdf",
+                "tags": [
+                    "Report"
+                ],
+                "parameters": [
+                    {
+                        "name": "report",
+                        "in": "path",
+                        "required": true,
+                        "description": "The report ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/octet-stream": {
+                                "schema": {
+                                    "type": "string",
+                                    "format": "binary"
+                                }
+                            }
+                        },
+                        "headers": {
+                            "Transfer-Encoding": {
+                                "required": true,
+                                "schema": {
+                                    "type": "string",
+                                    "enum": [
+                                        "chunked"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/reports/{report}/sign": {
+            "post": {
+                "operationId": "report.sign",
+                "tags": [
+                    "Report"
+                ],
+                "parameters": [
+                    {
+                        "name": "report",
+                        "in": "path",
+                        "required": true,
+                        "description": "The report ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/SignReportRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`ReportDetailResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ReportDetailResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/reports/{report}/release": {
+            "post": {
+                "operationId": "report.release",
+                "summary": "Releases a signed report, or withholds it for a client with overdue dues (status `withheld`)",
+                "tags": [
+                    "Report"
+                ],
+                "parameters": [
+                    {
+                        "name": "report",
+                        "in": "path",
+                        "required": true,
+                        "description": "The report ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`ReportDetailResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/ReportDetailResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/reports/{report}/amend": {
+            "post": {
+                "operationId": "report.amend",
+                "summary": "Starts the next version; answers with it",
+                "tags": [
+                    "Report"
+                ],
+                "parameters": [
+                    {
+                        "name": "report",
+                        "in": "path",
+                        "required": true,
+                        "description": "The report ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/AmendReportRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`JsonResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/JsonResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/results": {
+            "post": {
+                "operationId": "result.store",
+                "summary": "POST /results: values for one test. Changing results that are already\nstored needs If-Match with the test's ETag, so two people never\noverwrite each other (spec \u00a78.7). 201 when results were first created",
+                "tags": [
+                    "Result"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/EnterResultsRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/results/{result}/verify": {
+            "post": {
+                "operationId": "result.verify",
+                "tags": [
+                    "Result"
+                ],
+                "parameters": [
+                    {
+                        "name": "result",
+                        "in": "path",
+                        "required": true,
+                        "description": "The result ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`LabResultResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/LabResultResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/order-items/{orderItemId}/verify": {
+            "post": {
+                "operationId": "result.verifyTest",
+                "summary": "POST /order-items/{id}/verify: every result of the test's current run",
+                "tags": [
+                    "Result"
+                ],
+                "parameters": [
+                    {
+                        "name": "orderItemId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "order_item_id": {
+                                                    "type": "string"
+                                                },
+                                                "status": {
+                                                    "$ref": "#/components/schemas/WorklistStatus"
+                                                },
+                                                "current_run": {
+                                                    "type": "integer"
+                                                },
+                                                "due_at": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "processing_branch_id": {
+                                                    "type": "string"
+                                                },
+                                                "department_id": {
+                                                    "type": "string"
+                                                },
+                                                "order": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string"
+                                                        },
+                                                        "order_no": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "id",
+                                                        "order_no"
+                                                    ]
+                                                },
+                                                "patient": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string"
+                                                        },
+                                                        "name": {
+                                                            "type": "string"
+                                                        },
+                                                        "uhid": {
+                                                            "type": "string"
+                                                        },
+                                                        "age_years": {
+                                                            "type": [
+                                                                "integer",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "gender": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "id",
+                                                        "name",
+                                                        "uhid",
+                                                        "age_years",
+                                                        "gender"
+                                                    ]
+                                                },
+                                                "sample": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string"
+                                                        },
+                                                        "barcode": {
+                                                            "type": "string"
+                                                        },
+                                                        "sample_type": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "id",
+                                                        "barcode",
+                                                        "sample_type"
+                                                    ]
+                                                },
+                                                "test": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string"
+                                                        },
+                                                        "code": {
+                                                            "type": "string"
+                                                        },
+                                                        "name": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "id",
+                                                        "code",
+                                                        "name"
+                                                    ]
+                                                },
+                                                "parameters": {
+                                                    "type": "array",
+                                                    "items": {}
+                                                },
+                                                "etag": {
+                                                    "type": "string"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "earlier_runs": {
+                                                    "type": "array",
+                                                    "items": {}
+                                                }
+                                            },
+                                            "required": [
+                                                "id",
+                                                "order_item_id",
+                                                "status",
+                                                "current_run",
+                                                "due_at",
+                                                "processing_branch_id",
+                                                "department_id",
+                                                "order",
+                                                "patient",
+                                                "sample",
+                                                "test",
+                                                "parameters",
+                                                "etag",
+                                                "updated_at",
+                                                "earlier_runs"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/order-items/{orderItemId}/rerun": {
+            "post": {
+                "operationId": "result.rerun",
+                "tags": [
+                    "Result"
+                ],
+                "parameters": [
+                    {
+                        "name": "orderItemId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RerunRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "order_item_id": {
+                                                    "type": "string"
+                                                },
+                                                "status": {
+                                                    "$ref": "#/components/schemas/WorklistStatus"
+                                                },
+                                                "current_run": {
+                                                    "type": "integer"
+                                                },
+                                                "due_at": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "processing_branch_id": {
+                                                    "type": "string"
+                                                },
+                                                "department_id": {
+                                                    "type": "string"
+                                                },
+                                                "order": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string"
+                                                        },
+                                                        "order_no": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "id",
+                                                        "order_no"
+                                                    ]
+                                                },
+                                                "patient": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string"
+                                                        },
+                                                        "name": {
+                                                            "type": "string"
+                                                        },
+                                                        "uhid": {
+                                                            "type": "string"
+                                                        },
+                                                        "age_years": {
+                                                            "type": [
+                                                                "integer",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "gender": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "id",
+                                                        "name",
+                                                        "uhid",
+                                                        "age_years",
+                                                        "gender"
+                                                    ]
+                                                },
+                                                "sample": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string"
+                                                        },
+                                                        "barcode": {
+                                                            "type": "string"
+                                                        },
+                                                        "sample_type": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "id",
+                                                        "barcode",
+                                                        "sample_type"
+                                                    ]
+                                                },
+                                                "test": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string"
+                                                        },
+                                                        "code": {
+                                                            "type": "string"
+                                                        },
+                                                        "name": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "id",
+                                                        "code",
+                                                        "name"
+                                                    ]
+                                                },
+                                                "parameters": {
+                                                    "type": "array",
+                                                    "items": {}
+                                                },
+                                                "etag": {
+                                                    "type": "string"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "earlier_runs": {
+                                                    "type": "array",
+                                                    "items": {}
+                                                }
+                                            },
+                                            "required": [
+                                                "id",
+                                                "order_item_id",
+                                                "status",
+                                                "current_run",
+                                                "due_at",
+                                                "processing_branch_id",
+                                                "department_id",
+                                                "order",
+                                                "patient",
+                                                "sample",
+                                                "test",
+                                                "parameters",
+                                                "etag",
+                                                "updated_at",
+                                                "earlier_runs"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
                     }
                 }
             }
@@ -6020,6 +7273,226 @@
                 }
             }
         },
+        "/signatories": {
+            "get": {
+                "operationId": "signatory.index",
+                "tags": [
+                    "Signatory"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        },
+                                        "pagination": {
+                                            "type": "object",
+                                            "properties": {
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "limit": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "next_cursor",
+                                                "limit"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "pagination"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "post": {
+                "operationId": "signatory.store",
+                "tags": [
+                    "Signatory"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "$ref": "#/components/schemas/StoreSignatoryRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "`JsonResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/JsonResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/signatories/{signatory}": {
+            "get": {
+                "operationId": "signatory.show",
+                "tags": [
+                    "Signatory"
+                ],
+                "parameters": [
+                    {
+                        "name": "signatory",
+                        "in": "path",
+                        "required": true,
+                        "description": "The signatory ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "`SignatoryResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/SignatoryResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            },
+            "patch": {
+                "operationId": "signatory.update",
+                "tags": [
+                    "Signatory"
+                ],
+                "parameters": [
+                    {
+                        "name": "signatory",
+                        "in": "path",
+                        "required": true,
+                        "description": "The signatory ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/UpdateSignatoryRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "`SignatoryResource`",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/components/schemas/SignatoryResource"
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            },
+            "delete": {
+                "operationId": "signatory.destroy",
+                "tags": [
+                    "Signatory"
+                ],
+                "parameters": [
+                    {
+                        "name": "signatory",
+                        "in": "path",
+                        "required": true,
+                        "description": "The signatory ID",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No content"
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
         "/tests/{test}/parameters": {
             "get": {
                 "operationId": "testParameter.index",
@@ -6626,6 +8099,243 @@
                     }
                 }
             }
+        },
+        "/worklist": {
+            "get": {
+                "operationId": "worklist.index",
+                "summary": "Open tests by default (pending and entered); `filter[status]` picks one\nstatus, including verified and withdrawn. Oldest due first",
+                "tags": [
+                    "Worklist"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        },
+                                        "pagination": {
+                                            "type": "object",
+                                            "properties": {
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "limit": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "next_cursor",
+                                                "limit"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "pagination"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/order-items/{orderItemId}/results": {
+            "get": {
+                "operationId": "worklist.results",
+                "summary": "GET /order-items/{id}/results: the test at the caller's lab with its\ncurrent results, plus earlier runs. The ETag goes back in If-Match",
+                "tags": [
+                    "Worklist"
+                ],
+                "parameters": [
+                    {
+                        "name": "orderItemId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "id": {
+                                                    "type": "string"
+                                                },
+                                                "order_item_id": {
+                                                    "type": "string"
+                                                },
+                                                "status": {
+                                                    "$ref": "#/components/schemas/WorklistStatus"
+                                                },
+                                                "current_run": {
+                                                    "type": "integer"
+                                                },
+                                                "due_at": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "processing_branch_id": {
+                                                    "type": "string"
+                                                },
+                                                "department_id": {
+                                                    "type": "string"
+                                                },
+                                                "order": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string"
+                                                        },
+                                                        "order_no": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "id",
+                                                        "order_no"
+                                                    ]
+                                                },
+                                                "patient": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string"
+                                                        },
+                                                        "name": {
+                                                            "type": "string"
+                                                        },
+                                                        "uhid": {
+                                                            "type": "string"
+                                                        },
+                                                        "age_years": {
+                                                            "type": [
+                                                                "integer",
+                                                                "null"
+                                                            ]
+                                                        },
+                                                        "gender": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "id",
+                                                        "name",
+                                                        "uhid",
+                                                        "age_years",
+                                                        "gender"
+                                                    ]
+                                                },
+                                                "sample": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string"
+                                                        },
+                                                        "barcode": {
+                                                            "type": "string"
+                                                        },
+                                                        "sample_type": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "id",
+                                                        "barcode",
+                                                        "sample_type"
+                                                    ]
+                                                },
+                                                "test": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "id": {
+                                                            "type": "string"
+                                                        },
+                                                        "code": {
+                                                            "type": "string"
+                                                        },
+                                                        "name": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "required": [
+                                                        "id",
+                                                        "code",
+                                                        "name"
+                                                    ]
+                                                },
+                                                "parameters": {
+                                                    "type": "array",
+                                                    "items": {}
+                                                },
+                                                "etag": {
+                                                    "type": "string"
+                                                },
+                                                "updated_at": {
+                                                    "type": "string",
+                                                    "format": "date-time"
+                                                },
+                                                "earlier_runs": {
+                                                    "type": "array",
+                                                    "items": {}
+                                                }
+                                            },
+                                            "required": [
+                                                "id",
+                                                "order_item_id",
+                                                "status",
+                                                "current_run",
+                                                "due_at",
+                                                "processing_branch_id",
+                                                "department_id",
+                                                "order",
+                                                "patient",
+                                                "sample",
+                                                "test",
+                                                "parameters",
+                                                "etag",
+                                                "updated_at",
+                                                "earlier_runs"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "$ref": "#/components/responses/ModelNotFoundException"
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
         }
     },
     "components": {
@@ -6712,6 +8422,81 @@
                     "items"
                 ],
                 "title": "AddOrderItemsRequest"
+            },
+            "AgentResultsRequest": {
+                "type": "object",
+                "description": "An upload from the interface agent: values read by analysers, with the\nanalyser's own timestamps (spec \u00a711: replayed after an outage, in order).",
+                "properties": {
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "barcode": {
+                                    "type": "string",
+                                    "maxLength": 30
+                                },
+                                "test_code": {
+                                    "type": "string",
+                                    "maxLength": 20
+                                },
+                                "parameter_code": {
+                                    "type": "string",
+                                    "maxLength": 30
+                                },
+                                "value": {
+                                    "type": "string",
+                                    "maxLength": 255
+                                },
+                                "instrument": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ],
+                                    "maxLength": 100
+                                },
+                                "measured_at": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                },
+                                "run_no": {
+                                    "type": [
+                                        "integer",
+                                        "null"
+                                    ],
+                                    "minimum": 1
+                                }
+                            },
+                            "required": [
+                                "barcode",
+                                "test_code",
+                                "parameter_code",
+                                "value",
+                                "measured_at"
+                            ]
+                        },
+                        "minItems": 1,
+                        "maxItems": 500
+                    }
+                },
+                "required": [
+                    "results"
+                ],
+                "title": "AgentResultsRequest"
+            },
+            "AmendReportRequest": {
+                "type": "object",
+                "properties": {
+                    "reason": {
+                        "type": "string",
+                        "minLength": 5,
+                        "maxLength": 1000
+                    }
+                },
+                "required": [
+                    "reason"
+                ],
+                "title": "AmendReportRequest"
             },
             "AssignBarcodeRequest": {
                 "type": "object",
@@ -7234,6 +9019,35 @@
                 },
                 "title": "CollectSampleRequest"
             },
+            "CreateInterfaceAgentRequest": {
+                "type": "object",
+                "description": "A lab's interface agent and the addresses (or CIDR ranges) it may call from.",
+                "properties": {
+                    "branch_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "name": {
+                        "type": "string",
+                        "maxLength": 100
+                    },
+                    "allowed_ips": {
+                        "type": "array",
+                        "items": {
+                            "type": "string",
+                            "maxLength": 49
+                        },
+                        "minItems": 1,
+                        "maxItems": 20
+                    }
+                },
+                "required": [
+                    "branch_id",
+                    "name",
+                    "allowed_ips"
+                ],
+                "title": "CreateInterfaceAgentRequest"
+            },
             "CreateManifestRequest": {
                 "type": "object",
                 "description": "A new bag; staff at one branch may leave out the sending branch.",
@@ -7493,6 +9307,50 @@
                 ],
                 "title": "DoctorResource"
             },
+            "EnterResultsRequest": {
+                "type": "object",
+                "description": "Results for one test: a value per parameter code. Values are text as\nreported; JSON numbers are accepted and read as text.",
+                "properties": {
+                    "order_item_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "results": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "parameter_code": {
+                                    "type": "string",
+                                    "maxLength": 30
+                                },
+                                "value": {
+                                    "type": "string",
+                                    "maxLength": 255
+                                },
+                                "comment": {
+                                    "type": [
+                                        "string",
+                                        "null"
+                                    ],
+                                    "maxLength": 1000
+                                }
+                            },
+                            "required": [
+                                "parameter_code",
+                                "value"
+                            ]
+                        },
+                        "minItems": 1,
+                        "maxItems": 100
+                    }
+                },
+                "required": [
+                    "order_item_id",
+                    "results"
+                ],
+                "title": "EnterResultsRequest"
+            },
             "Gender": {
                 "type": "string",
                 "description": "Patient gender; drives reference ranges (spec \u00a77.3, \u00a77.4).\n",
@@ -7661,6 +9519,53 @@
                 ],
                 "title": "HomeCollectionStatusRequest"
             },
+            "InterfaceAgentResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "branch_id": {
+                        "type": "string"
+                    },
+                    "name": {
+                        "type": "string"
+                    },
+                    "key_prefix": {
+                        "type": "string"
+                    },
+                    "allowed_ips": {
+                        "type": "array",
+                        "items": {
+                            "type": "string"
+                        }
+                    },
+                    "is_active": {
+                        "type": "boolean"
+                    },
+                    "last_seen_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "branch_id",
+                    "name",
+                    "key_prefix",
+                    "allowed_ips",
+                    "is_active",
+                    "last_seen_at",
+                    "created_at"
+                ],
+                "title": "InterfaceAgentResource"
+            },
             "InvoicePaymentStatus": {
                 "type": "string",
                 "description": "credit: billed to a B2B client on credit terms.\n",
@@ -7772,6 +9677,112 @@
             "JsonResource": {
                 "type": "string",
                 "title": "JsonResource"
+            },
+            "LabResultResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "run_no": {
+                        "type": "integer"
+                    },
+                    "value": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "value_numeric": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "unit": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "ref_range_text": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "flag": {
+                        "anyOf": [
+                            {
+                                "$ref": "#/components/schemas/ResultFlag"
+                            },
+                            {
+                                "type": "null"
+                            }
+                        ]
+                    },
+                    "is_critical": {
+                        "type": "boolean"
+                    },
+                    "source": {
+                        "$ref": "#/components/schemas/ResultSource"
+                    },
+                    "instrument": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "comment": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "entered_by": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "entered_at": {
+                        "type": "string"
+                    },
+                    "verified_by": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "verified_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "is_final": {
+                        "type": "boolean"
+                    }
+                },
+                "required": [
+                    "id",
+                    "run_no",
+                    "value",
+                    "value_numeric",
+                    "unit",
+                    "ref_range_text",
+                    "flag",
+                    "is_critical",
+                    "source",
+                    "instrument",
+                    "comment",
+                    "entered_by",
+                    "entered_at",
+                    "verified_by",
+                    "verified_at",
+                    "is_final"
+                ],
+                "title": "LabResultResource"
             },
             "LabTestRequest": {
                 "type": "object",
@@ -9434,6 +11445,136 @@
                 ],
                 "title": "ReportDelivery"
             },
+            "ReportDetailResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "order_id": {
+                        "type": "string"
+                    },
+                    "patient_id": {
+                        "type": "string"
+                    },
+                    "branch_id": {
+                        "type": "string"
+                    },
+                    "b2b_client_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "processing_branch_id": {
+                        "type": "string"
+                    },
+                    "version": {
+                        "type": "integer"
+                    },
+                    "status": {
+                        "$ref": "#/components/schemas/ReportStatus"
+                    },
+                    "is_partial": {
+                        "type": "boolean"
+                    },
+                    "amendment_reason": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "released_at": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "released_by": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "pdf_ready": {
+                        "type": "boolean"
+                    },
+                    "pdf_sha256": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "signatures": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "properties": {
+                                "department_id": {
+                                    "type": "string"
+                                },
+                                "signatory_id": {
+                                    "type": "string"
+                                },
+                                "signed_at": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "department_id",
+                                "signatory_id",
+                                "signed_at"
+                            ]
+                        }
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "departments": {
+                        "type": "array",
+                        "items": {}
+                    }
+                },
+                "required": [
+                    "id",
+                    "order_id",
+                    "patient_id",
+                    "branch_id",
+                    "b2b_client_id",
+                    "processing_branch_id",
+                    "version",
+                    "status",
+                    "is_partial",
+                    "amendment_reason",
+                    "released_at",
+                    "released_by",
+                    "pdf_ready",
+                    "pdf_sha256",
+                    "signatures",
+                    "created_at",
+                    "updated_at",
+                    "departments"
+                ],
+                "title": "ReportDetailResource"
+            },
+            "ReportStatus": {
+                "type": "string",
+                "description": "Report lifecycle (spec \u00a75.5).\n",
+                "enum": [
+                    "draft",
+                    "pending_signature",
+                    "signed",
+                    "released",
+                    "amended",
+                    "withheld"
+                ],
+                "title": "ReportStatus"
+            },
             "RerouteSampleRequest": {
                 "type": "object",
                 "description": "Send a sample to another lab; without a lab, the routing rules choose.",
@@ -9454,6 +11595,42 @@
                     "reason"
                 ],
                 "title": "RerouteSampleRequest"
+            },
+            "RerunRequest": {
+                "type": "object",
+                "properties": {
+                    "reason": {
+                        "type": "string",
+                        "maxLength": 255
+                    }
+                },
+                "required": [
+                    "reason"
+                ],
+                "title": "RerunRequest"
+            },
+            "ResultFlag": {
+                "type": "string",
+                "description": "Where a result sits against its reference range (spec \u00a75.5 step 1).\n",
+                "enum": [
+                    "normal",
+                    "low",
+                    "high",
+                    "critical_low",
+                    "critical_high",
+                    "abnormal"
+                ],
+                "title": "ResultFlag"
+            },
+            "ResultSource": {
+                "type": "string",
+                "description": "Where a result came from. `calculated` is an addition to the spec's analyser/manual: derived parameters such as LDL are computed here.\n",
+                "enum": [
+                    "analyser",
+                    "manual",
+                    "calculated"
+                ],
+                "title": "ResultSource"
             },
             "ResultType": {
                 "type": "string",
@@ -9876,6 +12053,100 @@
                 ],
                 "title": "SignInRequest"
             },
+            "SignReportRequest": {
+                "type": "object",
+                "description": "The authenticator code (spec \u00a710.4: signing re-asks it) and, optionally,\nthe departments to sign; without them every department the signer may\nsign now is signed.",
+                "properties": {
+                    "code": {
+                        "type": "string"
+                    },
+                    "department_ids": {
+                        "type": [
+                            "array",
+                            "null"
+                        ],
+                        "items": {
+                            "type": "string",
+                            "format": "uuid"
+                        },
+                        "minItems": 1,
+                        "maxItems": 20,
+                        "uniqueItems": true
+                    }
+                },
+                "required": [
+                    "code"
+                ],
+                "title": "SignReportRequest"
+            },
+            "SignatoryResource": {
+                "type": "object",
+                "properties": {
+                    "id": {
+                        "type": "string"
+                    },
+                    "user_id": {
+                        "type": "string"
+                    },
+                    "branch_id": {
+                        "type": "string"
+                    },
+                    "department_id": {
+                        "type": "string"
+                    },
+                    "signing_discipline": {
+                        "$ref": "#/components/schemas/SigningDiscipline"
+                    },
+                    "qualification": {
+                        "type": "string"
+                    },
+                    "council_name": {
+                        "type": "string"
+                    },
+                    "registration_no": {
+                        "type": "string"
+                    },
+                    "hpr_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "valid_till": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
+                    "is_active": {
+                        "type": "boolean"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time"
+                    }
+                },
+                "required": [
+                    "id",
+                    "user_id",
+                    "branch_id",
+                    "department_id",
+                    "signing_discipline",
+                    "qualification",
+                    "council_name",
+                    "registration_no",
+                    "hpr_id",
+                    "valid_till",
+                    "is_active",
+                    "created_at",
+                    "updated_at"
+                ],
+                "title": "SignatoryResource"
+            },
             "SigningDiscipline": {
                 "type": "string",
                 "description": "Which qualification may sign a department's results (spec \u00a77.2, \u00a710).\n",
@@ -9894,6 +12165,70 @@
                     "frozen"
                 ],
                 "title": "StorageTemperature"
+            },
+            "StoreSignatoryRequest": {
+                "type": "object",
+                "description": "A new signatory with their signature image (multipart, PNG).",
+                "properties": {
+                    "user_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "branch_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "department_id": {
+                        "type": "string",
+                        "format": "uuid"
+                    },
+                    "signing_discipline": {
+                        "$ref": "#/components/schemas/SigningDiscipline"
+                    },
+                    "qualification": {
+                        "type": "string",
+                        "maxLength": 100
+                    },
+                    "council_name": {
+                        "type": "string",
+                        "maxLength": 100
+                    },
+                    "registration_no": {
+                        "type": "string",
+                        "maxLength": 50
+                    },
+                    "hpr_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 50
+                    },
+                    "valid_till": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date"
+                    },
+                    "signature_image": {
+                        "type": "string",
+                        "format": "binary",
+                        "contentMediaType": "application/octet-stream",
+                        "description": "Maximum file size: 512 kilobytes."
+                    }
+                },
+                "required": [
+                    "user_id",
+                    "branch_id",
+                    "department_id",
+                    "signing_discipline",
+                    "qualification",
+                    "council_name",
+                    "registration_no",
+                    "signature_image"
+                ],
+                "title": "StoreSignatoryRequest"
             },
             "TestParameterRequest": {
                 "type": "object",
@@ -10209,6 +12544,45 @@
                 },
                 "title": "UpdateOrganizationRequest"
             },
+            "UpdateSignatoryRequest": {
+                "type": "object",
+                "description": "Registration details and validity; who, where and which department never change.",
+                "properties": {
+                    "signing_discipline": {
+                        "$ref": "#/components/schemas/SigningDiscipline"
+                    },
+                    "qualification": {
+                        "type": "string",
+                        "maxLength": 100
+                    },
+                    "council_name": {
+                        "type": "string",
+                        "maxLength": 100
+                    },
+                    "registration_no": {
+                        "type": "string",
+                        "maxLength": 50
+                    },
+                    "hpr_id": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 50
+                    },
+                    "valid_till": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "format": "date"
+                    },
+                    "is_active": {
+                        "type": "boolean"
+                    }
+                },
+                "title": "UpdateSignatoryRequest"
+            },
             "UserRequest": {
                 "type": "object",
                 "description": "Create (POST) and partial update (PATCH) of a staff member.",
@@ -10385,6 +12759,17 @@
                     "disabled"
                 ],
                 "title": "UserStatus"
+            },
+            "WorklistStatus": {
+                "type": "string",
+                "description": "One test waiting at the lab that runs it: results pending, all entered, all verified, or withdrawn because its sample was re-routed or rejected.\n",
+                "enum": [
+                    "pending",
+                    "entered",
+                    "verified",
+                    "withdrawn"
+                ],
+                "title": "WorklistStatus"
             }
         },
         "responses": {

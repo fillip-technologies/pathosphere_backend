@@ -45,4 +45,15 @@ return [
         'webhook_secret' => env('RAZORPAY_WEBHOOK_SECRET', ''),
     ],
 
+    // Delivery receipts from the SMS / WhatsApp vendors (spec §9 rule 5).
+    'messaging' => [
+        'webhook_secret' => env('MESSAGING_WEBHOOK_SECRET', ''),
+    ],
+
+    // Report PDFs (spec §3): `chromium` on the VPS, `fake` locally and in tests.
+    'pdf' => [
+        'renderer' => env('PDF_RENDERER', 'fake'),
+        'chromium_binary' => env('CHROMIUM_BINARY', '/usr/bin/chromium'),
+    ],
+
 ];

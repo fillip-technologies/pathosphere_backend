@@ -32,6 +32,12 @@ final class RecordingMessageSender implements EmailSender, SmsSender, WhatsAppSe
         return $this->record('email', $email, $body);
     }
 
+    /** Forgets what was sent so far, to look only at what comes next. */
+    public function clear(): void
+    {
+        $this->sent = [];
+    }
+
     /** @return list<string> */
     public function channelsUsed(): array
     {

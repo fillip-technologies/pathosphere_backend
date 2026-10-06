@@ -5,10 +5,12 @@ namespace App\Modules\Shared;
 use App\Modules\Shared\Console\PrintAppUserGrants;
 use App\Modules\Shared\Context\CurrentActor;
 use App\Modules\Shared\Database\SchemaMacros;
+use App\Modules\Shared\Notifications\Contracts\DeliveryReportParser;
 use App\Modules\Shared\Notifications\Contracts\EmailSender;
 use App\Modules\Shared\Notifications\Contracts\SmsSender;
 use App\Modules\Shared\Notifications\Contracts\WhatsAppSender;
 use App\Modules\Shared\Notifications\Infrastructure\LogMessageSender;
+use App\Modules\Shared\Notifications\Infrastructure\SignedJsonDeliveryReports;
 use App\Modules\Shared\Scoping\CurrentScope;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Model;
@@ -28,6 +30,7 @@ final class SharedServiceProvider extends ServiceProvider
         $this->app->bind(SmsSender::class, LogMessageSender::class);
         $this->app->bind(WhatsAppSender::class, LogMessageSender::class);
         $this->app->bind(EmailSender::class, LogMessageSender::class);
+        $this->app->bind(DeliveryReportParser::class, fn () => new SignedJsonDeliveryReports((string) config('services.messaging.webhook_secret')));
     }
 
     public function boot(): void

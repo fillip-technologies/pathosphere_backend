@@ -12,6 +12,7 @@ use App\Modules\Samples\Domain\StabilityChecker;
 use App\Modules\Samples\Enums\SampleStatus;
 use App\Modules\Samples\Errors\SampleError;
 use App\Modules\Samples\Events\SampleCollected;
+use App\Modules\Samples\Events\SampleReceived;
 use App\Modules\Samples\Models\Sample;
 use App\Modules\Samples\Models\SampleOrderItem;
 use App\Modules\Samples\StateMachines\SampleStateMachine;
@@ -148,12 +149,15 @@ final class SampleCollectionService
             throw SampleError::needsManifest();
         }
 
-        $this->sampleStates->transition($sample, SampleStatus::Received, [
-            'received_at' => CarbonImmutable::now(),
-            'received_by' => $staff->user()->id,
-        ]);
+        return DB::transaction(function () use ($staff, $sample): Sample {
+            $this->sampleStates->transition($sample, SampleStatus::Received, [
+                'received_at' => CarbonImmutable::now(),
+                'received_by' => $staff->user()->id,
+            ]);
+            event(new SampleReceived($sample->id, $sample->organization_id));
 
-        return $sample;
+            return $sample;
+        });
     }
 
     /**

@@ -40,6 +40,11 @@ final class AuthError
         return new DomainError('MFA_CODE_INVALID', 'The authenticator code is incorrect.', 401);
     }
 
+    public static function mfaNotSetUp(): DomainError
+    {
+        return new DomainError('MFA_NOT_SET_UP', 'Set up your authenticator app before signing reports.', 403);
+    }
+
     public static function mfaEnrollmentNotStarted(): DomainError
     {
         return new DomainError('MFA_ENROLLMENT_NOT_STARTED', 'Start MFA enrolment before confirming a code.', 422);

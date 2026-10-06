@@ -52,6 +52,14 @@ return [
         'missing_after_minutes' => 120,
     ],
 
+    // Lab and reports (spec §5.5, §9).
+    'lab' => [
+        // Patient and doctor links to a report PDF expire after this many hours (spec §9 rule 2: 24–72).
+        'report_link_hours' => 48,
+        // Public QR verification requests per minute per IP address (spec §10.5).
+        'verify_requests_per_minute' => 30,
+    ],
+
     // Staff authentication (spec §8.1, §10.3–10.4).
     'auth' => [
         'access_token_minutes' => 15,
