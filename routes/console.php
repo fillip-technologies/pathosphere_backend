@@ -1,7 +1,16 @@
 <?php
 
+use App\Modules\Dashboards\Jobs\BuildDailyMetrics;
+use App\Modules\Lab\Jobs\AlertExpiringSignatories;
 use App\Modules\Lab\Jobs\DisableExpiredSignatories;
 use App\Modules\Lab\Jobs\MonitorTurnaroundTimes;
+use App\Modules\Ledger\Jobs\AlertLowWalletBalances;
+use App\Modules\Ledger\Jobs\BuildSettlements;
+use App\Modules\Ledger\Jobs\HoldOverduePartners;
+use App\Modules\Ledger\Jobs\RemindB2bDues;
+use App\Modules\Network\Jobs\AlertExpiringNetworkPapers;
+use App\Modules\Network\Jobs\ExpireEndedAgreements;
+use App\Modules\Samples\Jobs\AlertExpiringStock;
 use App\Modules\Samples\Jobs\MonitorTransitDelays;
 use App\Modules\Shared\Http\Middleware\IdempotencyRecord;
 use Illuminate\Support\Facades\Schedule;
@@ -28,5 +37,53 @@ Schedule::job(new MonitorTurnaroundTimes)
 // Signatories past their registration validity stop signing (spec §9).
 Schedule::job(new DisableExpiredSignatories)
     ->dailyAt('00:15')
+    ->timezone('Asia/Kolkata')
+    ->withoutOverlapping();
+
+// Partner money (spec §9). Settlements are built after the cycle closes, at night.
+Schedule::job(new BuildSettlements)
+    ->dailyAt('02:00')
+    ->timezone('Asia/Kolkata')
+    ->withoutOverlapping();
+
+Schedule::job(new AlertLowWalletBalances)
+    ->hourly()
+    ->withoutOverlapping();
+
+// Off unless LEDGER_AUTO_HOLD is set (spec §12: block only with HQ Finance's approval).
+Schedule::job(new HoldOverduePartners)
+    ->dailyAt('03:00')
+    ->timezone('Asia/Kolkata')
+    ->withoutOverlapping();
+
+Schedule::job(new RemindB2bDues)
+    ->dailyAt('10:00')
+    ->timezone('Asia/Kolkata')
+    ->withoutOverlapping();
+
+// Franchise agreements, papers, NABL, signatories and stock nearing expiry (spec §9).
+Schedule::job(new ExpireEndedAgreements)
+    ->dailyAt('00:20')
+    ->timezone('Asia/Kolkata')
+    ->withoutOverlapping();
+
+Schedule::job(new AlertExpiringNetworkPapers)
+    ->dailyAt('09:00')
+    ->timezone('Asia/Kolkata')
+    ->withoutOverlapping();
+
+Schedule::job(new AlertExpiringSignatories)
+    ->dailyAt('09:00')
+    ->timezone('Asia/Kolkata')
+    ->withoutOverlapping();
+
+Schedule::job(new AlertExpiringStock)
+    ->dailyAt('09:00')
+    ->timezone('Asia/Kolkata')
+    ->withoutOverlapping();
+
+// Yesterday's dashboard summary (spec §11 observability 4), after midnight in India.
+Schedule::job(new BuildDailyMetrics)
+    ->dailyAt('01:30')
     ->timezone('Asia/Kolkata')
     ->withoutOverlapping();

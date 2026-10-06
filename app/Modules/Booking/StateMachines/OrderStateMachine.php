@@ -61,6 +61,7 @@ final class OrderStateMachine extends StateMachine
 
         return new PartnerCharge(
             $order->id,
+            $order->order_no,
             $order->organization_id,
             $order->franchise_id,
             $order->b2b_client_id,

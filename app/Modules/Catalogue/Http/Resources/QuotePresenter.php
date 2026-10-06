@@ -8,8 +8,11 @@ use App\Modules\Catalogue\Domain\QuoteLine;
 /** JSON shape of a successful quote. */
 final class QuotePresenter
 {
-    /** @return array<string, mixed> */
-    public static function present(Quote $quote, string $branchId, ?string $b2bClientId, string $mrpPriceListId, ?string $partnerPriceListId): array
+    /**
+     * @param  array<string, mixed>|null  $walletCheck  for bookings debited from a prepaid franchise wallet
+     * @return array<string, mixed>
+     */
+    public static function present(Quote $quote, string $branchId, ?string $b2bClientId, string $mrpPriceListId, ?string $partnerPriceListId, ?array $walletCheck): array
     {
         return [
             'branch_id' => $branchId,
@@ -21,8 +24,7 @@ final class QuotePresenter
                 'mrp_total' => $quote->mrpTotal(),
                 'partner_total' => $quote->partnerTotal(),
             ],
-            // Filled in Phase 6, when franchise wallets exist.
-            'wallet_check' => null,
+            'wallet_check' => $walletCheck,
         ];
     }
 

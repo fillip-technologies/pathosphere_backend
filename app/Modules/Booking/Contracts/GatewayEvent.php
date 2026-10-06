@@ -11,6 +11,8 @@ final class GatewayEvent
 {
     public const PAYMENT_CAPTURED = 'payment_captured';
 
+    public const WALLET_TOPUP_CAPTURED = 'wallet_topup_captured';
+
     public const REFUND_PROCESSED = 'refund_processed';
 
     public const IGNORED = 'ignored';
@@ -23,11 +25,17 @@ final class GatewayEvent
         public readonly ?PaymentMode $mode = null,
         public readonly ?CarbonImmutable $occurredAt = null,
         public readonly ?string $refundId = null,
+        public readonly ?string $walletTopupId = null,
     ) {}
 
     public static function paymentCaptured(string $invoiceId, string $paymentId, Money $amount, PaymentMode $mode, CarbonImmutable $paidAt): self
     {
         return new self(self::PAYMENT_CAPTURED, $invoiceId, $paymentId, $amount, $mode, $paidAt);
+    }
+
+    public static function walletTopupCaptured(string $walletTopupId, string $paymentId, Money $amount, PaymentMode $mode, CarbonImmutable $paidAt): self
+    {
+        return new self(self::WALLET_TOPUP_CAPTURED, null, $paymentId, $amount, $mode, $paidAt, walletTopupId: $walletTopupId);
     }
 
     public static function refundProcessed(string $refundId): self

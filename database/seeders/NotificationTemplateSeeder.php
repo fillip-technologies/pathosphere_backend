@@ -66,6 +66,35 @@ class NotificationTemplateSeeder extends Seeder
         'samples_delayed' => [
             'sms' => [null, 'Manifest {{manifest_no}} ({{from_branch}} to {{to_branch}}): {{sample_count}} sample(s) in transit past their stability limit.'],
         ],
+        // Partner money (spec §5.6, §9). Partners are businesses: SMS and email.
+        'settlement_ready' => [
+            'sms' => [null, '{{partner_name}}: settlement {{settlement_no}} for {{period}} is ready. Rs {{amount}} {{direction}}.'],
+            'email' => ['Settlement {{settlement_no}} for {{period}}', "Dear {{partner_name}},\n\nYour settlement {{settlement_no}} for {{period}} is ready: Rs {{amount}} {{direction}}. The statement is in your partner portal.\n"],
+        ],
+        'wallet_low_balance' => [
+            'sms' => [null, '{{partner_name}}: wallet balance Rs {{balance}}, Rs {{available}} available with credit. Top up to keep booking.'],
+            'email' => ['Wallet balance low', "Dear {{partner_name}},\n\nYour wallet balance is Rs {{balance}}; Rs {{available}} is available including your credit limit. Please top up to keep booking tests.\n"],
+        ],
+        'dues_reminder' => [
+            'sms' => [null, '{{partner_name}}: Rs {{amount}} is overdue on {{invoice_count}} invoice(s), the oldest due {{oldest_due_date}}. Please pay to avoid a hold.'],
+            'email' => ['Payment overdue', "Dear {{partner_name}},\n\nRs {{amount}} is overdue on {{invoice_count}} invoice(s), the oldest due on {{oldest_due_date}}. Please arrange payment.\n"],
+        ],
+        'partner_paper_expiring' => [
+            'sms' => [null, '{{partner_name}}: your {{paper}} expires on {{expires_on}} ({{days_left}} days). Please renew it.'],
+            'email' => ['Your {{paper}} expires on {{expires_on}}', "Dear {{partner_name}},\n\nYour {{paper}} expires on {{expires_on}}, in {{days_left}} days. Please renew it in time.\n"],
+        ],
+        'nabl_expiring' => [
+            'sms' => [null, '{{branch_name}}: NABL certificate {{certificate_no}} expires on {{expires_on}}. Start renewal.'],
+        ],
+        'signatory_expiring' => [
+            'sms' => [null, '{{branch_name}}: signatory registration {{registration_no}} lapses on {{expires_on}}. Update it before signing stops.'],
+        ],
+        'stock_expiring' => [
+            'sms' => [null, '{{branch_name}}: {{item_name}} batch {{batch_no}} expires on {{expires_on}}.'],
+        ],
+        'stock_low' => [
+            'sms' => [null, '{{branch_name}}: {{item_name}} batch {{batch_no}} is down to {{quantity}} {{unit}}, below its reorder level.'],
+        ],
     ];
 
     public function run(): void

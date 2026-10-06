@@ -26,6 +26,7 @@ final class BranchService
         private readonly StaffDirectory $staffDirectory,
         private readonly BranchStateMachine $stateMachine,
         private readonly PriceListDirectory $priceLists,
+        private readonly FranchiseService $franchises,
     ) {}
 
     /**
@@ -46,6 +47,11 @@ final class BranchService
             $branch->status = BranchStatus::Setup;
             $branch->save();
             $this->auditLogger->recordCreated('branch.create', $branch);
+
+            // An approved franchise with an active agreement goes live with its first branch (spec §5.1 step 7).
+            if ($branch->franchise_id !== null) {
+                $this->franchises->activateIfReady($branch->franchise_id);
+            }
 
             return $branch;
         });

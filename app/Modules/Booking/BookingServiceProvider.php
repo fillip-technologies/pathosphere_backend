@@ -4,10 +4,8 @@ namespace App\Modules\Booking;
 
 use App\Modules\Booking\Contracts\AbdmClient;
 use App\Modules\Booking\Contracts\Geocoder;
-use App\Modules\Booking\Contracts\PartnerChargePolicy;
 use App\Modules\Booking\Contracts\PaymentGateway;
 use App\Modules\Booking\Events\OrderConfirmed;
-use App\Modules\Booking\Infrastructure\DeferredPartnerCharges;
 use App\Modules\Booking\Infrastructure\DisabledGeocoder;
 use App\Modules\Booking\Infrastructure\FakeAbdmClient;
 use App\Modules\Booking\Infrastructure\FakePaymentGateway;
@@ -38,8 +36,7 @@ final class BookingServiceProvider extends ServiceProvider
         // Until ABDM sandbox onboarding, the fake client stands in (spec §5.7).
         $this->app->bind(AbdmClient::class, fn () => new FakeAbdmClient((string) config('services.abdm.callback_secret')));
 
-        // Phase 6 replaces this with ledger postings and wallet checks.
-        $this->app->bind(PartnerChargePolicy::class, DeferredPartnerCharges::class);
+        // PartnerChargePolicy is bound by the Ledger module (partner ledger and wallets).
     }
 
     public function boot(): void

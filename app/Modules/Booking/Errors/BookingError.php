@@ -25,6 +25,16 @@ final class BookingError
         return new DomainError('FRANCHISE_SUSPENDED', 'This franchise is not active, so its branches cannot take new orders.', 422);
     }
 
+    public static function b2bClientOnHold(): DomainError
+    {
+        return new DomainError('B2B_CLIENT_ON_HOLD', 'This B2B client is on hold or closed, so it cannot place new orders.', 422, [['field' => 'b2b_client_id']]);
+    }
+
+    public static function b2bDiscountNotAllowed(): DomainError
+    {
+        return new DomainError('B2B_DISCOUNT_NOT_ALLOWED', 'B2B clients are billed at their own rate list; change the list instead of discounting.', 422, [['field' => 'discount.amount']]);
+    }
+
     public static function discountTooLarge(): DomainError
     {
         return new DomainError('DISCOUNT_TOO_LARGE', 'The discount cannot exceed the bill amount.', 422, [['field' => 'discount.amount']]);

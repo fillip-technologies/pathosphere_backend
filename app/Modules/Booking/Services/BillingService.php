@@ -155,6 +155,37 @@ final class BillingService
         return $payment;
     }
 
+    /**
+     * Money a B2B client paid against its settlement, applied to one of its
+     * credit invoices. The bank transfer reference (UTR) is the transaction ID.
+     */
+    public function recordClientSettlementPayment(Invoice $invoice, Money $amount, string $reference): Payment
+    {
+        return DB::transaction(function () use ($invoice, $amount, $reference): Payment {
+            $invoice = $this->lockInvoice($invoice->id);
+
+            if ($amount->isGreaterThan($invoice->balanceDue())) {
+                throw BookingError::overpayment($invoice->balanceDue());
+            }
+
+            $payment = new Payment([
+                'invoice_id' => $invoice->id,
+                'amount' => $amount,
+                'mode' => PaymentMode::Netbanking,
+                'gateway' => null,
+                'transaction_id' => $reference,
+                'received_by' => $this->currentActor->userId(),
+                'paid_at' => now(),
+                'status' => PaymentStatus::Success,
+            ]);
+            $payment->save();
+            $this->auditLogger->recordCreated('payment.create', $payment);
+            $this->refresh($invoice);
+
+            return $payment;
+        });
+    }
+
     /** Refunds part or all of a payment (spec §7.5 refunds). */
     public function refund(StaffContext $approver, Payment $payment, Money $amount, string $reason): Refund
     {

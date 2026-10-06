@@ -60,6 +60,38 @@ return [
         'verify_requests_per_minute' => 30,
     ],
 
+    // Franchise onboarding (spec §5.1). Papers every franchise must have verified
+    // before its KYC is approved; the GST certificate is added for GST-registered ones.
+    'franchise' => [
+        'mandatory_documents' => ['pan', 'address_proof', 'bank_proof', 'premises_photo'],
+    ],
+
+    // Partner ledger, wallets and settlements (spec §5.6, §9, §12 open decisions).
+    'ledger' => [
+        // Reasons for manual adjustments, a lookup list (spec §6): add, never rename a key in use.
+        'adjustment_reasons' => [
+            'billing_correction' => 'Billing correction',
+            'goodwill' => 'Goodwill credit',
+            'deposit_refund' => 'Security deposit refund',
+            'min_business_shortfall' => 'Minimum business shortfall',
+            'penalty' => 'Penalty per agreement',
+            'opening_balance' => 'Opening balance',
+            'other' => 'Other',
+        ],
+        // Warn a wholesale franchise when it uses this share of its credit limit (spec §12: 80%).
+        'credit_warning_percent' => 80,
+        // …or when its available money (balance + credit limit) falls below this.
+        'low_balance_threshold' => '2000.00',
+        // Rejected samples are redrawn free, so the original charge stands unless HQ
+        // turns this on (organization setting `reverse_partner_charge_on_rejection`).
+        'reverse_partner_charge_on_rejection' => false,
+        // Franchise auto-hold (spec §9): off by default; blocks only with HQ Finance's say-so.
+        'auto_hold' => [
+            'enabled' => (bool) env('LEDGER_AUTO_HOLD', false),
+            'grace_days' => 15,
+        ],
+    ],
+
     // Staff authentication (spec §8.1, §10.3–10.4).
     'auth' => [
         'access_token_minutes' => 15,

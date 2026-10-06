@@ -34,8 +34,10 @@ final class PaymentLinkService
 
         $patient = Patient::query()->findOrFail($invoice->order->patient_id);
         $link = $this->gateway->createPaymentLink(new PaymentLinkRequest(
+            PaymentLinkRequest::INVOICE,
             $invoice->id,
             $invoice->invoice_no,
+            "Invoice {$invoice->invoice_no}",
             $invoice->balanceDue(),
             $patient->name,
             $patient->phone,

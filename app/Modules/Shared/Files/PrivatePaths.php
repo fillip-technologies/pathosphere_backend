@@ -25,6 +25,17 @@ final class PrivatePaths
         return sprintf('kyc/%s/%s.%s', $franchiseId, $documentId, self::cleanExtension($extension));
     }
 
+    /** A franchise agreement as sent for signature, or the signed copy returned by the e-sign vendor. */
+    public static function agreement(string $franchiseId, string $agreementId, bool $signed): string
+    {
+        return sprintf('agreements/%s/%s_%s.pdf', $franchiseId, $agreementId, $signed ? 'signed' : 'unsigned');
+    }
+
+    public static function settlementStatement(string $settlementId, DateTimeInterface $periodEnd): string
+    {
+        return sprintf('statements/%s/%s.pdf', $periodEnd->format('Y/m'), $settlementId);
+    }
+
     public static function signature(string $signatoryId): string
     {
         return sprintf('signatures/%s.png', $signatoryId);

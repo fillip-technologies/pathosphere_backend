@@ -114,4 +114,39 @@ final class SampleError
     {
         return new DomainError('SAMPLE_ALREADY_RECEIVED', 'This sample was already scanned in with a different condition.', 409, [['field' => 'items', 'barcode' => $barcode]]);
     }
+
+    public static function inventoryItemExists(): DomainError
+    {
+        return new DomainError('INVENTORY_ITEM_EXISTS', 'This branch already has that item and batch. Update its quantity instead.', 409, [['field' => 'item_code'], ['field' => 'batch_no']]);
+    }
+
+    public static function inventoryItemInStock(): DomainError
+    {
+        return new DomainError('INVENTORY_ITEM_IN_STOCK', 'Only an item with no stock left can be removed.', 409);
+    }
+
+    public static function stockInsufficient(string $available): DomainError
+    {
+        return new DomainError('STOCK_INSUFFICIENT', "The sending branch has only {$available} of this batch.", 409, [['field' => 'quantity', 'available' => $available]]);
+    }
+
+    public static function senderItemMissing(): DomainError
+    {
+        return new DomainError('STOCK_ITEM_NOT_AT_SENDER', 'The sending branch has no such item and batch.', 422, [['field' => 'item_code'], ['field' => 'batch_no']]);
+    }
+
+    public static function chargeNotAllowed(): DomainError
+    {
+        return new DomainError(
+            'STOCK_CHARGE_NOT_ALLOWED',
+            'Only a company branch sending to a franchise branch can charge for stock, and only the sending side sets the charge.',
+            422,
+            [['field' => 'charge_amount']],
+        );
+    }
+
+    public static function transferNotEditable(): DomainError
+    {
+        return new DomainError('STOCK_TRANSFER_NOT_EDITABLE', 'Only a requested transfer can be changed.', 409);
+    }
 }

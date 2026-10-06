@@ -1,7 +1,9 @@
 <?php
 
+use App\Modules\Samples\Http\Controllers\InventoryItemController;
 use App\Modules\Samples\Http\Controllers\ManifestController;
 use App\Modules\Samples\Http\Controllers\SampleController;
+use App\Modules\Samples\Http\Controllers\StockTransferController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth:sanctum', 'staff'])->group(function (): void {
@@ -39,4 +41,21 @@ Route::middleware(['auth:sanctum', 'staff'])->group(function (): void {
     // The receiving lab scans the bag in: its runner or its accessioning technician.
     Route::post('/manifests/{manifest}/receive', [ManifestController::class, 'receive'])
         ->middleware('permission:receive_manifest,accession_sample');
+});
+
+// Branch stock and supply between branches (spec §7.7, §8 Inventory).
+Route::middleware(['auth:sanctum', 'staff', 'permission:manage_inventory'])->group(function (): void {
+    Route::get('/inventory-items', [InventoryItemController::class, 'index']);
+    Route::post('/inventory-items', [InventoryItemController::class, 'store']);
+    Route::get('/inventory-items/{inventoryItem}', [InventoryItemController::class, 'show']);
+    Route::patch('/inventory-items/{inventoryItem}', [InventoryItemController::class, 'update']);
+    Route::delete('/inventory-items/{inventoryItem}', [InventoryItemController::class, 'destroy']);
+
+    Route::get('/stock-transfers', [StockTransferController::class, 'index']);
+    Route::post('/stock-transfers', [StockTransferController::class, 'store']);
+    Route::get('/stock-transfers/{stockTransfer}', [StockTransferController::class, 'show']);
+    Route::patch('/stock-transfers/{stockTransfer}', [StockTransferController::class, 'update']);
+    Route::post('/stock-transfers/{stockTransfer}/dispatch', [StockTransferController::class, 'dispatch']);
+    Route::post('/stock-transfers/{stockTransfer}/receive', [StockTransferController::class, 'receive']);
+    Route::post('/stock-transfers/{stockTransfer}/cancel', [StockTransferController::class, 'cancel']);
 });

@@ -10,6 +10,7 @@ final class PartnerCharge
     /** @param  array<string, Money>  $partnerPriceByOrderItem */
     public function __construct(
         public readonly string $orderId,
+        public readonly string $orderNo,
         public readonly string $organizationId,
         public readonly ?string $franchiseId,
         public readonly ?string $b2bClientId,

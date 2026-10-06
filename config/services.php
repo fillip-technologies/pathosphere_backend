@@ -50,6 +50,11 @@ return [
         'webhook_secret' => env('MESSAGING_WEBHOOK_SECRET', ''),
     ],
 
+    // E-sign vendor webhooks (spec §5.1 step 4), our signed JSON format until a vendor is chosen.
+    'esign' => [
+        'webhook_secret' => env('ESIGN_WEBHOOK_SECRET', ''),
+    ],
+
     // Report PDFs (spec §3): `chromium` on the VPS, `fake` locally and in tests.
     'pdf' => [
         'renderer' => env('PDF_RENDERER', 'fake'),

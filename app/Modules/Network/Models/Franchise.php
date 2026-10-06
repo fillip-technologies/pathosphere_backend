@@ -9,6 +9,7 @@ use App\Modules\Shared\Money\MoneyCast;
 use App\Modules\Shared\Scoping\BelongsToScope;
 use App\Modules\Shared\Scoping\HasScopeColumns;
 use App\Modules\Shared\Scoping\ScopeColumns;
+use Carbon\CarbonImmutable;
 use Database\Factories\Network\FranchiseFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -16,17 +17,26 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * An outside business running branches under the brand (spec §7.1).
- * Onboarding workflows arrive in Phase 6.
  *
  * @property string $id
  * @property string $organization_id
  * @property string $region_id
  * @property string $franchise_code
  * @property string $name
+ * @property string $legal_name
+ * @property string $owner_name
+ * @property string $phone
+ * @property string $email
+ * @property string|null $gstin
+ * @property string $pan
+ * @property string $address
+ * @property string|null $bank_account_no
+ * @property string|null $bank_ifsc
  * @property string|null $partner_price_list_id
  * @property Money $credit_limit
  * @property Money $current_balance
  * @property FranchiseStatus $status
+ * @property CarbonImmutable|null $onboarded_at
  */
 final class Franchise extends BaseModel implements HasScopeColumns
 {
@@ -56,6 +66,12 @@ final class Franchise extends BaseModel implements HasScopeColumns
     public static function scopeColumns(): ScopeColumns
     {
         return new ScopeColumns(region: 'region_id', franchise: 'id');
+    }
+
+    /** @return HasMany<FranchiseAgreement, $this> */
+    public function agreements(): HasMany
+    {
+        return $this->hasMany(FranchiseAgreement::class);
     }
 
     /** @return HasMany<Branch, $this> */

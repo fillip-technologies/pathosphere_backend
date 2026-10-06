@@ -4,6 +4,8 @@ namespace App\Modules\Booking\Services;
 
 use App\Modules\Auth\Permissions\Permission;
 use App\Modules\Auth\Services\StaffContext;
+use App\Modules\Booking\Contracts\PartnerCharge;
+use App\Modules\Booking\Contracts\PartnerChargePolicy;
 use App\Modules\Booking\Domain\DiscountAllocator;
 use App\Modules\Booking\Domain\OrderLineDraft;
 use App\Modules\Booking\Domain\OrderLinePlanner;
@@ -54,6 +56,7 @@ final class OrderBookingService
         private readonly HomeCollectionService $homeCollections,
         private readonly OrderStateMachine $orderStates,
         private readonly HomeCollectionStateMachine $homeCollectionStates,
+        private readonly PartnerChargePolicy $partnerCharges,
     ) {}
 
     public function book(StaffContext $staff, BookOrderCommand $command): Order
@@ -69,7 +72,11 @@ final class OrderBookingService
             throw BookingError::franchiseSuspended();
         }
 
-        $this->assertDiscountAllowed($staff, $command->discount, $quote->mrpTotal(), $branch->organizationId);
+        if ($command->b2bClientId !== null && ! $this->network->b2bClientAllowsBooking($command->b2bClientId)) {
+            throw BookingError::b2bClientOnHold();
+        }
+
+        $this->assertDiscountAllowed($staff, $command->discount, $quote->mrpTotal(), $branch->organizationId, $command->b2bClientId !== null);
         $collectionCharge = $command->homeCollection->collectionCharge ?? Money::zero();
 
         return DB::transaction(function () use ($staff, $command, $patient, $quote, $branch, $collectionCharge): Order {
@@ -98,7 +105,7 @@ final class OrderBookingService
                 $this->homeCollections->createForOrder($order, $command->homeCollection);
             }
 
-            $invoice = $this->billing->createInvoice($order, $quote->mrpTotal()->add($collectionCharge), $command->discount);
+            $invoice = $this->billing->createInvoice($order, $this->billedAmount($quote, $order)->add($collectionCharge), $command->discount);
 
             if ($command->payment !== null) {
                 $this->billing->recordDeskPayment($staff, $invoice, $command->payment->mode, $command->payment->amount, $command->payment->transactionId);
@@ -124,11 +131,22 @@ final class OrderBookingService
 
         $quote = $this->bookableQuote($this->quotes->quote($order->branch_id, $order->b2b_client_id, $items)['quote']);
         $this->assertNotAlreadyOrdered($order, $quote);
-        $this->assertDiscountAllowed($staff, $discount, $quote->mrpTotal(), $order->organization_id);
+        $this->assertDiscountAllowed($staff, $discount, $quote->mrpTotal(), $order->organization_id, $order->b2b_client_id !== null);
 
         return DB::transaction(function () use ($staff, $order, $quote, $discount, $discountReason, $payment): Invoice {
-            $this->saveLines($order, OrderLinePlanner::plan($quote, $discount, CarbonImmutable::now()), $discountReason);
-            $invoice = $this->billing->createInvoice($order, $quote->mrpTotal(), $discount);
+            $added = $this->saveLines($order, OrderLinePlanner::plan($quote, $discount, CarbonImmutable::now()), $discountReason);
+
+            // The order was charged when it was confirmed; add-on tests are charged now (spec §7.8).
+            $this->partnerCharges->chargeForConfirmedOrder(new PartnerCharge(
+                $order->id,
+                $order->order_no,
+                $order->organization_id,
+                $order->franchise_id,
+                $order->b2b_client_id,
+                array_map(fn (OrderItem $item) => $item->partner_price, $added),
+            ));
+
+            $invoice = $this->billing->createInvoice($order, $this->billedAmount($quote, $order), $discount);
 
             if ($payment !== null) {
                 $this->billing->recordDeskPayment($staff, $invoice, $payment->mode, $payment->amount, $payment->transactionId);
@@ -174,16 +192,24 @@ final class OrderBookingService
         });
     }
 
-    /** @param  list<OrderLineDraft>  $lines */
-    private function saveLines(Order $order, array $lines, ?string $discountReason): void
+    /**
+     * @param  list<OrderLineDraft>  $lines
+     * @return array<string, OrderItem> the priced (top-level) items by ID
+     */
+    private function saveLines(Order $order, array $lines, ?string $discountReason): array
     {
+        $priced = [];
+
         foreach ($lines as $line) {
             $parent = $this->saveLine($order, $line, null, $discountReason);
+            $priced[$parent->id] = $parent;
 
             foreach ($line->children as $child) {
                 $this->saveLine($order, $child, $parent->id, null);
             }
         }
+
+        return $priced;
     }
 
     private function saveLine(Order $order, OrderLineDraft $line, ?string $parentItemId, ?string $discountReason): OrderItem
@@ -249,10 +275,23 @@ final class OrderBookingService
         }
     }
 
-    private function assertDiscountAllowed(StaffContext $staff, Money $discount, Money $gross, string $organizationId): void
+    /**
+     * Patients pay MRP; a B2B client is billed at its own rate list
+     * (spec glossary), the same prices its ledger is charged.
+     */
+    private function billedAmount(Quote $quote, Order $order): Money
+    {
+        return $order->b2b_client_id !== null ? $quote->partnerTotal() : $quote->mrpTotal();
+    }
+
+    private function assertDiscountAllowed(StaffContext $staff, Money $discount, Money $gross, string $organizationId, bool $billedToClient): void
     {
         if ($discount->isZero()) {
             return;
+        }
+
+        if ($billedToClient) {
+            throw BookingError::b2bDiscountNotAllowed();
         }
 
         if ($discount->isGreaterThan($gross)) {

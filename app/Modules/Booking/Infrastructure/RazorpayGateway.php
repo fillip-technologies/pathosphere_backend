@@ -33,8 +33,8 @@ final class RazorpayGateway implements PaymentGateway
         $response = $this->http()->post('/payment_links', [
             'amount' => $request->amount->paise(),
             'currency' => 'INR',
-            'reference_id' => $request->invoiceNo,
-            'description' => "Invoice {$request->invoiceNo}",
+            'reference_id' => $request->referenceNo,
+            'description' => $request->description,
             'expire_by' => $request->expiresAt->getTimestamp(),
             'customer' => array_filter([
                 'name' => $request->customerName,
@@ -43,7 +43,7 @@ final class RazorpayGateway implements PaymentGateway
             ]),
             // We send the link ourselves through our own templates.
             'notify' => ['sms' => false, 'email' => false],
-            'notes' => ['invoice_id' => $request->invoiceId],
+            'notes' => RazorpayWebhookParser::notesFor($request),
         ])->throw();
 
         return new PaymentLink(

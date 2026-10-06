@@ -2,6 +2,7 @@
 
 namespace App\Modules\Network\Services;
 
+use App\Modules\Network\Enums\B2bClientStatus;
 use App\Modules\Network\Enums\BranchStatus;
 use App\Modules\Network\Enums\BranchType;
 use App\Modules\Network\Enums\FranchiseStatus;
@@ -232,6 +233,50 @@ final class NetworkDirectory
             ScopeContext::system(),
             fn (): bool => Franchise::query()->whereKey($franchiseId)->where('status', FranchiseStatus::Active)->exists(),
         );
+    }
+
+    /** A B2B client on hold or closed cannot place new orders. */
+    public function b2bClientAllowsBooking(string $b2bClientId): bool
+    {
+        return $this->currentScope->runAs(
+            ScopeContext::system(),
+            fn (): bool => B2bClient::query()->whereKey($b2bClientId)->where('status', B2bClientStatus::Active)->exists(),
+        );
+    }
+
+    /**
+     * Any branch of the organization, visible to the caller or not, with who
+     * owns it; null when there is no such branch. For flows that cross scope
+     * by design, such as a franchise PSC asking an HQ lab for kits.
+     */
+    public function branchOwnership(string $organizationId, string $branchId): ?BranchOwnership
+    {
+        return $this->currentScope->runAs(ScopeContext::system($organizationId), function () use ($branchId): ?BranchOwnership {
+            $branch = Branch::query()->find($branchId);
+
+            return $branch === null ? null : new BranchOwnership($branch->id, $branch->branch_code, $branch->name, $branch->franchise_id, $branch->region_id);
+        });
+    }
+
+    /**
+     * Every branch of the organization with where it sits, for summaries
+     * that roll up by region and franchise.
+     *
+     * @return list<BranchOwnership>
+     */
+    public function branchPlacements(string $organizationId): array
+    {
+        return $this->currentScope->runAs(ScopeContext::system($organizationId), fn (): array => Branch::query()
+            ->withTrashed()
+            ->get()
+            ->map(fn (Branch $branch) => new BranchOwnership($branch->id, $branch->branch_code, $branch->name, $branch->franchise_id, $branch->region_id))
+            ->all());
+    }
+
+    /** @return list<string> */
+    public function organizationIds(): array
+    {
+        return $this->currentScope->runAs(ScopeContext::system(), fn (): array => Organization::query()->pluck('id')->all());
     }
 
     /** Credit days of a visible B2B client, for invoice due dates. */

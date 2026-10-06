@@ -16,15 +16,21 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Hospital, clinic, lab or corporate buying on credit (spec §7.1).
- * Client management arrives in Phase 6.
  *
  * @property string $id
  * @property string $organization_id
  * @property string $region_id
  * @property string $serviced_by_branch_id
  * @property string $price_list_id
+ * @property B2bClientType $client_type
  * @property string $client_code
  * @property string $name
+ * @property string|null $gstin
+ * @property string $contact_name
+ * @property string $phone
+ * @property string $email
+ * @property string $billing_address
+ * @property int $credit_days
  * @property Money $credit_limit
  * @property Money $current_balance
  * @property bool $withhold_reports_when_overdue
