@@ -47,7 +47,17 @@ final class AuthError
 
     public static function mfaEnrollmentNotStarted(): DomainError
     {
-        return new DomainError('MFA_ENROLLMENT_NOT_STARTED', 'Start MFA enrolment before confirming a code.', 422);
+        return new DomainError('MFA_ENROLLMENT_NOT_STARTED', 'Start MFA set-up before confirming a code.', 422);
+    }
+
+    public static function mfaAlreadyEnabled(): DomainError
+    {
+        return new DomainError('MFA_ALREADY_ENABLED', 'MFA is already switched on for this account.', 409);
+    }
+
+    public static function mfaNotEnabled(): DomainError
+    {
+        return new DomainError('MFA_NOT_ENABLED', 'MFA is not switched on for this account.', 422);
     }
 
     public static function notStaff(): DomainError

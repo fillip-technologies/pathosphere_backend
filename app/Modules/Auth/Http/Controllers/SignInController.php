@@ -2,7 +2,6 @@
 
 namespace App\Modules\Auth\Http\Controllers;
 
-use App\Modules\Auth\Http\Requests\MfaEnrollmentRequest;
 use App\Modules\Auth\Http\Requests\MfaVerificationRequest;
 use App\Modules\Auth\Http\Requests\RefreshTokenRequest;
 use App\Modules\Auth\Http\Requests\SignInRequest;
@@ -30,11 +29,6 @@ final class SignInController
         );
 
         return new JsonResponse(['data' => $result->toArray()]);
-    }
-
-    public function startMfaEnrollment(MfaEnrollmentRequest $request): JsonResponse
-    {
-        return new JsonResponse(['data' => $this->signIn->startMfaEnrollment($request->validated('mfa_challenge_token'))]);
     }
 
     public function completeMfa(MfaVerificationRequest $request): JsonResponse

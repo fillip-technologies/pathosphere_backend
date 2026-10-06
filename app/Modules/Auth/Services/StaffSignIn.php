@@ -14,12 +14,11 @@ use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Hash;
 
 /**
- * Staff sign-in by password, with MFA where the role demands it
- * (spec §8.1, §10.3–10.4):
+ * Staff sign-in by password, with MFA for accounts that switched it on
+ * (spec §8.1, §10.3). MFA is optional; staff turn it on through StaffMfa.
  *
- *   password ok, MFA not needed      → tokens
- *   password ok, MFA set up          → challenge → code → tokens
- *   password ok, MFA needed, not set → challenge → enrolment → code → tokens
+ *   password ok, MFA off → tokens
+ *   password ok, MFA on  → challenge → code → tokens
  */
 final class StaffSignIn
 {
@@ -53,56 +52,22 @@ final class StaffSignIn
             throw AuthError::invalidCredentials();
         }
 
-        $user = $this->activeUserFor($account);
+        $this->activeUserFor($account);
         $account->forceFill(['failed_attempts' => 0, 'locked_until' => null])->save();
 
-        if ($account->mfa_enabled || $user->role->requiresMfa()) {
-            $challenge = new MfaChallenge($account->id, ! $account->mfa_enabled, null, 0, $ipAddress, $deviceInfo);
-            $token = $this->challenges->create($challenge);
-
-            return $challenge->isEnrollment
-                ? SignInResult::mfaEnrollmentRequired($token)
-                : SignInResult::mfaRequired($token);
+        if ($account->mfa_enabled) {
+            return SignInResult::mfaRequired($this->challenges->create(new MfaChallenge($account->id, 0, $ipAddress, $deviceInfo)));
         }
 
         return SignInResult::authenticated($this->completeSignIn($account, $ipAddress, $deviceInfo));
     }
 
-    /**
-     * Starts MFA enrolment for a challenge that requires it and returns the
-     * new secret for the authenticator app.
-     *
-     * @return array{secret: string, otpauth_uri: string}
-     */
-    public function startMfaEnrollment(string $challengeToken): array
-    {
-        $challenge = $this->challenges->get($challengeToken);
-
-        if (! $challenge->isEnrollment) {
-            throw AuthError::invalidMfaChallenge();
-        }
-
-        $account = Account::query()->findOrFail($challenge->accountId);
-        $secret = Totp::generateSecret();
-        $this->challenges->put($challengeToken, $challenge->withPendingSecret($secret));
-
-        return [
-            'secret' => $secret,
-            'otpauth_uri' => Totp::provisioningUri($secret, $account->login_identifier, (string) config('pathology.auth.mfa_issuer')),
-        ];
-    }
-
-    /** Checks the authenticator code; on enrolment it also switches MFA on. */
+    /** Checks the authenticator code and finishes the sign-in. */
     public function completeMfa(string $challengeToken, string $code): IssuedTokens
     {
         $challenge = $this->challenges->get($challengeToken);
         $account = Account::query()->findOrFail($challenge->accountId);
-
-        if ($challenge->isEnrollment && $challenge->pendingSecret === null) {
-            throw AuthError::mfaEnrollmentNotStarted();
-        }
-
-        $secret = $challenge->isEnrollment ? $challenge->pendingSecret : $account->mfa_secret;
+        $secret = $account->mfa_enabled ? $account->mfa_secret : null;
 
         if ($secret === null || ! Totp::verify($secret, $code, CarbonImmutable::now()->getTimestamp())) {
             $this->recordFailedMfaAttempt($challengeToken, $challenge);
@@ -112,10 +77,6 @@ final class StaffSignIn
 
         $this->challenges->forget($challengeToken);
         $this->activeUserFor($account);
-
-        if ($challenge->isEnrollment) {
-            $account->forceFill(['mfa_secret' => $secret, 'mfa_enabled' => true])->save();
-        }
 
         return $this->completeSignIn($account, $challenge->ipAddress, $challenge->deviceInfo);
     }

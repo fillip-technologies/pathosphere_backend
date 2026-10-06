@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 /**
  * Keeps MFA challenges in the database cache for a few minutes. The client
  * holds only a random token; the cache key is its hash, and the stored
- * challenge (which may contain a TOTP secret) is encrypted.
+ * challenge is encrypted.
  */
 final class MfaChallengeStore
 {

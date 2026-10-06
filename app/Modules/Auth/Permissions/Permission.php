@@ -116,8 +116,9 @@ enum Permission: string
     }
 
     /**
-     * Holding any of these makes MFA mandatory for the role (spec §10.4:
-     * Super Admin, HQ Finance, Franchise Manager and every signatory).
+     * Roles holding any of these should use MFA (spec §10.4: Super Admin, HQ
+     * Finance, Franchise Manager and every signatory). Sign-in does not force
+     * it, so apps use the flag to prompt; signing a report still needs MFA.
      */
     public function requiresMfa(): bool
     {

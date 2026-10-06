@@ -3261,7 +3261,7 @@
         },
         "/webhooks/sms-dlr": {
             "post": {
-                "operationId": "modules.shared.deliveryWebhook_249",
+                "operationId": "modules.shared.deliveryWebhook_251",
                 "tags": [
                     "DeliveryWebhook"
                 ],
@@ -3297,7 +3297,7 @@
         },
         "/webhooks/whatsapp": {
             "post": {
-                "operationId": "modules.shared.deliveryWebhook_250",
+                "operationId": "modules.shared.deliveryWebhook_252",
                 "tags": [
                     "DeliveryWebhook"
                 ],
@@ -6902,6 +6902,9 @@
                                                     "type": "array",
                                                     "items": {}
                                                 },
+                                                "mfa_enabled": {
+                                                    "type": "boolean"
+                                                },
                                                 "permissions": {
                                                     "type": "array",
                                                     "items": {}
@@ -6962,6 +6965,7 @@
                                             },
                                             "required": [
                                                 "user",
+                                                "mfa_enabled",
                                                 "permissions",
                                                 "scope"
                                             ]
@@ -6976,6 +6980,153 @@
                     },
                     "401": {
                         "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/me/mfa": {
+            "post": {
+                "operationId": "mfa.start",
+                "tags": [
+                    "Mfa"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "secret": {
+                                                    "type": "string"
+                                                },
+                                                "otpauth_uri": {
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "required": [
+                                                "secret",
+                                                "otpauth_uri"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/me/mfa/confirmation": {
+            "post": {
+                "operationId": "mfa.confirm",
+                "tags": [
+                    "Mfa"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MfaCodeRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "mfa_enabled": {
+                                                    "type": "boolean"
+                                                }
+                                            },
+                                            "required": [
+                                                "mfa_enabled"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
+                    }
+                }
+            }
+        },
+        "/me/mfa/disable": {
+            "post": {
+                "operationId": "mfa.disable",
+                "tags": [
+                    "Mfa"
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/MfaCodeRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "mfa_enabled": {
+                                                    "type": "boolean"
+                                                }
+                                            },
+                                            "required": [
+                                                "mfa_enabled"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    },
+                    "422": {
+                        "$ref": "#/components/responses/ValidationException"
                     }
                 }
             }
@@ -11862,59 +12013,6 @@
                                         "data": {
                                             "type": "array",
                                             "items": {}
-                                        }
-                                    },
-                                    "required": [
-                                        "data"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "$ref": "#/components/responses/ValidationException"
-                    }
-                }
-            }
-        },
-        "/auth/mfa-enrollments": {
-            "post": {
-                "operationId": "signIn.startMfaEnrollment",
-                "tags": [
-                    "SignIn"
-                ],
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/MfaEnrollmentRequest"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "object",
-                                            "properties": {
-                                                "secret": {
-                                                    "type": "string"
-                                                },
-                                                "otpauth_uri": {
-                                                    "type": "string"
-                                                }
-                                            },
-                                            "required": [
-                                                "secret",
-                                                "otpauth_uri"
-                                            ]
                                         }
                                     },
                                     "required": [
@@ -17280,18 +17378,19 @@
                 ],
                 "title": "MergePatientRequest"
             },
-            "MfaEnrollmentRequest": {
+            "MfaCodeRequest": {
                 "type": "object",
+                "description": "A code from the staff member's authenticator app.",
                 "properties": {
-                    "mfa_challenge_token": {
+                    "code": {
                         "type": "string",
-                        "maxLength": 100
+                        "pattern": "^\\d{6}$"
                     }
                 },
                 "required": [
-                    "mfa_challenge_token"
+                    "code"
                 ],
-                "title": "MfaEnrollmentRequest"
+                "title": "MfaCodeRequest"
             },
             "MfaVerificationRequest": {
                 "type": "object",
