@@ -5,9 +5,12 @@ namespace App\Modules\Locker;
 use App\Modules\Lab\Events\ReportPdfViewed;
 use App\Modules\Lab\Events\ReportReleased;
 use App\Modules\Locker\Console\BackfillLocker;
+use App\Modules\Locker\Contracts\AbdmHipGateway;
 use App\Modules\Locker\Http\Middleware\ResolveDoctor;
 use App\Modules\Locker\Http\Middleware\ResolvePatientProfile;
+use App\Modules\Locker\Infrastructure\FakeAbdmHipGateway;
 use App\Modules\Locker\Listeners\CopyReleasedReportToLocker;
+use App\Modules\Locker\Listeners\LinkReleasedReportToAbha;
 use App\Modules\Locker\Listeners\LogReportPdfView;
 use App\Modules\Locker\Services\DoctorViewer;
 use App\Modules\Locker\Services\PatientViewer;
@@ -17,14 +20,24 @@ use Illuminate\Routing\Router;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
+use LogicException;
 
-/** Patient health locker, Engine 17 (spec §7.11), and patient and doctor sign-in. */
+/**
+ * Patient health locker, Engine 17 (spec §7.11), patient and doctor sign-in,
+ * and our labs as ABDM Health Information Providers (spec §5.7 M2).
+ */
 final class LockerServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
         $this->app->scoped(PatientViewer::class);
         $this->app->scoped(DoctorViewer::class);
+
+        // Until ABDM sandbox onboarding only the fake gateway exists; it records what would be sent.
+        $this->app->singleton(AbdmHipGateway::class, fn () => match (config('services.abdm.hip_gateway')) {
+            'fake' => new FakeAbdmHipGateway((string) config('services.abdm.callback_secret'), (string) config('services.abdm.cm_id')),
+            default => throw new LogicException('Only the fake ABDM HIP gateway exists until sandbox onboarding (ABDM_HIP_GATEWAY=fake).'),
+        });
 
         $this->commands([BackfillLocker::class]);
     }
@@ -48,6 +61,7 @@ final class LockerServiceProvider extends ServiceProvider
         RateLimiter::for('share-links', fn (Request $request) => Limit::perMinute((int) config('pathology.locker.share_link_requests_per_minute'))->by('share-link:'.$request->ip()));
 
         Event::listen(ReportReleased::class, CopyReleasedReportToLocker::class);
+        Event::listen(ReportReleased::class, LinkReleasedReportToAbha::class);
         Event::listen(ReportPdfViewed::class, LogReportPdfView::class);
     }
 }

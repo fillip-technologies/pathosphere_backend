@@ -16,5 +16,7 @@ final class BranchLetterhead
         public readonly ?string $nablCertificateNo,
         public readonly ?CarbonImmutable $nablValidTill,
         public readonly ?string $clinicalEstablishmentRegNo,
+        /** ABDM Health Facility Registry ID: the lab's identity as a Health Information Provider. */
+        public readonly ?string $hfrId = null,
     ) {}
 }

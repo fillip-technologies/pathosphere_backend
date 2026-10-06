@@ -37,6 +37,10 @@ return [
 
     'abdm' => [
         'callback_secret' => env('ABDM_CALLBACK_SECRET', ''),
+        // Health Information Provider gateway (M2): `fake` until sandbox onboarding.
+        'hip_gateway' => env('ABDM_HIP_GATEWAY', 'fake'),
+        // Consent manager ID sent as X-CM-ID: `sbx` in the sandbox, `abdm` in production.
+        'cm_id' => env('ABDM_CM_ID', 'sbx'),
     ],
 
     'razorpay' => [

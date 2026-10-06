@@ -30,9 +30,9 @@ class DevelopmentNetworkSeeder extends Seeder
         $jharkhand = $this->region($organization, 'Jharkhand');
         $ranchi = $this->region($organization, 'Ranchi', $jharkhand);
 
-        Branch::factory()->in($patna)->ofType(BranchType::ReferenceLab)->create(['branch_code' => 'PATREF', 'name' => 'Patna Reference Lab', 'pincode' => '800001']);
-        Branch::factory()->in($patna)->ofType(BranchType::ClinicalLab)->create(['branch_code' => 'PATCL1', 'name' => 'Patna Clinical Lab', 'pincode' => '800013']);
-        Branch::factory()->in($ranchi)->ofType(BranchType::ClinicalLab)->create(['branch_code' => 'RNCCL1', 'name' => 'Ranchi Clinical Lab', 'pincode' => '834001']);
+        Branch::factory()->in($patna)->ofType(BranchType::ReferenceLab)->create(['branch_code' => 'PATREF', 'hfr_id' => 'DEMO-HFR-PATREF', 'name' => 'Patna Reference Lab', 'pincode' => '800001']);
+        Branch::factory()->in($patna)->ofType(BranchType::ClinicalLab)->create(['branch_code' => 'PATCL1', 'hfr_id' => 'DEMO-HFR-PATCL1', 'name' => 'Patna Clinical Lab', 'pincode' => '800013']);
+        Branch::factory()->in($ranchi)->ofType(BranchType::ClinicalLab)->create(['branch_code' => 'RNCCL1', 'hfr_id' => 'DEMO-HFR-RNCCL1', 'name' => 'Ranchi Clinical Lab', 'pincode' => '834001']);
         Branch::factory()->in($patna)->create(['branch_code' => 'PATPSC1', 'name' => 'Boring Road PSC', 'pincode' => '800001']);
         Branch::factory()->in($patna)->create(['branch_code' => 'PATPSC2', 'name' => 'Kankarbagh PSC', 'pincode' => '800020']);
         Branch::factory()->in($ranchi)->create(['branch_code' => 'RNCPSC1', 'name' => 'Lalpur PSC', 'pincode' => '834001']);

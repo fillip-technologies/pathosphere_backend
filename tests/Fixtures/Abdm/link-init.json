@@ -1,0 +1,14 @@
+{
+  "transactionId": "a8b3c1d2-0000-4c5d-8e9f-111122223333",
+  "abhaAddress": "asha.kumari@sbx",
+  "patient": [
+    {
+      "referenceNumber": "UH000000001",
+      "careContexts": [
+        { "referenceNumber": "01920000-0000-7000-8000-000000000001" }
+      ],
+      "hiType": "DiagnosticReport",
+      "count": 1
+    }
+  ]
+}

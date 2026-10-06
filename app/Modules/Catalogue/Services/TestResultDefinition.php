@@ -13,6 +13,8 @@ final class TestResultDefinition
         public readonly string $departmentId,
         public readonly ?string $method,
         public readonly array $parameters,
+        /** For ABDM: the report is shared as a FHIR DiagnosticReport coded by LOINC. */
+        public readonly ?string $loincCode = null,
     ) {}
 
     public function parameterByCode(string $code): ?ParameterDefinition

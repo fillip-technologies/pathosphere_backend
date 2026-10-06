@@ -9,6 +9,7 @@ use App\Modules\Ledger\Jobs\BuildSettlements;
 use App\Modules\Ledger\Jobs\HoldOverduePartners;
 use App\Modules\Ledger\Jobs\RemindB2bDues;
 use App\Modules\Locker\Jobs\ExpireRecordShares;
+use App\Modules\Locker\Jobs\RetryCareContextLinks;
 use App\Modules\Locker\Jobs\SendDueReminders;
 use App\Modules\Network\Jobs\AlertExpiringNetworkPapers;
 use App\Modules\Network\Jobs\ExpireEndedAgreements;
@@ -98,4 +99,9 @@ Schedule::job(new SendDueReminders)
 Schedule::job(new ExpireRecordShares)
     ->dailyAt('00:30')
     ->timezone('Asia/Kolkata')
+    ->withoutOverlapping();
+
+// ABDM M2 (spec §5.7): reports ABDM has not linked yet are sent again.
+Schedule::job(new RetryCareContextLinks)
+    ->hourly()
     ->withoutOverlapping();

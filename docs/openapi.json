@@ -57,6 +57,102 @@
                 }
             }
         },
+        "/me/abdm-consents": {
+            "get": {
+                "operationId": "abdmConsent.index",
+                "tags": [
+                    "AbdmConsent"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "string"
+                                        },
+                                        "pagination": {
+                                            "type": "object",
+                                            "properties": {
+                                                "next_cursor": {
+                                                    "type": [
+                                                        "string",
+                                                        "null"
+                                                    ]
+                                                },
+                                                "limit": {
+                                                    "type": "integer"
+                                                }
+                                            },
+                                            "required": [
+                                                "next_cursor",
+                                                "limit"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data",
+                                        "pagination"
+                                    ]
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "$ref": "#/components/responses/AuthenticationException"
+                    }
+                }
+            }
+        },
+        "/abdm/callbacks/hip/{callbackType}": {
+            "post": {
+                "operationId": "locker.abdmHipCallback",
+                "tags": [
+                    "AbdmHipCallback"
+                ],
+                "parameters": [
+                    {
+                        "name": "callbackType",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "object",
+                                            "properties": {
+                                                "accepted": {
+                                                    "type": "boolean"
+                                                }
+                                            },
+                                            "required": [
+                                                "accepted"
+                                            ]
+                                        }
+                                    },
+                                    "required": [
+                                        "data"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/abha-verifications": {
             "post": {
                 "operationId": "abha.startVerification",
@@ -2860,7 +2956,7 @@
         },
         "/webhooks/sms-dlr": {
             "post": {
-                "operationId": "modules.shared.deliveryWebhook_236",
+                "operationId": "modules.shared.deliveryWebhook_238",
                 "tags": [
                     "DeliveryWebhook"
                 ],
@@ -2896,7 +2992,7 @@
         },
         "/webhooks/whatsapp": {
             "post": {
-                "operationId": "modules.shared.deliveryWebhook_237",
+                "operationId": "modules.shared.deliveryWebhook_239",
                 "tags": [
                     "DeliveryWebhook"
                 ],
@@ -19038,6 +19134,13 @@
                         "type": "string",
                         "maxLength": 150
                     },
+                    "loinc_code": {
+                        "type": [
+                            "string",
+                            "null"
+                        ],
+                        "maxLength": 20
+                    },
                     "unit": {
                         "type": [
                             "string",
@@ -19168,6 +19271,12 @@
                     "code": {
                         "type": "string"
                     },
+                    "loinc_code": {
+                        "type": [
+                            "string",
+                            "null"
+                        ]
+                    },
                     "parameter_name": {
                         "type": "string"
                     },
@@ -19287,6 +19396,7 @@
                     "id",
                     "test_id",
                     "code",
+                    "loinc_code",
                     "parameter_name",
                     "unit",
                     "result_type",

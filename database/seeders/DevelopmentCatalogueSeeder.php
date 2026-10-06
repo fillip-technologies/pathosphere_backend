@@ -33,6 +33,17 @@ use Illuminate\Database\Seeder;
  */
 class DevelopmentCatalogueSeeder extends Seeder
 {
+    /**
+     * LOINC codes of common analytes, so ABDM FHIR Observations are coded
+     * (spec §7.4 loinc_code). Parameters not listed travel with our own code.
+     */
+    private const PARAMETER_LOINC_CODES = [
+        'HB' => '718-7', 'TLC' => '6690-2', 'PLT' => '777-3', 'RBC' => '789-8', 'PCV' => '4544-3',
+        'GLUF' => '1558-6', 'HBA1C' => '4548-4', 'TC' => '2093-3', 'TG' => '2571-8', 'HDL' => '2085-9',
+        'LDL' => '13457-7', 'TSH' => '3016-3', 'CREAT' => '2160-0', 'NA' => '2951-2', 'K' => '2823-3',
+        'CL' => '2075-0', 'VITD' => '1989-3',
+    ];
+
     /** Tests only the reference lab runs; clinical labs run the rest. */
     private const SPECIALISED = [
         'VITD', 'VITB12', 'FERR', 'PSA', 'INS-F', 'CORT', 'FT3', 'FT4',
@@ -230,6 +241,7 @@ class DevelopmentCatalogueSeeder extends Seeder
         $parameter = new TestParameter([
             'parameter_name' => $name,
             'code' => $code,
+            'loinc_code' => self::PARAMETER_LOINC_CODES[$code] ?? null,
             'result_type' => $type,
             'unit' => match ($type) {
                 ResultType::Numeric => $definition[2],

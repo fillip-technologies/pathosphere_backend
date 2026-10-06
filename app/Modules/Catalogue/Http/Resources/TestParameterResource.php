@@ -17,6 +17,7 @@ final class TestParameterResource extends JsonResource
             'id' => $this->id,
             'test_id' => $this->test_id,
             'code' => $this->code,
+            'loinc_code' => $this->loinc_code,
             'parameter_name' => $this->parameter_name,
             'unit' => $this->unit,
             'result_type' => $this->result_type,

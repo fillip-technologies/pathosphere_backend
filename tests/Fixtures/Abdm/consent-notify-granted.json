@@ -1,0 +1,29 @@
+{
+  "notification": {
+    "status": "GRANTED",
+    "consentId": "c0ns3nt-0000-4000-8000-000000000001",
+    "consentDetail": {
+      "schemaVersion": "v3",
+      "consentId": "c0ns3nt-0000-4000-8000-000000000001",
+      "createdAt": "2026-10-20T06:00:00.000Z",
+      "patient": { "id": "asha.kumari@sbx" },
+      "careContexts": [
+        { "patientReference": "UH000000001", "careContextReference": "01920000-0000-7000-8000-000000000001" }
+      ],
+      "purpose": { "text": "Care Management", "code": "CAREMGT", "refUri": "http://terminology.hl7.org/ValueSet/v3-PurposeOfUse" },
+      "hip": { "id": "IN1010000101" },
+      "hiu": { "id": "IN2020000202" },
+      "requester": { "name": "Dr. Meera Sinha", "identifier": { "type": "REGNO", "value": "MH1001", "system": "https://www.mciindia.org" } },
+      "consentManager": { "id": "sbx" },
+      "hiTypes": ["DiagnosticReport"],
+      "permission": {
+        "accessMode": "VIEW",
+        "dateRange": { "from": "2026-01-01T00:00:00.000Z", "to": "2026-12-31T23:59:59.000Z" },
+        "dataEraseAt": "2027-01-31T00:00:00.000Z",
+        "frequency": { "unit": "HOUR", "value": 1, "repeats": 0 }
+      }
+    },
+    "signature": "dGhpcy1pcy1hLXNpZ25hdHVyZQ==",
+    "grantAcknowledgement": false
+  }
+}

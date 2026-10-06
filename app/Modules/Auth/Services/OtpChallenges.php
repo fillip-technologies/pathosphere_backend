@@ -64,10 +64,14 @@ final class OtpChallenges
         });
 
         $minutes = (int) config('pathology.otp.expiry_minutes');
+        [$action, $templateId] = $purpose === OtpPurpose::CareContextLink
+            ? ["link your {$brandName} lab reports to your ABHA", config('pathology.otp.care_context_link_sms_template_id')]
+            : ["sign in to {$brandName}", config('pathology.otp.sms_template_id')];
+
         $this->sms->sendSms(
             $phone,
-            "{$code} is your code to sign in to {$brandName}. It is valid for {$minutes} minutes. Do not share it with anyone.",
-            config('pathology.otp.sms_template_id'),
+            "{$code} is your code to {$action}. It is valid for {$minutes} minutes. Do not share it with anyone.",
+            $templateId,
         );
 
         return $otp->expires_at;

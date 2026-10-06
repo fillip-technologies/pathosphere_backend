@@ -8,6 +8,12 @@ namespace Tests\Support\Architecture;
  */
 final class NoFloatInMoneyCode implements ArchitectureRule
 {
+    /** Reviewed exceptions: Domain code that holds no money. */
+    private const ALLOWED_FILES = [
+        // FHIR Observation values must be JSON numbers (lab results, never money).
+        'app/Modules/Locker/Domain/DiagnosticReportRecord.php',
+    ];
+
     public function description(): string
     {
         return 'Money code (Shared/Money, */Domain/, Ledger) must not use float.';
@@ -20,7 +26,7 @@ final class NoFloatInMoneyCode implements ArchitectureRule
         foreach ($files as $file) {
             $isMoneyCode = $file->isUnder('/Shared/Money/') || $file->isUnder('/Domain/') || $file->isUnder('/Modules/Ledger/');
 
-            if (! $isMoneyCode) {
+            if (! $isMoneyCode || array_filter(self::ALLOWED_FILES, fn (string $path): bool => str_ends_with($file->path, $path)) !== []) {
                 continue;
             }
 

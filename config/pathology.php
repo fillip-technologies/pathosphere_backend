@@ -112,6 +112,7 @@ return [
         'daily_limit_per_phone' => 10,
         // DLT template ID of the OTP SMS (spec §3); fill in once registered.
         'sms_template_id' => env('OTP_SMS_TEMPLATE_ID'),
+        'care_context_link_sms_template_id' => env('OTP_LINK_SMS_TEMPLATE_ID'),
     ],
 
     // Patient health locker (spec §7.11, Engine 17).
@@ -124,6 +125,23 @@ return [
         'share_max_days' => 30,
         // Public share-link views per minute per IP address (spec §10.5).
         'share_link_requests_per_minute' => 30,
+    ],
+
+    // ABDM milestone M2: our labs as Health Information Providers (spec §5.7).
+    'abdm' => [
+        // Link each released report to the patient's ABHA when they have one.
+        'link_on_release' => (bool) env('ABDM_LINK_ON_RELEASE', true),
+        // ABDM's link token for a patient at one of our facilities, kept encrypted in the cache.
+        'link_token_ttl_minutes' => 43200,
+        // A link request with no answer after this long is sent again by the retry job.
+        'link_retry_after_minutes' => 30,
+        'link_max_attempts' => 5,
+        // From the patient's choice of reports in their ABHA app to the code they confirm with.
+        'link_session_minutes' => 10,
+        // Care contexts per page pushed to a health information user.
+        'transfer_page_size' => 10,
+        // How long the public key we send with encrypted data is valid.
+        'transfer_key_valid_minutes' => 1440,
     ],
 
 ];

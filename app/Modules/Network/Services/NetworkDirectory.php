@@ -191,6 +191,7 @@ final class NetworkDirectory
                 $branch->nabl_certificate_no,
                 $branch->nabl_valid_till,
                 $branch->clinical_establishment_reg_no,
+                $branch->hfr_id,
             );
         });
     }

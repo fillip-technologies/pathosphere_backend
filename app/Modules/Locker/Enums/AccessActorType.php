@@ -11,4 +11,6 @@ enum AccessActorType: string
     case ShareLink = 'share_link';
     case ReportLink = 'report_link';
     case System = 'system';
+    /** Sent to a health information user through ABDM, under a consent artefact. */
+    case Abdm = 'abdm';
 }

@@ -83,21 +83,22 @@ final class SchemaMacros
          */
         Blueprint::macro('enumString', function (string $column, string $enumClass): ColumnDefinition {
             /** @var Blueprint $this */
-            if (! is_subclass_of($enumClass, BackedEnum::class)) {
-                throw new InvalidArgumentException("{$enumClass} is not a backed enum.");
-            }
-
-            $allowedValues = array_map(
-                fn (BackedEnum $case): string => "'".str_replace("'", "''", (string) $case->value)."'",
-                $enumClass::cases(),
-            );
-
-            $this->check(
-                sprintf('`%s` in (%s)', $column, implode(', ', $allowedValues)),
-                "{$this->getTable()}_{$column}_check",
-            );
+            $this->check(SchemaMacros::enumCheckExpression($column, $enumClass), "{$this->getTable()}_{$column}_check");
 
             return $this->string($column, 32);
+        });
+
+        /**
+         * Rebuilds the CHECK of an enumString column after cases were added
+         * to its enum (the column itself is unchanged).
+         *
+         * @param  class-string<BackedEnum>  $enumClass
+         */
+        Blueprint::macro('refreshEnumCheck', function (string $column, string $enumClass): void {
+            /** @var Blueprint $this */
+            $name = "{$this->getTable()}_{$column}_check";
+            $this->addCommand('dropCheck', ['index' => $name]);
+            $this->check(SchemaMacros::enumCheckExpression($column, $enumClass), $name);
         });
 
         /** Hashes (SHA-256 hex) use an ascii char(64) column. */
@@ -173,6 +174,12 @@ final class SchemaMacros
             );
         });
 
+        // MySQL 8.0.19+ and MariaDB both accept DROP CONSTRAINT for a CHECK.
+        MySqlGrammar::macro('compileDropCheck', function (Blueprint $blueprint, Fluent $command): string {
+            /** @var MySqlGrammar $this */
+            return sprintf('alter table %s drop constraint %s', $this->wrapTable($blueprint), $this->wrap($command->get('index')));
+        });
+
         MySqlGrammar::macro('compileSearchableText', function (Blueprint $blueprint, Fluent $command): string {
             /** @var MySqlGrammar $this */
             $isMaria = $this->connection instanceof MySqlConnection && $this->connection->isMaria();
@@ -186,5 +193,24 @@ final class SchemaMacros
                 $parser,
             );
         });
+    }
+
+    /**
+     * `column in ('a', 'b')` from a backed enum's values.
+     *
+     * @param  class-string<BackedEnum>  $enumClass
+     */
+    public static function enumCheckExpression(string $column, string $enumClass): string
+    {
+        if (! is_subclass_of($enumClass, BackedEnum::class)) {
+            throw new InvalidArgumentException("{$enumClass} is not a backed enum.");
+        }
+
+        $allowedValues = array_map(
+            fn (BackedEnum $case): string => "'".str_replace("'", "''", (string) $case->value)."'",
+            $enumClass::cases(),
+        );
+
+        return sprintf('`%s` in (%s)', $column, implode(', ', $allowedValues));
     }
 }

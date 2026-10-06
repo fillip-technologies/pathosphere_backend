@@ -23,6 +23,7 @@ final class TestParameterRequest extends FormRequest
 
         $rules = [
             'parameter_name' => [$required, 'string', 'max:150'],
+            'loinc_code' => ['sometimes', 'nullable', 'string', 'max:20'],
             'unit' => ['sometimes', 'nullable', 'string', 'max:30'],
             'result_type' => [$required, Rule::enum(ResultType::class)],
             'decimal_places' => ['sometimes', 'nullable', 'integer', 'between:0,4'],

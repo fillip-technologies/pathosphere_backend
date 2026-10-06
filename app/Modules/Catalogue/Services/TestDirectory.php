@@ -77,7 +77,9 @@ final class TestDirectory
                         $range->critical_high,
                         $range->display_text,
                     ))->values()->all(),
+                    $parameter->loinc_code,
                 ))->values()->all(),
+                $test->loinc_code,
             )])
             ->all();
     }

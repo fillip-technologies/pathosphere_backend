@@ -1,0 +1,18 @@
+{
+  "transactionId": "7e1d0c3b-2a19-4f08-b7e6-d5c4b3a29180",
+  "hiRequest": {
+    "consent": { "id": "c0ns3nt-0000-4000-8000-000000000001" },
+    "dateRange": { "from": "2026-01-01T00:00:00.000Z", "to": "2026-12-31T23:59:59.000Z" },
+    "dataPushUrl": "https://hiu.example.in/data/push",
+    "keyMaterial": {
+      "cryptoAlg": "ECDH",
+      "curve": "Curve25519",
+      "dhPublicKey": {
+        "expiry": "2030-01-01T00:00:00.000Z",
+        "parameters": "Curve25519/32byte random key",
+        "keyValue": "3q2+7wABAgMEBQYHCAkKCwwNDg8QERITFBUWFxgZGhs="
+      },
+      "nonce": "AAECAwQFBgcICQoLDA0ODxAREhMUFRYXGBkaGxwdHh8="
+    }
+  }
+}

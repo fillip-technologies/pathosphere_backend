@@ -1,0 +1,16 @@
+{
+  "transactionId": "a8b3c1d2-0000-4c5d-8e9f-111122223333",
+  "patient": {
+    "id": "asha.kumari@sbx",
+    "name": "Asha Kumari",
+    "gender": "F",
+    "yearOfBirth": 1990,
+    "verifiedIdentifiers": [
+      { "type": "MOBILE", "value": "9876501234" },
+      { "type": "ABHA_NUMBER", "value": "91-1111-2222-3333" }
+    ],
+    "unverifiedIdentifiers": [
+      { "type": "MR", "value": "UH000000001" }
+    ]
+  }
+}

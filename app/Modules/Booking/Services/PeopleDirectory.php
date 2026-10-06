@@ -2,6 +2,7 @@
 
 namespace App\Modules\Booking\Services;
 
+use App\Modules\Booking\Enums\AbhaStatus;
 use App\Modules\Booking\Enums\ReportDelivery;
 use App\Modules\Booking\Models\Doctor;
 use App\Modules\Booking\Models\Patient;
@@ -45,11 +46,7 @@ final class PeopleDirectory
     public function patient(string $patientId): ?PatientProfile
     {
         return $this->asSystem(function () use ($patientId): ?PatientProfile {
-            $patient = Patient::query()->find($patientId);
-
-            for ($hops = 0; $patient !== null && $patient->merged_into_id !== null && $hops < self::MAX_MERGE_CHAIN; $hops++) {
-                $patient = Patient::query()->find($patient->merged_into_id);
-            }
+            $patient = $this->surviving($patientId);
 
             return $patient === null ? null : $this->profileOf($patient);
         });
@@ -75,6 +72,77 @@ final class PeopleDirectory
 
             return array_values(array_unique($ids));
         });
+    }
+
+    /**
+     * The patient (following merges) with their linked ABHA; null when no
+     * ABHA is linked (spec §5.7: ABHA is optional).
+     */
+    public function abhaIdentity(string $patientId): ?AbhaIdentity
+    {
+        return $this->asSystem(function () use ($patientId): ?AbhaIdentity {
+            $patient = $this->surviving($patientId);
+
+            if ($patient === null || $patient->abha_status !== AbhaStatus::Linked || $patient->abha_number === null) {
+                return null;
+            }
+
+            return new AbhaIdentity(
+                $patient->id,
+                $patient->organization_id,
+                $patient->uhid,
+                $patient->name,
+                $patient->gender,
+                $patient->dob,
+                self::yearOfBirth($patient),
+                $patient->abha_number,
+                $patient->abha_address,
+            );
+        });
+    }
+
+    /**
+     * Patients who could be the person ABDM is looking up: the ABHA number
+     * linked at our desk, or the mobile number ABDM verified. Merged and
+     * deleted records are left out.
+     *
+     * @return list<AbhaDiscoveryCandidate>
+     */
+    public function abhaDiscoveryCandidates(?string $abhaNumber, ?string $phone): array
+    {
+        $hash = $abhaNumber === null ? null : Patient::abhaNumberHash($abhaNumber);
+        $digits = $phone === null ? null : self::normalisePhone($phone);
+
+        if ($hash === null && ($digits === null || $digits === '')) {
+            return [];
+        }
+
+        return $this->asSystem(fn (): array => Patient::query()
+            ->whereNull('merged_into_id')
+            ->where(function ($query) use ($hash, $digits): void {
+                if ($hash !== null) {
+                    $query->orWhere('abha_number_hash', $hash);
+                }
+
+                if ($digits !== null && $digits !== '') {
+                    $query->orWhere('phone', $digits);
+                }
+            })
+            ->orderBy('created_at')
+            ->orderBy('id')
+            ->limit(50)
+            ->get()
+            ->map(fn (Patient $patient) => new AbhaDiscoveryCandidate(
+                $patient->id,
+                $patient->organization_id,
+                $patient->uhid,
+                $patient->name,
+                $patient->gender,
+                self::yearOfBirth($patient),
+                $hash !== null && $patient->abha_status === AbhaStatus::Linked && $patient->abha_number_hash === $hash,
+                $digits !== null && $patient->phone === $digits,
+            ))
+            ->all());
     }
 
     /** The referring doctor who signs in with this phone: the earliest registered one. */
@@ -153,6 +221,27 @@ final class PeopleDirectory
     public static function normalisePhone(string $phone): string
     {
         return substr(preg_replace('/\D/', '', $phone) ?? '', -10);
+    }
+
+    private function surviving(string $patientId): ?Patient
+    {
+        $patient = Patient::query()->find($patientId);
+
+        for ($hops = 0; $patient !== null && $patient->merged_into_id !== null && $hops < self::MAX_MERGE_CHAIN; $hops++) {
+            $patient = Patient::query()->find($patient->merged_into_id);
+        }
+
+        return $patient;
+    }
+
+    /** From the date of birth, else from the age given at registration. */
+    private static function yearOfBirth(Patient $patient): ?int
+    {
+        if ($patient->dob !== null) {
+            return $patient->dob->year;
+        }
+
+        return $patient->age_years === null ? null : $patient->created_at->year - $patient->age_years;
     }
 
     private function profileOf(Patient $patient): PatientProfile

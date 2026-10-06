@@ -25,6 +25,8 @@ final class ParameterDefinition
         public readonly ?string $formula,
         public readonly int $displayOrder,
         public readonly array $ranges,
+        /** For ABDM: each result is shared as a FHIR Observation coded by LOINC. */
+        public readonly ?string $loincCode = null,
     ) {}
 
     public function rangeFor(Gender $gender, ?int $ageDays): ?ReferenceRangeEntry

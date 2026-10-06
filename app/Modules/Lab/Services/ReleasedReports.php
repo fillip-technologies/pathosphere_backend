@@ -2,22 +2,26 @@
 
 namespace App\Modules\Lab\Services;
 
+use App\Modules\Auth\Services\StaffDirectory;
 use App\Modules\Booking\Services\OrderReporting;
 use App\Modules\Catalogue\Services\TestDirectory;
 use App\Modules\Lab\Enums\ReportStatus;
 use App\Modules\Lab\Models\LabResult;
 use App\Modules\Lab\Models\Report;
+use App\Modules\Lab\Models\ReportSignature;
 use App\Modules\Lab\Models\WorklistEntry;
 use App\Modules\Network\Services\NetworkDirectory;
+use App\Modules\Shared\Files\PrivateFileStore;
 use App\Modules\Shared\Scoping\CurrentScope;
 use App\Modules\Shared\Scoping\ScopeContext;
 use Closure;
 
 /**
  * Released reports as the patient's health locker keeps them (spec §7.11:
- * "copied from final lab_results; powers trend charts"). Read at
- * organization level: the locker is filled by a system job, and patients
- * reach the copy only through their own records.
+ * "copied from final lab_results; powers trend charts") and as ABDM shares
+ * them (spec §5.7 M2). Read at organization level: the locker and ABDM are
+ * served by system jobs, and patients reach reports only through their own
+ * records.
  */
 final class ReleasedReports
 {
@@ -27,6 +31,8 @@ final class ReleasedReports
         private readonly OrderReporting $orders,
         private readonly TestDirectory $tests,
         private readonly NetworkDirectory $network,
+        private readonly StaffDirectory $staffDirectory,
+        private readonly PrivateFileStore $files,
     ) {}
 
     /**
@@ -123,5 +129,119 @@ final class ReleasedReports
                     $each($report->id, $report->organization_id);
                 }
             }));
+    }
+
+    /** A released version with what other health systems need to know about it; null if never released. */
+    public function forExchange(string $organizationId, string $reportId): ?ReportForExchange
+    {
+        return $this->currentScope->runAs(ScopeContext::system($organizationId), function () use ($reportId): ?ReportForExchange {
+            $report = Report::query()->find($reportId);
+
+            if ($report === null || ! $report->status->isPublished() || $report->released_at === null) {
+                return null;
+            }
+
+            $order = $this->orders->reportFacts($report->organization_id, $report->order_id);
+            $entries = $this->reports->liveEntries($report);
+            $definitions = $this->tests->resultDefinitions($entries->pluck('test_id')->all());
+            $departments = $this->tests->departments($entries->pluck('department_id')->all());
+            $signatures = $report->signatures()->with('signatory')->get();
+            $names = $this->staffDirectory->names($signatures->map(fn (ReportSignature $signature) => $signature->signatory->user_id)->values()->all());
+            $tests = [];
+
+            foreach ($entries->unique('test_id') as $entry) {
+                /** @var WorklistEntry $entry */
+                $definition = $definitions[$entry->test_id];
+                $loincCodes = [];
+
+                foreach ($definition->parameters as $parameter) {
+                    if ($parameter->loincCode !== null) {
+                        $loincCodes[$parameter->code] = $parameter->loincCode;
+                    }
+                }
+
+                $tests[] = new ExchangeTest(
+                    $definition->code,
+                    $definition->name,
+                    $definition->loincCode,
+                    $entry->department_id,
+                    $departments[$entry->department_id]->name ?? '',
+                    $loincCodes,
+                );
+            }
+
+            return new ReportForExchange(
+                $report->id,
+                $report->organization_id,
+                $report->patient_id,
+                $report->version,
+                $report->status === ReportStatus::Released,
+                $order->orderNo,
+                $order->orderDate,
+                $report->released_at,
+                $this->network->letterhead($report->processing_branch_id),
+                $tests,
+                $signatures->map(fn (ReportSignature $signature) => new ExchangeSigner(
+                    $signature->signatory_id,
+                    $signature->department_id,
+                    $names[$signature->signatory->user_id] ?? '',
+                    $signature->signatory->qualification,
+                    $signature->signatory->council_name,
+                    $signature->signatory->registration_no,
+                    $signature->signatory->hpr_id,
+                    $signature->signed_at,
+                ))->values()->all(),
+                $report->pdf_path !== null,
+            );
+        });
+    }
+
+    /** The PDF exactly as released; null until it is rendered. */
+    public function pdfContents(string $organizationId, string $reportId): ?string
+    {
+        $path = $this->currentScope->runAs(ScopeContext::system($organizationId), fn () => Report::query()
+            ->whereKey($reportId)
+            ->whereIn('status', [ReportStatus::Released, ReportStatus::Amended])
+            ->value('pdf_path'));
+
+        return is_string($path) ? $this->files->contents($path) : null;
+    }
+
+    /**
+     * The current released reports of these patients made at one lab,
+     * oldest first: what a patient can link to their ABHA at that facility.
+     *
+     * @param  list<string>  $patientIds
+     * @return list<ReleasedReportSummary>
+     */
+    public function currentAtLab(array $patientIds, string $labBranchId): array
+    {
+        if ($patientIds === []) {
+            return [];
+        }
+
+        return $this->currentScope->runAs(ScopeContext::system(), function () use ($patientIds, $labBranchId): array {
+            $labName = $this->network->letterhead($labBranchId)->name;
+
+            return Report::query()
+                ->whereIn('patient_id', $patientIds)
+                ->where('processing_branch_id', $labBranchId)
+                ->where('status', ReportStatus::Released)
+                ->whereNotNull('released_at')
+                ->orderBy('released_at')
+                ->get()
+                ->map(fn (Report $report) => new ReleasedReportSummary(
+                    $report->id,
+                    $report->organization_id,
+                    $report->patient_id,
+                    $report->processing_branch_id,
+                    $labName,
+                    $report->version,
+                    $this->orders->reportFacts($report->organization_id, $report->order_id)->orderDate,
+                    $report->released_at ?? $report->created_at,
+                ))
+                ->values()
+                ->all();
+        });
     }
 }

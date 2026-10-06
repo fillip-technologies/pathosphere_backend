@@ -44,20 +44,23 @@ final class RecordSharing
         private readonly CurrentScope $currentScope,
     ) {}
 
-    /** @return Builder<Consent> the profile's shares, newest first */
+    /** @return Builder<Consent> the profile's own shares (not ABDM consents), newest first */
     public function list(PatientViewer $viewer): Builder
     {
         return Consent::query()
             ->whereIn('patient_id', $viewer->patientIds())
+            ->whereNull('consent_artefact_id')
             ->with('shares')
             ->orderByDesc('created_at');
     }
 
     public function find(PatientViewer $viewer, string $consentId): Consent
     {
+        // ABDM consents are revoked in the patient's ABHA app, not here.
         return Consent::query()
             ->whereKey($consentId)
             ->whereIn('patient_id', $viewer->patientIds())
+            ->whereNull('consent_artefact_id')
             ->with('shares')
             ->first() ?? throw LockerError::notFound('share');
     }

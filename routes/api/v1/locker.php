@@ -1,5 +1,7 @@
 <?php
 
+use App\Modules\Locker\Http\Controllers\AbdmConsentController;
+use App\Modules\Locker\Http\Controllers\AbdmHipCallbackController;
 use App\Modules\Locker\Http\Controllers\AccessLogController;
 use App\Modules\Locker\Http\Controllers\DoctorRecordController;
 use App\Modules\Locker\Http\Controllers\FamilyController;
@@ -17,6 +19,10 @@ Route::prefix('auth')->group(function (): void {
     Route::post('/otp-challenges', [PersonSignInController::class, 'challenge'])->middleware('throttle:otp-challenges');
     Route::post('/otp-verifications', [PersonSignInController::class, 'verify'])->middleware('throttle:otp-verifications');
 });
+
+// ABDM gateway calling our labs as Health Information Providers (spec §5.7 M2); verified by the gateway signature.
+Route::post('/abdm/callbacks/hip/{callbackType}', AbdmHipCallbackController::class)
+    ->where('callbackType', 'link-token|care-contexts-linked|discover|link-init|link-confirm|consent-notify|health-information-request');
 
 // Public: a record opened through a share link (rate-limited, token is the proof).
 Route::middleware('throttle:share-links')->group(function (): void {
@@ -56,6 +62,9 @@ Route::middleware(['auth:sanctum', 'person:patient', 'patient-profile'])->prefix
     Route::post('/reminders/{reminderId}/dismiss', [ReminderController::class, 'dismiss'])->whereUuid('reminderId');
 
     Route::get('/record-access-logs', [AccessLogController::class, 'index']);
+
+    // What the patient allowed other health systems to receive through ABDM (granted in their ABHA app).
+    Route::get('/abdm-consents', [AbdmConsentController::class, 'index']);
 });
 
 // The referring doctor's app: records shared with them by consent.

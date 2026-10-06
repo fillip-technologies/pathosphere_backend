@@ -17,6 +17,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @property string $test_id
  * @property string $parameter_name
  * @property string $code
+ * @property string|null $loinc_code
  * @property string|null $unit
  * @property ResultType $result_type
  * @property int|null $decimal_places
