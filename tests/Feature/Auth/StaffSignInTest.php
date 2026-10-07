@@ -15,7 +15,7 @@ use Illuminate\Testing\TestResponse;
 use Tests\Support\Auth\BuildsStaff;
 use Tests\TestCase;
 
-/** Staff sign-in, MFA, refresh and sign-out (spec §8.1, §10.3–10.4). */
+/** Staff sign-in, optional MFA, refresh and sign-out (spec §8.1, §10.3–10.4). */
 final class StaffSignInTest extends TestCase
 {
     use BuildsStaff;
@@ -93,17 +93,42 @@ final class StaffSignInTest extends TestCase
         $this->withToken($token)->getJson('/api/v1/me')->assertUnauthorized()->assertJsonPath('error.code', 'ACCOUNT_DISABLED');
     }
 
-    public function test_roles_that_need_mfa_must_enrol_then_verify_a_code(): void
+    public function test_mfa_is_off_until_the_staff_member_switches_it_on(): void
     {
+        $this->signIn('admin@example.com', self::STAFF_PASSWORD)
+            ->assertOk()
+            ->assertJsonPath('data.status', 'authenticated');
+    }
+
+    public function test_staff_switch_on_mfa_and_then_sign_in_with_a_code(): void
+    {
+        $token = $this->signIn('admin@example.com', self::STAFF_PASSWORD)->json('data.tokens.access_token');
+        $this->withToken($token)->getJson('/api/v1/me')->assertJsonPath('data.mfa_enabled', false);
+
+        $this->withToken($token)->postJson('/api/v1/me/mfa/confirmation', ['code' => '123456'])
+            ->assertUnprocessable()
+            ->assertJsonPath('error.code', 'MFA_ENROLLMENT_NOT_STARTED');
+
+        $setup = $this->withToken($token)->postJson('/api/v1/me/mfa')->assertOk();
+        $secret = $setup->json('data.secret');
+        $this->assertStringStartsWith('otpauth://totp/', $setup->json('data.otpauth_uri'));
+
+        $this->withToken($token)->postJson('/api/v1/me/mfa/confirmation', ['code' => $this->wrongCode($secret)])
+            ->assertUnauthorized()
+            ->assertJsonPath('error.code', 'MFA_CODE_INVALID');
+
+        $this->withToken($token)->postJson('/api/v1/me/mfa/confirmation', ['code' => Totp::codeAt($secret, time())])
+            ->assertOk()
+            ->assertJsonPath('data.mfa_enabled', true);
+
+        $this->withToken($token)->getJson('/api/v1/me')->assertJsonPath('data.mfa_enabled', true);
+        $this->withToken($token)->postJson('/api/v1/me/mfa')->assertConflict()->assertJsonPath('error.code', 'MFA_ALREADY_ENABLED');
+
         $challenge = $this->signIn('admin@example.com', self::STAFF_PASSWORD)
             ->assertOk()
-            ->assertJsonPath('data.status', 'mfa_enrollment_required')
+            ->assertJsonPath('data.status', 'mfa_required')
             ->assertJsonMissingPath('data.tokens')
             ->json('data.mfa_challenge_token');
-
-        $enrolment = $this->postJson('/api/v1/auth/mfa-enrollments', ['mfa_challenge_token' => $challenge])->assertOk();
-        $secret = $enrolment->json('data.secret');
-        $this->assertStringStartsWith('otpauth://totp/', $enrolment->json('data.otpauth_uri'));
 
         $this->postJson('/api/v1/auth/mfa-verifications', ['mfa_challenge_token' => $challenge, 'code' => $this->wrongCode($secret)])
             ->assertUnauthorized()
@@ -112,17 +137,32 @@ final class StaffSignInTest extends TestCase
         $this->postJson('/api/v1/auth/mfa-verifications', ['mfa_challenge_token' => $challenge, 'code' => Totp::codeAt($secret, time())])
             ->assertOk()
             ->assertJsonPath('data.status', 'authenticated');
+    }
 
-        $this->assertTrue($this->asSystem(fn () => app(StaffAccounts::class)->for($this->superAdmin)->mfa_enabled));
+    public function test_switching_mfa_off_needs_a_current_code(): void
+    {
+        $secret = $this->switchOnMfa($this->frontDesk);
+        $token = $this->signInWithMfa('desk@example.com', $secret);
 
-        // Next time, MFA is asked for, not enrolment.
-        $this->signIn('admin@example.com', self::STAFF_PASSWORD)->assertJsonPath('data.status', 'mfa_required');
+        $this->withToken($token)->postJson('/api/v1/me/mfa/disable', ['code' => $this->wrongCode($secret)])
+            ->assertUnauthorized()
+            ->assertJsonPath('error.code', 'MFA_CODE_INVALID');
+
+        $this->withToken($token)->postJson('/api/v1/me/mfa/disable', ['code' => Totp::codeAt($secret, time())])
+            ->assertOk()
+            ->assertJsonPath('data.mfa_enabled', false);
+
+        $this->withToken($token)->postJson('/api/v1/me/mfa/disable', ['code' => Totp::codeAt($secret, time())])
+            ->assertUnprocessable()
+            ->assertJsonPath('error.code', 'MFA_NOT_ENABLED');
+
+        $this->signIn('desk@example.com', self::STAFF_PASSWORD)->assertJsonPath('data.status', 'authenticated');
     }
 
     public function test_a_challenge_cannot_be_reused_after_success(): void
     {
+        $secret = $this->switchOnMfa($this->superAdmin);
         $challenge = $this->signIn('admin@example.com', self::STAFF_PASSWORD)->json('data.mfa_challenge_token');
-        $secret = $this->postJson('/api/v1/auth/mfa-enrollments', ['mfa_challenge_token' => $challenge])->json('data.secret');
         $code = Totp::codeAt($secret, time());
 
         $this->postJson('/api/v1/auth/mfa-verifications', ['mfa_challenge_token' => $challenge, 'code' => $code])->assertOk();
@@ -175,6 +215,24 @@ final class StaffSignInTest extends TestCase
     private function signIn(string $identifier, string $password): TestResponse
     {
         return $this->postJson('/api/v1/auth/login', ['login_identifier' => $identifier, 'password' => $password]);
+    }
+
+    /** Switches MFA on for the user directly and returns the secret. */
+    private function switchOnMfa(User $user): string
+    {
+        $secret = Totp::generateSecret();
+        $this->asSystem(fn () => app(StaffAccounts::class)->for($user)->forceFill(['mfa_secret' => $secret, 'mfa_enabled' => true])->save());
+
+        return $secret;
+    }
+
+    private function signInWithMfa(string $identifier, string $secret): string
+    {
+        $challenge = $this->signIn($identifier, self::STAFF_PASSWORD)->assertJsonPath('data.status', 'mfa_required')->json('data.mfa_challenge_token');
+
+        return $this->postJson('/api/v1/auth/mfa-verifications', ['mfa_challenge_token' => $challenge, 'code' => Totp::codeAt($secret, time())])
+            ->assertOk()
+            ->json('data.tokens.access_token');
     }
 
     private function wrongCode(string $secret): string

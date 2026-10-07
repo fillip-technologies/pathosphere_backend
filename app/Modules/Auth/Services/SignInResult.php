@@ -12,8 +12,6 @@ final class SignInResult
 
     public const MFA_REQUIRED = 'mfa_required';
 
-    public const MFA_ENROLLMENT_REQUIRED = 'mfa_enrollment_required';
-
     private function __construct(
         public readonly string $status,
         public readonly ?IssuedTokens $tokens = null,
@@ -28,11 +26,6 @@ final class SignInResult
     public static function mfaRequired(string $challengeToken): self
     {
         return new self(self::MFA_REQUIRED, mfaChallengeToken: $challengeToken);
-    }
-
-    public static function mfaEnrollmentRequired(string $challengeToken): self
-    {
-        return new self(self::MFA_ENROLLMENT_REQUIRED, mfaChallengeToken: $challengeToken);
     }
 
     /** @return array<string, mixed> */
